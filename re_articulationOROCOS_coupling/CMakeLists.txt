@@ -24,7 +24,7 @@ include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
-orocos_component(${PROJECT_NAME} src/Coupling.cpp)
+orocos_component(${PROJECT_NAME} src/Connector.cpp)
 
 
 #common commands for building c++ executables and libraries

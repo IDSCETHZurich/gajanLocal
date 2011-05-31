@@ -1,4 +1,4 @@
-#include "Coupling.hpp"
+#include "Connector.hpp"
 
 ORO_CREATE_COMPONENT(re_articulationOROCOS_coupling::Connector);
 
@@ -15,35 +15,27 @@ namespace re_articulationOROCOS_coupling
     msg(),
     cartPosMsr(),
     cartPosCmd(),
-    vecKDLFrames(),
     qx(0.0),
     qy(0.0),
     qz(0.0),
     qw(0.0),
-    trajectorySize(0),trajectoryPointer(0),
-    RobotStatePort("RobotState"),
-    FriStatePort("FriState"),
-    cartPosMsrPort("LWR_Pos_Msr"),
-    jntPosPort("msrJntPos"),
-    jntPosCmdPort("LWR_Pos_Cmd"),
     invokeMoveTo(false), doRecord(true), doPlay(false),
-    playDirection(-1),
-    KRLintTmp(vector<int32_t>(FRI_USER_SIZE)),
-    toKRLintAttr("toKRLint",KRLintTmp)
+    KRLintTmp(vector<int32_t>(FRI_USER_SIZE))
+    //toKRLintAttr("toKRLint",KRLintTmp)
     {
       int argc = 0;
       char* argv[0];
       log(Info)<<"Creating ros node"<<endlog();
-      ros::init(argc, argv, "Connector(Orocos-LWR)");
+      ros::init(argc, argv, "Connector");
       n = new ros::NodeHandle();
       listener = new tf::TransformListener();
       client = n->serviceClient<re_srvs::getNextPose>("get_next_pose");
-      this->addPort("cartPosMsrPort", cartPosMsrPort);
+      this->addPort("msrCartPosPort", cartPosPort);
+      this->addPort("msrJntPosPort", jntPosPort);
       this->addPort("RobotStatePort", RobotStatePort);
-      this->addPort("FriStatePort", FriStatePort);
-      this->addPort("jntPosPort", jntPosPort);
+      this->addPort("FRIStatePort", FRIStatePort);
 
-      this->addPort("jntPosCmdPort", jntPosCmdPort);
+      this->addPort("cartPosCmdPort", cartPosCmdPort);
     }
 
     Connector::~Connector()
@@ -54,7 +46,7 @@ namespace re_articulationOROCOS_coupling
 
   bool Connector::configureHook(){
     chatter_pub   = n->advertise<geometry_msgs::PoseStamped>("tool_pose", 1);
-    joint_pos_pub = n->advertise<sensor_msgs::JointState>("joint_positions", 1);
+    joint_pos_pub = n->advertise<sensor_msgs::JointState>("joint_positions_connector", 1);
 
     // Initialize joint names
     jntStateMsg.header.frame_id = "arm_0_link";
@@ -70,7 +62,7 @@ namespace re_articulationOROCOS_coupling
   } 
   bool Connector::startHook()
     {   
-	toKRLintAttr = this->getPeer("FRIServer")->attributes()->getAttribute("toKRLint");
+/*	toKRLintAttr = this->getPeer("FRIServer")->attributes()->getAttribute("toKRLint");
 
 	//wait while FRI Server + trajectoryGeneratorJntPos is running
 	std::cout << "wait while FRI Server + trajectoryGeneratorJntPos is running" << endl;
@@ -86,11 +78,11 @@ namespace re_articulationOROCOS_coupling
 
 	//wait till FRI is in monitor mode
 	std::cout << "wait till FRI is in monitor mode and the quality is perfect" << endl;
-	FriStatePort.read(friState);
+	FRIStatePort.read(friState);
 
 	do{
 		sleep(1);
-		FriStatePort.read(friState);
+		FRIStatePort.read(friState);
 	}while(friState.state!=1 || friState.quality!=3);
 	std::cout << "FRI is in monitor mode." << endl;
 
@@ -111,15 +103,15 @@ namespace re_articulationOROCOS_coupling
 
 	std::cout << "Wait till command mode " << endl;
 	//Wait till command mode 
-	FriStatePort.read(friState);
+	FRIStatePort.read(friState);
 	while(friState.state == 2){
 		sleep(1);
-		FriStatePort.read(friState);
+		FRIStatePort.read(friState);
 	}
 
 	//All configuration OK
 	std::cout << "All configuration OK !!" << endl;
-
+*/
 	return true;
     }   
   void Connector::updateHook(){  
@@ -134,50 +126,21 @@ namespace re_articulationOROCOS_coupling
       
    //get moveTo parameters from ROS and send it to FRI, if the command is executed publish the result as a ros topic.
    //Publish from LWR to ROS
-	FriStatePort.read(friState);
+	FRIStatePort.read(friState);
 	RobotStatePort.read(robotState);
 	invokeMoveTo = (friState.state == 2)&&(robotState.power==127);
 
-    cartPosMsrPort.read(cartPosMsr);
-
-	cartPosMsr.M.GetQuaternion(qx,qy,qz,qw);
-
-	msg.header.stamp = ros::Time::now();
-	msg.header.frame_id = "arm_0_link";
-	msg.pose.position.x = cartPosMsr.p[0];
-	msg.pose.position.y = cartPosMsr.p[1];
-	msg.pose.position.z = cartPosMsr.p[2];
-	msg.pose.orientation.x = qx;
-	msg.pose.orientation.y = qy;
-	msg.pose.orientation.z = qz;
-	msg.pose.orientation.w = qw;
+    cartPosPort.read(cartPosMsr);
 	
-	chatter_pub.publish(msg);
-    //if(moveToCommand.done() && invokeMoveTo){
-	  //resetting the command
-	  //moveToCommand = this->getPeer("trajectoryGeneratorJntPos")->commands()->getCommand<bool(KDL::Frame,double)>("moveTo");
-
-	//} //end of if executed
+	chatter_pub.publish(cartPosMsr);
+	srv.request.currentPose = cartPosMsr;
 	
+	if (client.call(srv)){
+		cartPosCmdPort.write(srv.response.commandPose);
+	}else{
+		//std::cout << "getNextPose service call failed " << std::endl;
+	}
 
-	//if(moveToCommand.ready() && invokeMoveTo)
-	{
-	  cartPosMsrPort.read(cartPosMsr);
-	  cartPosMsr.M.GetQuaternion(qx,qy,qz,qw);
-
-          msg.header.stamp = ros::Time::now();
-          msg.header.frame_id = "arm_0_link";
-          msg.pose.position.x = cartPosMsr.p[0];
-          msg.pose.position.y = cartPosMsr.p[1];
-          msg.pose.position.z = cartPosMsr.p[2];
-	
-	  msg.pose.orientation.x = qx; 
-          msg.pose.orientation.y = qy;
-          msg.pose.orientation.z = qz;
-          msg.pose.orientation.w = qw;
-	  srv.request.currentPose = msg.pose;
-
-	}//end of if ready  
   }
 
   void Connector::stopHook()

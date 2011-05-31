@@ -5,13 +5,13 @@
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.6</pydev_property>
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
-<path>/home/gajan/ros/stacks/gajanLocal/re_articulationOROCOS_coupling/src</path>
-<path>/home/gajan/ros/stacks/gajanLocal/re_articulationOROCOS_coupling/lib</path>
-<path>/home/gajan/ros/stacks/trajectory-generator/lwr_fri/src</path>
-<path>/home/gajan/ros/stacks/trajectory-generator/lwr_fri/lib</path>
+<path>/home/demo/ros/stacks/gajanLocal/re_articulationOROCOS_coupling/src</path>
+<path>/home/demo/ros/stacks/gajanLocal/re_articulationOROCOS_coupling/lib</path>
+<path>/home/demo/ros/stacks/trajectory-generator/lwr_fri/src</path>
+<path>/home/demo/ros/stacks/trajectory-generator/lwr_fri/lib</path>
 <path>/opt/ros/diamondback/stacks/orocos_toolchain_ros/ocl/lib</path>
 <path>/opt/ros/diamondback/stacks/orocos_toolchain_ros/log4cpp/src</path>
-<path>/home/gajan/ros/stacks/orocos_kinematics_dynamics/orocos_kdl/install/lib/python/site-packages</path>
+<path>/home/demo/ros/stacks/orocos_kinematics_dynamics/orocos_kdl/install/lib/python/site-packages</path>
 <path>/opt/ros/diamondback/stacks/common_msgs/geometry_msgs/src</path>
 <path>/opt/ros/diamondback/stacks/ros_comm/tools/rosbagmigration/src</path>
 <path>/opt/ros/diamondback/stacks/ros_comm/tools/rosbag/src</path>
@@ -58,11 +58,12 @@
 <path>/opt/ros/diamondback/stacks/ros_comm/utilities/message_filters/src</path>
 <path>/opt/ros/diamondback/stacks/ros_comm/utilities/message_filters/lib</path>
 <path>/opt/ros/diamondback/stacks/geometry/kdl/lib</path>
-<path>/home/gajan/ros/stacks/roboearth/re_srvs/src</path>
+<path>/home/demo/ros/stacks/roboearth/re_srvs/src</path>
 <path>/opt/ros/diamondback/ros/core/mk</path>
-<path>/usr/local/lib/python2.6/dist-packages/rosinstall-0.5.8-py2.6.egg</path>
+<path>/usr/local/lib/python2.6/dist-packages/rosinstall-0.5.15-py2.6.egg</path>
 <path>/opt/ros/diamondback/ros/core/roslib/src</path>
-<path>/home/gajan/ros/stacks/gajanLocal/re_articulationOROCOS_coupling</path>
+<path>/home/demo/ros/stacks/gajanLocal/re_articulationOROCOS_coupling</path>
+<path>/home/demo/probcog/python</path>
 <path>/usr/lib/python2.6</path>
 <path>/usr/lib/python2.6/plat-linux2</path>
 <path>/usr/lib/python2.6/lib-tk</path>

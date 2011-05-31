@@ -161,9 +161,9 @@
 <pathentry kind="mac" name="__GXX_RTTI" path="" value="1"/>
 <pathentry kind="mac" name="__EXCEPTIONS" path="" value="1"/>
 <pathentry kind="mac" name="_GNU_SOURCE" path="" value="1"/>
-<pathentry include="/home/gajan/ros/stacks/gajanLocal/re_articulationOROCOS_coupling/include" kind="inc" path="" system="true"/>
+<pathentry include="/home/demo/ros/stacks/gajanLocal/re_articulationOROCOS_coupling/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/orocos_toolchain_ros/ocl/install/include/orocos" kind="inc" path="" system="true"/>
-<pathentry include="/home/gajan/ros/stacks/orocos_kinematics_dynamics/orocos_kdl/install/include" kind="inc" path="" system="true"/>
+<pathentry include="/home/demo/ros/stacks/orocos_kinematics_dynamics/orocos_kdl/install/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/geometry/tf_conversions/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/geometry/tf/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/geometry/tf/msg_gen/cpp/include" kind="inc" path="" system="true"/>
@@ -171,7 +171,7 @@
 <pathentry include="/opt/ros/diamondback/stacks/geometry/kdl/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/orocos_toolchain_ros/log4cpp/install/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/geometry/eigen/include" kind="inc" path="" system="true"/>
-<pathentry include="/home/gajan/ros/stacks/roboearth/re_srvs/srv_gen/cpp/include" kind="inc" path="" system="true"/>
+<pathentry include="/home/demo/ros/stacks/roboearth/re_srvs/srv_gen/cpp/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/common_msgs/geometry_msgs/msg_gen/cpp/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/common_msgs/sensor_msgs/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/common_msgs/sensor_msgs/msg_gen/cpp/include" kind="inc" path="" system="true"/>
@@ -202,7 +202,6 @@
 <pathentry include="/usr/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/include/orocos" kind="inc" path="" system="true"/>
-<pathentry include="/home/gajan/ros/stacks/gajanLocal/re_articulationOROCOS_coupling/srv_gen/cpp/include" kind="inc" path="" system="true"/>
 <pathentry include="/usr/local/include" kind="inc" path="" system="true"/>
 <pathentry include="/usr/lib/gcc/x86_64-linux-gnu/4.4.3/include" kind="inc" path="" system="true"/>
 <pathentry include="/usr/lib/gcc/x86_64-linux-gnu/4.4.3/include-fixed" kind="inc" path="" system="true"/>
@@ -237,13 +236,6 @@
 <buildCommand>/usr/bin/make</buildCommand>
 <buildArguments/>
 <buildTarget>ROSBUILD_gensrv_lisp</buildTarget>
-<stopOnError>true</stopOnError>
-<useDefaultCommand>false</useDefaultCommand>
-</target>
-<target name=": ROSBUILD_gensrv_py" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>/usr/bin/make</buildCommand>
-<buildArguments/>
-<buildTarget>ROSBUILD_gensrv_py</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
 </target>
@@ -335,13 +327,6 @@
 <buildCommand>/usr/bin/make</buildCommand>
 <buildArguments/>
 <buildTarget>rospack_gensrv</buildTarget>
-<stopOnError>true</stopOnError>
-<useDefaultCommand>false</useDefaultCommand>
-</target>
-<target name=": rospack_gensrv_all" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>/usr/bin/make</buildCommand>
-<buildArguments/>
-<buildTarget>rospack_gensrv_all</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
 </target>

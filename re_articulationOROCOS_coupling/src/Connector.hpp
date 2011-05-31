@@ -38,17 +38,13 @@ namespace re_articulationOROCOS_coupling
     ros::Publisher chatter_pub;
     ros::Publisher joint_pos_pub;
 
-
     ros::ServiceClient client;
     re_srvs::getNextPose srv;
 
-   
-    geometry_msgs::PoseStamped msg;
+    geometry_msgs::Pose msg;
     sensor_msgs::JointState jntStateMsg;
-    KDL::Frame cartPosMsr,cartPosCmd;
-    std::vector<KDL::Frame> vecKDLFrames;
+    geometry_msgs::Pose cartPosMsr,cartPosCmd;
     double qx,qy,qz,qw;
-    int trajectorySize, trajectoryPointer;
     std::vector<double> jntPosArray;
     tf::TransformListener* listener;
     tf::StampedTransform transform;
@@ -64,12 +60,11 @@ namespace re_articulationOROCOS_coupling
     *********/
         
     RTT::InputPort<tFriRobotState> RobotStatePort;
-    RTT::InputPort<tFriIntfState> FriStatePort;
-    RTT::InputPort<KDL::Frame> cartPosMsrPort;
-    RTT::InputPort< std::vector<double> > jntPosPort;
-    RTT::OutputPort<KDL::Frame> jntPosCmdPort;
+    RTT::InputPort<tFriIntfState> FRIStatePort;
+    RTT::InputPort<geometry_msgs::Pose> cartPosPort;
+    RTT::InputPort<std::vector<double> > jntPosPort;
+    RTT::OutputPort<geometry_msgs::Pose> cartPosCmdPort;
 
-    //RTT::OutputPort<KDL::Frame> jntPosCmd;
     
 
     bool invokeMoveTo;
