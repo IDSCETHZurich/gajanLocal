@@ -1,0 +1,73 @@
+0.000 [ Info   ][Logger] No ORO_LOGLEVEL environment variable set.
+0.000 [ Info   ][Logger]  OROCOS version '1.10.4' compiled with GCC 4.4.3. Running in GNU/Linux.
+0.000 [ Info   ][Logger] Orocos Logging Activated at level : [ Warning] ( 4 ) 
+0.000 [ Info   ][Logger] Reference System Time is : 1295431968779619371 ticks ( 1.29543e+09 seconds ).
+0.000 [ Info   ][Logger] Logging is relative to this time.
+0.000 [ Info   ][Toolkit] Loading Tool RealTime.
+0.002 [ Info   ][Thread] Creating Thread for scheduler: 0
+0.002 [ Info   ][Deployer] Thread created with scheduler type '0', priority 0 and period 0.
+0.003 [ Info   ][Deployer] No plugins present in /usr/lib/rtt/gnulinux/plugins
+0.003 [ Info   ][DeploymentComponent::loadComponents] Loading 'FRIServerCommandMode1_CartesianGeneratorPos_Connector.xml'.
+0.003 [ Info   ][DeploymentComponent::loadComponents] Validating new configuration...
+0.007 [ Info   ][Toolkit] Loading Tool KDL.
+0.007 [ Warning][Toolkit] Overriding TypeInfo for 'std::vector'.
+0.007 [ Info   ][DeploymentComponent::loadLibrary] Loaded RTT Plugin 'KDL'
+0.010 [ Info   ][DeploymentComponent::loadLibrary] Loaded multi component library '/home/gajan/ros/stacks/kul-ros-pkg/lwr_fri/lib/libFRIComponent.so'
+0.010 [ Info   ][DeploymentComponent::loadLibrary] Loaded component type 'LWR::FRIComponent'
+0.010 [ Info   ][Toolkit] Loading Tool FRI.
+0.010 [ Info   ][DeploymentComponent::loadLibrary] Loaded RTT Plugin 'FRI'
+0.027 [ Info   ][DeploymentComponent::loadLibrary] Loaded multi component library '/home/gajan/ros/stacks/gajanLocal/lwr_coupling/lib/libConnector.so'
+0.028 [ Info   ][DeploymentComponent::loadLibrary] Loaded component type 'lwr_coupling::Connector'
+0.028 [ Info   ][DeploymentComponent::loadLibrary] Storing Connector
+0.031 [ Info   ][DeploymentComponent::loadLibrary] Loaded multi component library '/home/gajan/ros/stacks/kul-ros-pkg/orocos/ocl/ocl_1.10/ocl/lib/liborocos-cartesian-gnulinux.so'
+0.031 [ Info   ][DeploymentComponent::loadLibrary] Storing orocos-cartesian
+0.032 [ Info   ][Thread] Creating Thread for scheduler: 0
+0.032 [ Info   ][FRIServer] Thread created with scheduler type '0', priority 0 and period 0.
+0.032 [ Info   ][DeploymentComponent::loadComponent] Adding FRIServer as new peer:  OK.
+0.033 [ Info   ][NonPeriodicActivity] SingleThread created with priority 1 and period 0.
+0.033 [ Info   ][NonPeriodicActivity] Scheduler type was set to `1'.
+0.034 [ Info   ][Thread] Creating Thread for scheduler: 0
+0.034 [ Info   ][CartGeneratorPos] Thread created with scheduler type '0', priority 0 and period 0.
+0.034 [ Info   ][DeploymentComponent::loadComponent] Adding CartGeneratorPos as new peer:  OK.
+0.035 [ Info   ][PeriodicThread] Creating PeriodicThread for scheduler: 1
+0.035 [ Info   ][TimerThreadInstance] PeriodicThread created with scheduler type '1', priority 1 and period 0.005.
+0.036 [ Info   ][Thread] Creating Thread for scheduler: 0
+0.036 [ Info   ][Connector] Thread created with scheduler type '0', priority 0 and period 0.
+0.037 [ Info   ][DeploymentComponent::loadComponent] Creating ros node
+0.055 [ Info   ][DeploymentComponent::loadComponent] Adding Connector as new peer:  OK.
+0.055 [ Info   ][PeriodicThread] Creating PeriodicThread for scheduler: 0
+0.055 [ Info   ][TimerThreadInstance] PeriodicThread created with scheduler type '0', priority 0 and period 1.
+0.056 [ Info   ][DeploymentComponent::configureComponents] Creating Connection DesPos starting from CartGeneratorPos.CartesianDesiredPosition :
+0.056 [ Info   ][DeploymentComponent::configureComponents] Connected Port FRIServer.cartPos to connection DesPos
+0.056 [ Info   ][DeploymentComponent::configureComponents] Creating Connection FriStateConn starting from FRIServer.FriState :
+0.056 [ Info   ][DeploymentComponent::configureComponents] Connected Port Connector.FriState to connection FriStateConn
+0.056 [ Info   ][DeploymentComponent::configureComponents] Creating Connection MsrPos starting from FRIServer.msrCartPos :
+0.056 [ Info   ][DeploymentComponent::configureComponents] Connected Port CartGeneratorPos.CartesianSensorPosition to connection MsrPos
+0.056 [ Info   ][DeploymentComponent::configureComponents] Connected Port Connector.LWR_Pos_Msr to connection MsrPos
+0.056 [ Info   ][DeploymentComponent::configureComponents] Creating Connection RobotStateConn starting from FRIServer.RobotState :
+0.056 [ Info   ][DeploymentComponent::configureComponents] Connected Port Connector.RobotState to connection RobotStateConn
+0.056 [ Info   ][PropertyLoader:load] Loading properties into TaskContext 'FRIServer' with 'cpf/FRIServer_cm4.cpf'.
+0.057 [ Info   ][DeploymentComponent::configureComponents] Configured Properties of FRIServer from cpf/FRIServer_cm4.cpf
+0.057 [ Info   ][DeploymentComponent::configureComponents] Re-setting activity of FRIServer
+0.057 [ Info   ][PropertyLoader:load] Loading properties into TaskContext 'CartGeneratorPos' with 'cpf/CartPosGenerator.cpf'.
+0.058 [ Info   ][DeploymentComponent::configureComponents] Configured Properties of CartGeneratorPos from cpf/CartPosGenerator.cpf
+0.058 [ Info   ][DeploymentComponent::configureComponents] Re-setting activity of CartGeneratorPos
+0.059 [ Info   ][DeploymentComponent::configureComponents] Configured Properties of Connector from main configuration file.
+0.059 [ Info   ][DeploymentComponent::configureComponents] Re-setting activity of Connector
+0.061 [ Info   ][DeploymentComponent::configureComponents] Configuration successful.
+5.063 [ Info   ][DeploymentComponent::startComponents] Startup successful.
+5.063 [ Info   ][Deployer] Successfully loaded, configured and started components from FRIServerCommandMode1_CartesianGeneratorPos_Connector.xml
+5.064 [ Info   ][Thread] Creating Thread for scheduler: 0
+5.065 [ Info   ][TaskBrowser] Thread created with scheduler type '0', priority 0 and period 0.
+5.066 [ Info   ][TaskBrowser] Entering Task Deployer
+41.486 [ Info   ][DeploymentComponent::stopComponents] Stopped CartGeneratorPos
+41.486 [ Info   ][DeploymentComponent::stopComponents] Stopped Connector
+41.496 [ Info   ][DeploymentComponent::stopComponents] Stopped FRIServer
+41.496 [ Info   ][DeploymentComponent::cleanupComponents] Cleaned up CartGeneratorPos
+41.496 [ Info   ][DeploymentComponent::cleanupComponents] Cleaned up Connector
+41.496 [ Info   ][DeploymentComponent::cleanupComponents] Cleaned up FRIServer
+41.501 [ Info   ][TaskBrowser] Disconnected and destroyed CartGeneratorPos
+42.056 [ Info   ][TaskBrowser] Disconnected and destroyed Connector
+42.057 [ Info   ][TaskBrowser] Disconnected and destroyed FRIServer
+42.057 [ Info   ][TaskBrowser] Kick-out successful.
+42.058 [ Info   ][Logger] Orocos Logging Deactivated.

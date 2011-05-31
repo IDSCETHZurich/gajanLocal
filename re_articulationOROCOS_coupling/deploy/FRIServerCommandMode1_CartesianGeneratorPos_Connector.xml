@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+ 	<simple name="Import" type="string"><value>kdl_typekit</value></simple>
+	<simple name="Import" type="string"><value>lwr_fri</value></simple>
+	<simple name="Import" type="string"><value>trajectory_generator</value></simple>
+	<simple name="Import" type="string"><value>kuka_IK</value></simple>
+	<simple name="Import" type="string"><value>re_articulationOROCOS_coupling</value></simple>
+
+<struct name="FRIServer" type="LWR::FRIComponent">
+	<struct name="Activity" type="NonPeriodicActivity">
+		<simple name="Priority" type="short"><value>1</value></simple>
+		<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+	</struct>
+	<simple name="AutoConf" type="boolean"><value>1</value></simple>
+	<simple name="AutoStart" type="boolean"><value>1</value></simple>
+	<simple name="LoadProperties" type="string"><value>deploy/cpf/FRIServer_cm4.cpf</value></simple>
+	<struct name="Ports" type="PropertyBag">
+		<simple name="msrJntPos" type="string"><value>MsrJointPos</value></simple>
+		<simple name="msrCartPos" type="string"> <value>MsrPos</value></simple>
+		<simple name="cartPos" type="string"><value>DesPos</value></simple>
+		<simple name="RobotState" type="string"><value>RobotStateConn</value></simple>
+		<simple name="FriState" type="string"><value>FriStateConn</value></simple>
+	</struct>
+</struct>
+
+<struct name="Coupling" type="re_articulationOROCOS_coupling::Coupling">
+    <struct name="Activity" type="PeriodicActivity">
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Period" type="double"><value>1</value></simple>
+      <simple name="Scheduler" type="string">\<value>ORO_SCHED_OTHER</value>\</simple>
+    </struct>
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>1</value></simple>
+    
+    <struct name="Ports" type="PropertyBag">
+        <simple name="msrJntPos" type="string"><value>MsrJointPos</value></simple>
+	<simple name="LWR_Pos_Msr" type="string"><value>MsrPos</value></simple>
+	<simple name="RobotState" type="string"><value>RobotStateConn</value></simple>
+	<simple name="FriState" type="string"><value>FriStateConn</value></simple>
+    </struct>
+    <struct name="Peers" type="PropertyBag">
+	<simple type="string"><value>CartGeneratorPos</value></simple>
+        <simple type="string"><value>FRIServer</value></simple>
+    </struct>
+</struct>
+  
+  
+<struct name="kukaIKComponent" type="kuka_IK::kuka_IK">
+		<struct name="Activity" type="NonPeriodicActivity">
+			<simple name="Priority" type="short"><value>1</value></simple>
+			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+        </struct>
+		<simple name="AutoConf" type="boolean"><value>1</value></simple>
+		<simple name="AutoStart" type="boolean"><value>1</value></simple>
+		<struct name="Ports" type="PropertyBag">
+    			<simple name="CartesianPoseInput" type="string"><value>ROSConPoseIn</value></simple>
+    			<simple name="JointPositionDes" type="string"><value>JntPosIn</value></simple>
+  		</struct>
+</struct>
+	
+<struct name="trajectoryGeneratorJntPos" type="trajectory_generator::TrajectoryGenerator">
+		<struct name="Activity" type="PeriodicActivity">
+			<simple name="Period" type="double"><value>0.005</value></simple>
+			<simple name="Priority" type="short"><value>1</value></simple>
+    			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  		</struct>
+		<simple name="AutoConf" type="boolean"><value>1</value></simple>
+		<simple name="AutoStart" type="boolean"><value>1</value></simple>
+		<simple name="PropertyFile" type="string"><value>cpf/trajectoryGeneratorPos.cpf</value></simple>
+		<struct name="Ports" type="PropertyBag">
+    			<simple name="JointPositionInput" type="string"><value>JntPosIn</value></simple>
+    			<simple name="JointPositionDesToROS" type="string"><value>ROSConJntPosOut</value></simple>
+    			<simple name="JointPositionMsr" type="string"><value>MsrJointPosition</value></simple>
+    			<simple name="JointPositionDes" type="string"><value>DesJointPosition</value></simple>
+  		</struct>
+</struct>
+  
+  
+</properties>

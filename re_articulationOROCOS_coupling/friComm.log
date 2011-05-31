@@ -1,0 +1,235 @@
+This is METAFONT, Version 2.718281 (TeX Live 2009/Debian) (base=mf 2010.11.23)  18 JAN 2011 19:10
+**friComm.h include/
+(friComm.h
+>> PH
+! Improper subscript has been replaced by zero.
+l.1 /*{{[PH]
+            
+? ls
+Type <return> to proceed, S to scroll future error messages,
+R to run without stopping, Q to run quietly,
+I to insert something, E to edit your file,
+1 or ... or 9 to ignore the next 1 to 9 tokens of input,
+H for help, X to quit.
+? 
+>> /*{{0***********************************************************************
+*****Project
+! Isolated expression.
+<to be read again> 
+                   :
+l.3  Project:
+               FRI
+? 
+! Extra tokens will be flushed.
+<to be read again> 
+                   :
+l.3  Project:
+               FRI
+? 
+! Interruption.
+l.3  Project:
+               FRI
+? 
+>> -unsigned*/typedef.unsigned.short.fri_uint16_t+/*!
+! Unknown relation will be considered false.
+<to be read again> 
+                   ;
+l.80 typedef unsigned short fri_uint16_t;
+                                          /*!< 2 byte unsigned */
+? q
+OK, entering batchmode...
+>> false
+! Isolated expression.
+<to be read again> 
+                   ;
+l.80 typedef unsigned short fri_uint16_t;
+                                          /*!< 2 byte unsigned */
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+>> -2unsigned*/typedef.unsigned.int.fri_uint32_t+/*!
+! Unknown relation will be considered false.
+<to be read again> 
+                   ;
+l.81 typedef unsigned int   fri_uint32_t;
+                                          /*!< 4 byte unsigned */
+Oh dear. I can't decide if the expression above is positive,
+negative, or zero. So this comparison test won't be `true'.
+
+>> false
+! Isolated expression.
+<to be read again> 
+                   ;
+l.81 typedef unsigned int   fri_uint32_t;
+                                          /*!< 4 byte unsigned */
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+>> -4unsigned*/typedef.int.fri_int32_t+/*!
+! Unknown relation will be considered false.
+<to be read again> 
+                   ;
+l.82 typedef int            fri_int32_t;
+                                          /*!< 4 byte signed */
+Oh dear. I can't decide if the expression above is positive,
+negative, or zero. So this comparison test won't be `true'.
+
+>> false
+! Isolated expression.
+<to be read again> 
+                   ;
+l.82 typedef int            fri_int32_t;
+                                          /*!< 4 byte signed */
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+>> -4signed*/typedef.float.fri_float_t+/*!
+! Unknown relation will be considered false.
+<to be read again> 
+                   ;
+l.83 typedef float          fri_float_t;
+                                          /*!< 4 byte IEEE 754 float */
+Oh dear. I can't decide if the expression above is positive,
+negative, or zero. So this comparison test won't be `true'.
+
+>> false
+! Isolated expression.
+<to be read again> 
+                   ;
+l.83 typedef float          fri_float_t;
+                                          /*!< 4 byte IEEE 754 float */
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+>> -4IEEE754float*/#define.FRI_UINT16_MAX+/*!
+! Unknown relation will be considered false.
+<to be read again> 
+                   (
+l.84 #define FRI_UINT16_MAX (
+                             (1<<16) - 1) /*!< Biggest UINT16 w.r.t the inte...
+Oh dear. I can't decide if the expression above is positive,
+negative, or zero. So this comparison test won't be `true'.
+
+>> false
+! Isolated expression.
+<to be read again> 
+                   (
+l.84 #define FRI_UINT16_MAX (
+                             (1<<16) - 1) /*!< Biggest UINT16 w.r.t the inte...
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+! Extra tokens will be flushed.
+<to be read again> 
+                   (
+l.84 #define FRI_UINT16_MAX (
+                             (1<<16) - 1) /*!< Biggest UINT16 w.r.t the inte...
+I've just read as much of that statement as I could fathom,
+so a semicolon should have been next. It's very puzzling...
+but I'll try to get myself back together, by ignoring
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+! A statement can't begin with `*'.
+<to be read again> 
+                   *
+l.96      *
+            seqCount++;
+I was looking for the beginning of a new statement.
+If you just proceed without changing anything, I'll ignore
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+! Extra tokens will be flushed.
+<to be read again> 
+                   *
+l.96      *
+            seqCount++;
+I've just read as much of that statement as I could fathom,
+so a semicolon should have been next. It's very puzzling...
+but I'll try to get myself back together, by ignoring
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+! A statement can't begin with `*'.
+<to be read again> 
+                   *
+l.97      *
+            cmd.head.sendSeqCount=seqCount;
+I was looking for the beginning of a new statement.
+If you just proceed without changing anything, I'll ignore
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+! Extra tokens will be flushed.
+<to be read again> 
+                   *
+l.97      *
+            cmd.head.sendSeqCount=seqCount;
+I've just read as much of that statement as I could fathom,
+so a semicolon should have been next. It's very puzzling...
+but I'll try to get myself back together, by ignoring
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+>> */fri_uint16_t.sendSeqCount
+! Isolated expression.
+<to be read again> 
+                   ;
+l.99     fri_uint16_t sendSeqCount;
+                                   
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+>> /**reflected.sequence.counter
+! Isolated expression.
+<to be read again> 
+                   (
+l.101     /** reflected sequence counter (
+                                          mirrored from last received packet)
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+! Extra tokens will be flushed.
+<to be read again> 
+                   (
+l.101     /** reflected sequence counter (
+                                          mirrored from last received packet)
+I've just read as much of that statement as I could fathom,
+so a semicolon should have been next. It's very puzzling...
+but I'll try to get myself back together, by ignoring
+everything up to the next `;'. Please insert a semicolon
+now in front of anything that you don't want me to delete.
+(See Chapter 27 of The METAFONTbook for an example.)
+
+>> */fri_uint16_t.reflSeqCount
+! Isolated expression.
+<to be read again> 
+                   ;
+l.107     fri_uint16_t reflSeqCount;
+                                    
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore it and carry on.
+
+>> /**overall.packet.size.Remote.side
+! Isolated expression.
+<to be read again> 
+                   :
+l.110        Remote side:
+                           FRI_CMD_DATA_SIZE
+I couldn't find an `=' or `:=' after the
+expression that is shown above this error message,
+so I guess I'll just ignore 

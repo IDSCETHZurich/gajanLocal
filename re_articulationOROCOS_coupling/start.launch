@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Start arm + joint controllers + IK + state_publisher + move out of singularity -->
+  <!--<param name="robot_description" command="$(find xacro)/xacro.py '$(find re_kuka)/description/robots/lbr_pin.urdf.xacro'" />-->
+  
+  <!-- Start Articulation controller -->
+  <!--<node name="re_articulationKUKAController_real" pkg="re_articulation" type="re_articulationKUKAController_real" respawn="false" output="screen"/>-->
+
+  <!-- Start model estimator & RVIZ-->
+  <!--<include file="$(find re_articulation)/launch/estimator.launch"/>-->
+
+  <!-- Connect to the FRI and load components -->
+  <!--<node name="kuka_arm" pkg="ocl_1.10" type="deployer-gnulinux" args="-start $(find lwr_coupling)/deploy/FRIServerCommandMode1_CartesianGeneratorPos_Connector.xml"/>-->
+  <node name="kuka_arm" pkg="ocl_1.10" type="deployer-gnulinux" args=""/>
+
+</launch>
+

@@ -1,0 +1,15 @@
+<package>
+  <description brief="KinectKUKA">
+
+     KinectKUKA
+
+  </description>
+  <author>demo</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/KinectKUKA</url>
+  <depend package="tf"/>
+
+</package>
+
+

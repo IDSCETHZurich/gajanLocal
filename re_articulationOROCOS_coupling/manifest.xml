@@ -1,0 +1,22 @@
+<package>
+  <description brief="re_articulationOROCOS_coupling">
+
+     re_articulationOROCOS_coupling
+
+  </description>
+  <author></author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org</url>
+
+  <depend package="lwr_fri"/>
+  <depend package="ocl"/>
+  <depend package="rtt"/>
+  <depend package="kdl"/>
+
+  <depend package="re_srvs"/>
+  <depend package="geometry_msgs"/>
+  
+  <depend package="tf"/>
+
+</package>
