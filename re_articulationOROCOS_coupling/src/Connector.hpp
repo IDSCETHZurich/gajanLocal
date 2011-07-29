@@ -32,6 +32,7 @@ namespace re_articulationOROCOS_coupling
     virtual bool startHook();
     virtual bool configureHook();
     virtual void stopHook();
+    virtual void cleanupHook();
 
     int i;
     ros::NodeHandle* n;
@@ -64,17 +65,28 @@ namespace re_articulationOROCOS_coupling
     RTT::InputPort<geometry_msgs::Pose> cartPosPort;
     RTT::InputPort<std::vector<double> > jntPosPort;
     RTT::OutputPort<geometry_msgs::Pose> cartPosCmdPort;
+    RTT::OutputPort<sensor_msgs::JointState > jntPosCmdPort;
 
     
 
     bool invokeMoveTo;
-    bool doRecord; 
-    bool doPlay;
-    int  playDirection; // 1 open ... -1 close 
+    bool doLearning;
+    bool doPlayBack;
 
-    std::vector<int32_t> KRLintTmp;
+
+    std::vector<sensor_msgs::JointState> recordedTrajectory;
+    sensor_msgs::JointState measuredJntState;
+    std::vector<double> measuredJntPos;
+    int trajectoryPointer;
+    int playDirection; // 1 open ... -1 close
+    double learningSpeedFactor;
+    double newPeriod4PlayBack;
+    RTT::Property<std::vector<double> > maxVel_property;
+    std::vector<double> maxVel;
+
+    tFriKrlData KRLintTmp;
     //Attributes
-    RTT::Attribute<std::vector<int32_t> > toKRLintAttr;
+    RTT::Attribute<tFriKrlData> toKRLintAttr;
 
     
   };

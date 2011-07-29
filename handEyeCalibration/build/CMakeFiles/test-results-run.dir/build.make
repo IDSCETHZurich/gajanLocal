@@ -31,11 +31,14 @@ CMAKE_COMMAND = /usr/bin/cmake
 # The command to remove a file.
 RM = /usr/bin/cmake -E remove -f
 
+# The program to use to edit the cache.
+CMAKE_EDIT_COMMAND = /usr/bin/ccmake
+
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/gajan/ros/stacks/gajanLocal/handEyeCalibration
+CMAKE_SOURCE_DIR = /home/demo/ros/stacks/gajanLocal/handEyeCalibration
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/gajan/ros/stacks/gajanLocal/handEyeCalibration/build
+CMAKE_BINARY_DIR = /home/demo/ros/stacks/gajanLocal/handEyeCalibration/build
 
 # Utility rule file for test-results-run.
 
@@ -54,6 +57,6 @@ CMakeFiles/test-results-run.dir/clean:
 .PHONY : CMakeFiles/test-results-run.dir/clean
 
 CMakeFiles/test-results-run.dir/depend:
-	cd /home/gajan/ros/stacks/gajanLocal/handEyeCalibration/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/gajan/ros/stacks/gajanLocal/handEyeCalibration /home/gajan/ros/stacks/gajanLocal/handEyeCalibration /home/gajan/ros/stacks/gajanLocal/handEyeCalibration/build /home/gajan/ros/stacks/gajanLocal/handEyeCalibration/build /home/gajan/ros/stacks/gajanLocal/handEyeCalibration/build/CMakeFiles/test-results-run.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/demo/ros/stacks/gajanLocal/handEyeCalibration/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/demo/ros/stacks/gajanLocal/handEyeCalibration /home/demo/ros/stacks/gajanLocal/handEyeCalibration /home/demo/ros/stacks/gajanLocal/handEyeCalibration/build /home/demo/ros/stacks/gajanLocal/handEyeCalibration/build /home/demo/ros/stacks/gajanLocal/handEyeCalibration/build/CMakeFiles/test-results-run.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/test-results-run.dir/depend
 

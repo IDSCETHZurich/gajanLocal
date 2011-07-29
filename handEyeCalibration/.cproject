@@ -160,7 +160,7 @@
 <pathentry kind="mac" name="__GXX_RTTI" path="" value="1"/>
 <pathentry kind="mac" name="__EXCEPTIONS" path="" value="1"/>
 <pathentry kind="mac" name="_GNU_SOURCE" path="" value="1"/>
-<pathentry include="/home/gajan/ros/stacks/gajanLocal/handEyeCalibration/include" kind="inc" path="" system="true"/>
+<pathentry include="/home/demo/ros/stacks/gajanLocal/handEyeCalibration/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/geometry/eigen/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/vision_opencv/cv_bridge/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/diamondback/stacks/vision_opencv/opencv2/opencv/include" kind="inc" path="" system="true"/>

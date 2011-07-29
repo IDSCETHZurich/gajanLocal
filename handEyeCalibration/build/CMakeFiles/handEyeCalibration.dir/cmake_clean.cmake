@@ -1,5 +1,6 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/handEyeCalibration.dir/src/handEyeCalibration.o"
+  "CMakeFiles/handEyeCalibration.dir/src/quaternions.o"
   "../bin/handEyeCalibration.pdb"
   "../bin/handEyeCalibration"
 )

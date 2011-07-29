@@ -5,7 +5,7 @@
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.6</pydev_property>
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
-<path>/home/gajan/ros/stacks/gajanLocal/handEyeCalibration/src</path>
+<path>/home/demo/ros/stacks/gajanLocal/handEyeCalibration/src</path>
 <path>/opt/ros/diamondback/stacks/ros_comm/clients/cpp/roscpp/src</path>
 <path>/opt/ros/diamondback/stacks/ros_comm/clients/cpp/roscpp/lib</path>
 <path>/opt/ros/diamondback/stacks/ros_comm/utilities/cpp_common/src</path>
@@ -48,9 +48,10 @@
 <path>/opt/ros/diamondback/stacks/ros_comm/utilities/message_filters/src</path>
 <path>/opt/ros/diamondback/stacks/ros_comm/utilities/message_filters/lib</path>
 <path>/opt/ros/diamondback/ros/core/mk</path>
-<path>/usr/local/lib/python2.6/dist-packages/rosinstall-0.5.16-py2.6.egg</path>
-<path>/usr/lib/python2.6/site-packages</path>
+<path>/usr/local/lib/python2.6/dist-packages/rosinstall-0.5.15-py2.6.egg</path>
 <path>/opt/ros/diamondback/ros/core/roslib/src</path>
+<path>/home/demo/ros/stacks/gajanLocal/handEyeCalibration</path>
+<path>/home/demo/probcog2377/python</path>
 <path>/usr/lib/python2.6</path>
 <path>/usr/lib/python2.6/plat-linux2</path>
 <path>/usr/lib/python2.6/lib-tk</path>
