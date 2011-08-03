@@ -56,7 +56,6 @@ void CalibrationNode::poseCallback (const geometry_msgs::PoseConstPtr& msg)
 {
 	if (readPoseFlag)
 	{
-		std::cout << "robot POSE read!" << std::endl;
 		rotationRB = Eigen::Quaternionf(
 				Eigen::Quaternion<float>(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w));
 		translationRB = Eigen::Vector3f(msg->position.x, msg->position.y, msg->position.z);
@@ -108,11 +107,11 @@ int CalibrationNode::storeData ()
 	bool patternWasFound = cv::findChessboardCorners (image, pattern, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
 	if (patternWasFound)
 	{
-//		readPoseFlag = true;
-//		do{
-//			ros::Duration(0.2).sleep();
-//			ROS_INFO("Waiting to read ROBOT pose ...");
-//		}while(readPoseFlag == false);
+		readPoseFlag = true;
+		do{
+			ros::Duration(0.2).sleep();
+			ROS_INFO("Waiting to read ROBOT pose ...");
+		}while(readPoseFlag == false);
 
 		cv::Mat gray_image;
 		gray_image.create (image_size, CV_8UC1);
