@@ -1,4 +1,5 @@
 #include "handEyeCalibration.hpp"
+#define DEBUG 0
 
 CalibrationNode::CalibrationNode(ros::NodeHandle& n):
 	ROSNode (n),
@@ -14,16 +15,8 @@ CalibrationNode::CalibrationNode(ros::NodeHandle& n):
 	this->ROSNode.getParam ("handEyeCalibration/points_per_row", points_per_row);
 	pattern = cv::Size_<int> (points_per_column, points_per_row);
 
-	double pattern_width, pattern_height;
-	this->ROSNode.getParam ("handEyeCalibration/pattern_width", pattern_width);
-	this->ROSNode.getParam ("handEyeCalibration/pattern_height", pattern_height);
-	pattern_size = cv::Size_<double> (pattern_width, pattern_height);
-
-//	pattern_to_base = Eigen::Vector4d::Zero ();
-//	this->ROSNode.getParam ("handEyeCalibration/pattern_to_base/x", pattern_to_base(0));
-//	this->ROSNode.getParam ("handEyeCalibration/pattern_to_base/y", pattern_to_base(1));
-//	this->ROSNode.getParam ("handEyeCalibration/pattern_to_base/z", pattern_to_base(2));
-//	this->ROSNode.getParam ("handEyeCalibration/pattern_to_base/w", pattern_to_base(3));
+	this->ROSNode.getParam ("handEyeCalibration/pattern_width", patternHeight);
+	this->ROSNode.getParam ("handEyeCalibration/pattern_height", patternWidth);
 
 	calibrationImageSubscriber = imageTransport.subscribe("/camera/image_color", 1, &CalibrationNode::imgCallback, this);
 	robotPoseSubscriber = ROSNode.subscribe ("robotPose", 1, &CalibrationNode::poseCallback, this);
@@ -124,35 +117,38 @@ int CalibrationNode::storeData ()
 		cv::imshow (IMAGE_WINDOW, image);
 
 		//fill in imagePoints and objectPoints
-		imagePoints = cv::Mat(2, corners.size(), CV_64F);
-		objectPoints = cv::Mat(3, corners.size(), CV_64F);
+		imagePoints = cv::Mat(corners.size(), 2, CV_32F);
+		objectPoints = cv::Mat(corners.size(), 3, CV_32F);
 
 		for(int i=0; i < (int)corners.size(); i++){
-			imagePoints.at<double>(0,i) = corners[i].x;
-			imagePoints.at<double>(1,i) = corners[i].y;
+			imagePoints.at<float>(i,0) = corners[i].x;
+			imagePoints.at<float>(i,1) = corners[i].y;
 		}
+
 		std::cout << "imagePoints" << std::endl << imagePoints << std::endl;
 
 		for(int i=0; i < pattern.height; i++){
 			for(int j=0; j < pattern.width; j++){
-				objectPoints.at<double>(0,i*pattern.height+j)=i*pattern_size.height;
-				objectPoints.at<double>(1,i*pattern.height+j)=j*pattern_size.width;
-				objectPoints.at<double>(2,i*pattern.height+j)=0.0;
+				objectPoints.at<float>(i*pattern.width+j, 0) = i*patternHeight;
+				objectPoints.at<float>(i*pattern.width+j, 1) = j*patternWidth;
+				objectPoints.at<float>(i*pattern.width+j, 2) = 0.0;
 			}
 		}
 		std::cout << "objectPoints" << std::endl << objectPoints << std::endl;
 
 		cv::Mat rvecs, tvecs;
-		cv::solvePnP (objectPoints,
-				imagePoints,
-				cameraMatrix,
-				distortionCoefficients,
-				rvecs,
-				tvecs);
+
+		//Assertion
+		assert(objectPoints.isContinuous());
+		assert(objectPoints.depth() == CV_32F);
+
+		assert(imagePoints.isContinuous());
+		assert(imagePoints.depth() == CV_32F);
+
+		cv::solvePnP (objectPoints, imagePoints, cameraMatrix, distortionCoefficients, rvecs, tvecs);
 
 		std::cout << "rvecs" << std::endl << rvecs << std::endl;
 		std::cout << "tvecs" << std::endl << tvecs << std::endl;
-
 
 		cv::waitKey ();
 

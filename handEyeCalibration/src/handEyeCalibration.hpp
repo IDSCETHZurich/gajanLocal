@@ -37,7 +37,7 @@ private:
 
 	cv::Size image_size;
 	cv::Size pattern;
-	cv::Size pattern_size;
+	double patternWidth, patternHeight;
 
 	cv::Mat image;
 	cv::Mat imagePoints, objectPoints;
