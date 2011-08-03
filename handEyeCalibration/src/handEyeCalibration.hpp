@@ -33,6 +33,7 @@ private:
 	image_transport::Subscriber calibrationImageSubscriber;
 
 	ros::Subscriber robotPoseSubscriber;
+	ros::Subscriber cameraInfoSubscriber;
 
 	geometry_msgs::Pose robotPose;
 
@@ -42,11 +43,11 @@ private:
 
 	cv::Mat image;
 
-	cv::vector<cv::vector<cv::Point2f> > image_points;
-	cv::vector<cv::vector<cv::Point3f> > object_points;
+	cv::vector<cv::vector<cv::Point2f> > imagePoints;
+	cv::vector<cv::vector<cv::Point3f> > objectPoints;
 	cv::vector<geometry_msgs::Pose> robotPoseVector;
 
-	cv::Mat camera_matrix, distortion_coefficients;
+	cv::Mat cameraMatrix, distortionCoefficients;
 
 	bool readPoseFlag;
 
@@ -61,7 +62,7 @@ public:
 	~CalibrationNode ();
 
 	void imgCallback (const sensor_msgs::ImageConstPtr& msg);
-
+	void cameraInfoCallback (const sensor_msgs::CameraInfoConstPtr&);
 	void poseCallback (const geometry_msgs::PoseConstPtr& msg);
 
 	static void mouseCallback (int event, int x, int y, int flags, void* param);

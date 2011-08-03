@@ -27,6 +27,10 @@ CalibrationNode::CalibrationNode(ros::NodeHandle& n):
 
 	calibrationImageSubscriber = imageTransport.subscribe("/camera/image_color", 1, &CalibrationNode::imgCallback, this);
 	robotPoseSubscriber = ROSNode.subscribe ("robotPose", 1, &CalibrationNode::poseCallback, this);
+	cameraInfoSubscriber =ROSNode.subscribe ("/camera/camera_info", 1, &CalibrationNode::cameraInfoCallback, this);
+
+	cameraMatrix = CreateMat(3, 3, CV_64FC1);
+	distortionCoefficients = CreateMat(5, 1, CV_64FC1);
 
 	cv::namedWindow (IMAGE_WINDOW, CV_WINDOW_AUTOSIZE);
 	cv::setMouseCallback (IMAGE_WINDOW, &CalibrationNode::mouseCallback, this);
@@ -83,6 +87,20 @@ void CalibrationNode::mouseCallback (int event, int x, int y, int flags, void* c
 	}
 }
 
+
+
+void CalibrationNode::cameraInfoCallback (const sensor_msgs::CameraInfoConstPtr& msg){
+	std::cout << msg->distortion_model << std::endl;
+
+	// Intrinsic camera matrix for the raw (distorted) images.
+	//     [fx  0 cx]
+	// K = [ 0 fy cy]
+	//     [ 0  0  1]
+
+	cameraInfoSubscriber.shutdown();
+}
+
+
 int CalibrationNode::storeData ()
 {
 	cv::vector<cv::Point2f> corners;
@@ -101,7 +119,7 @@ int CalibrationNode::storeData ()
 		cv::drawChessboardCorners (image, pattern, corners, patternWasFound);
 		cv::imshow (IMAGE_WINDOW, image);
 
-		image_points.push_back (corners);
+		imagePoints.push_back (corners);
 
 		std::cout << "The corner and the object points have been stored!\nPlease press a key to continue!\n";
 		cv::waitKey ();
@@ -131,18 +149,18 @@ int CalibrationNode::storeData ()
 //		}
 //	}
 //
-//	object_points.push_back (temp_vector);
+//	objectPoints.push_back (temp_vector);
 //
-//	return object_points_stored;
+//	return objectPoints_stored;
 //}
 
 //cv::vector<cv::vector<cv::Point2f> > CalibrationNode::getImagePoints ()
 //{
-//	return image_points;
+//	return imagePoints;
 //}
 //cv::vector<cv::vector<cv::Point3f> > CalibrationNode::getObjectPoints ()
 //{
-//	return object_points;
+//	return objectPoints;
 //}
 
 
