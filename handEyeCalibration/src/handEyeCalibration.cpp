@@ -1,22 +1,24 @@
 #include "handEyeCalibration.hpp"
 #define DEBUG 0
 
+using namespace Eigen;
+
 CalibrationNode::CalibrationNode(ros::NodeHandle& n):
 	ROSNode (n),
 	imageTransport (n)
 {
 	int width, height;
-	this->ROSNode.getParam ("handEyeCalibration/width", width);
-	this->ROSNode.getParam ("handEyeCalibration/height", height);
+	ROSNode.getParam ("handEyeCalibration/width", width);
+	ROSNode.getParam ("handEyeCalibration/height", height);
 	image_size = cv::Size_<int> (width, height);
 
 	int points_per_column, points_per_row;
-	this->ROSNode.getParam ("handEyeCalibration/points_per_column", points_per_column);
-	this->ROSNode.getParam ("handEyeCalibration/points_per_row", points_per_row);
+	ROSNode.getParam ("handEyeCalibration/points_per_column", points_per_column);
+	ROSNode.getParam ("handEyeCalibration/points_per_row", points_per_row);
 	pattern = cv::Size_<int> (points_per_column, points_per_row);
 
-	this->ROSNode.getParam ("handEyeCalibration/pattern_width", patternHeight);
-	this->ROSNode.getParam ("handEyeCalibration/pattern_height", patternWidth);
+	ROSNode.getParam ("handEyeCalibration/pattern_width", patternHeight);
+	ROSNode.getParam ("handEyeCalibration/pattern_height", patternWidth);
 
 	calibrationImageSubscriber = imageTransport.subscribe("/camera/image_color", 1, &CalibrationNode::imgCallback, this);
 	robotPoseSubscriber = ROSNode.subscribe ("robotPose", 1, &CalibrationNode::poseCallback, this);
@@ -54,7 +56,11 @@ void CalibrationNode::poseCallback (const geometry_msgs::PoseConstPtr& msg)
 {
 	if (readPoseFlag)
 	{
-		std::cout << "robot POSE read" << std::endl;
+		std::cout << "robot POSE read!" << std::endl;
+		rotationRB = Eigen::Quaternionf(
+				Eigen::Quaternion<float>(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w));
+		translationRB = Eigen::Vector3f(msg->position.x, msg->position.y, msg->position.z);
+
 		readPoseFlag = false;
 	}
 
@@ -67,12 +73,10 @@ void CalibrationNode::mouseCallback (int event, int x, int y, int flags, void* c
 	{
 	case CV_EVENT_LBUTTONDOWN:
 		(static_cast<CalibrationNode*> (calibrationNode))->storeData ();
-
 		break;
 
 	case CV_EVENT_RBUTTONDOWN:
 		std::cout << "CV_EVENT_RBUTTONDOWN" << std::endl;
-
 		break;
 	}
 }
@@ -104,7 +108,11 @@ int CalibrationNode::storeData ()
 	bool patternWasFound = cv::findChessboardCorners (image, pattern, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
 	if (patternWasFound)
 	{
-		robotPoseVector.push_back (robotPose);
+		readPoseFlag = true;
+		do{
+			ros::Duration(0.2).sleep();
+			ROS_INFO("Waiting to read ROBOT pose ...");
+		}while(readPoseFlag == false);
 
 		cv::Mat gray_image;
 		gray_image.create (image_size, CV_8UC1);
@@ -138,17 +146,26 @@ int CalibrationNode::storeData ()
 
 		cv::Mat rvecs, tvecs;
 
-		//Assertion
-		assert(objectPoints.isContinuous());
-		assert(objectPoints.depth() == CV_32F);
-
-		assert(imagePoints.isContinuous());
-		assert(imagePoints.depth() == CV_32F);
-
 		cv::solvePnP (objectPoints, imagePoints, cameraMatrix, distortionCoefficients, rvecs, tvecs);
 
 		std::cout << "rvecs" << std::endl << rvecs << std::endl;
 		std::cout << "tvecs" << std::endl << tvecs << std::endl;
+
+		cv::Mat rotMat = cv::Mat(3, 3, CV_32F);
+		cv::Rodrigues(rvecs, rotMat);
+
+
+		for(int i=0; i < 3; i++)
+			for(int j=0; j < 3; j++)
+				rotationCB(i,j) = rotMat.at<float>(i,j);
+
+		translationCB = Eigen::Vector3f(rvecs.at<float>(0,0), rvecs.at<float>(0,1), rvecs.at<float>(0,2));
+
+		//pushing back data into vectors
+		rotationRB_vec.push_back(rotationRB);
+		translationRB_vec.push_back(translationRB);
+		rotationCB_vec.push_back(rotationCB);
+		translationCB_vec.push_back(translationCB);
 
 		cv::waitKey ();
 
@@ -161,13 +178,6 @@ int CalibrationNode::storeData ()
 
 		return checkerboard_not_found;
 	}
-}
-
-int CalibrationNode::calibrateCamera ()
-{
-
-
-	return camera_calibrated;
 }
 
 

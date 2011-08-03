@@ -46,6 +46,16 @@ private:
 	cv::vector<geometry_msgs::Pose> robotPoseVector;
 	geometry_msgs::Pose robotPose;
 
+	std::vector<Eigen::Matrix3f> rotationRB_vec;
+	std::vector<Eigen::Vector3f> translationRB_vec;
+	std::vector<Eigen::Matrix3f> rotationCB_vec;
+	std::vector<Eigen::Vector3f> translationCB_vec;
+
+	Eigen::Matrix3f rotationRB;
+	Eigen::Vector3f translationRB;
+	Eigen::Matrix3f rotationCB;
+	Eigen::Vector3f translationCB;
+
 	bool readPoseFlag;
 
 public:
@@ -62,14 +72,6 @@ public:
 	static void mouseCallback (int event, int x, int y, int flags, void* param);
 
 	int storeData ();
-
-//	int getObjectPoints ();
-
-//	cv::vector<cv::vector<cv::Point2f> > getImagePoints ();
-//
-//	cv::vector<cv::vector<cv::Point3f> > getObjectPoints ();
-
-	int calibrateCamera ();
 
 };
 
