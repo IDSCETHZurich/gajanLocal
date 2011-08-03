@@ -67,7 +67,7 @@ public:
 
 	int storeData ();
 
-	int getObjectPoints ();
+//	int getObjectPoints ();
 
 //	cv::vector<cv::vector<cv::Point2f> > getImagePoints ();
 //

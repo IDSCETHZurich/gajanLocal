@@ -77,7 +77,7 @@ void CalibrationNode::mouseCallback (int event, int x, int y, int flags, void* c
 		break;
 
 	case CV_EVENT_RBUTTONDOWN:
-//		calibrateCamera ();
+		std::cout << "CV_EVENT_RBUTTONDOWN" << std::endl;
 
 		break;
 	}
@@ -118,23 +118,23 @@ int CalibrationNode::storeData ()
 }
 
 
-int CalibrationNode::getObjectPoints ()
-{
-	cv::vector<cv::Point3f> temp_vector;
-
-	for (int i = 0; i < pattern.height; i++)
-	{
-		for (int j = 0; j < pattern.width; j++)
-		{
-			cv::Point3f temp_point = cv::Point3f (j * pattern_size.width, i * pattern_size.height, 0.0);
-			temp_vector.push_back (temp_point);
-		}
-	}
-
-	object_points.push_back (temp_vector);
-
-	return object_points_stored;
-}
+//int CalibrationNode::getObjectPoints ()
+//{
+//	cv::vector<cv::Point3f> temp_vector;
+//
+//	for (int i = 0; i < pattern.height; i++)
+//	{
+//		for (int j = 0; j < pattern.width; j++)
+//		{
+//			cv::Point3f temp_point = cv::Point3f (j * pattern_size.width, i * pattern_size.height, 0.0);
+//			temp_vector.push_back (temp_point);
+//		}
+//	}
+//
+//	object_points.push_back (temp_vector);
+//
+//	return object_points_stored;
+//}
 
 //cv::vector<cv::vector<cv::Point2f> > CalibrationNode::getImagePoints ()
 //{
