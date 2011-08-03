@@ -21,7 +21,7 @@ CalibrationNode::CalibrationNode(ros::NodeHandle& n):
 	ROSNode.getParam ("handEyeCalibration/pattern_height", patternWidth);
 
 	calibrationImageSubscriber = imageTransport.subscribe("/camera/image_color", 1, &CalibrationNode::imgCallback, this);
-	robotPoseSubscriber = ROSNode.subscribe ("robotPose", 1, &CalibrationNode::poseCallback, this);
+	robotPoseSubscriber = ROSNode.subscribe ("/msrCartPos", 1, &CalibrationNode::poseCallback, this);
 	cameraInfoSubscriber =ROSNode.subscribe ("/camera/camera_info", 1, &CalibrationNode::cameraInfoCallback, this);
 
 	cv::namedWindow (IMAGE_WINDOW, CV_WINDOW_AUTOSIZE);
@@ -108,11 +108,11 @@ int CalibrationNode::storeData ()
 	bool patternWasFound = cv::findChessboardCorners (image, pattern, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
 	if (patternWasFound)
 	{
-		readPoseFlag = true;
-		do{
-			ros::Duration(0.2).sleep();
-			ROS_INFO("Waiting to read ROBOT pose ...");
-		}while(readPoseFlag == false);
+//		readPoseFlag = true;
+//		do{
+//			ros::Duration(0.2).sleep();
+//			ROS_INFO("Waiting to read ROBOT pose ...");
+//		}while(readPoseFlag == false);
 
 		cv::Mat gray_image;
 		gray_image.create (image_size, CV_8UC1);
