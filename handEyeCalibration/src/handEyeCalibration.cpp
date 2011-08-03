@@ -29,9 +29,6 @@ CalibrationNode::CalibrationNode(ros::NodeHandle& n):
 	robotPoseSubscriber = ROSNode.subscribe ("robotPose", 1, &CalibrationNode::poseCallback, this);
 	cameraInfoSubscriber =ROSNode.subscribe ("/camera/camera_info", 1, &CalibrationNode::cameraInfoCallback, this);
 
-	cameraMatrix = CreateMat(3, 3, CV_64FC1);
-	distortionCoefficients = CreateMat(5, 1, CV_64FC1);
-
 	cv::namedWindow (IMAGE_WINDOW, CV_WINDOW_AUTOSIZE);
 	cv::setMouseCallback (IMAGE_WINDOW, &CalibrationNode::mouseCallback, this);
 
@@ -92,10 +89,17 @@ void CalibrationNode::mouseCallback (int event, int x, int y, int flags, void* c
 void CalibrationNode::cameraInfoCallback (const sensor_msgs::CameraInfoConstPtr& msg){
 	std::cout << msg->distortion_model << std::endl;
 
-	// Intrinsic camera matrix for the raw (distorted) images.
-	//     [fx  0 cx]
-	// K = [ 0 fy cy]
-	//     [ 0  0  1]
+	cameraMatrix = cv::Mat(3, 3, CV_64F);// Intrinsic camera matrix for the raw (distorted) images.
+	for(int i=0; i<3; i++)
+		for(int j=0; j<3; j++)
+			cameraMatrix.at<double>(i,j) = msg->K[i*3+j];
+	std::cout << "cameraMatrix" << std::endl << cameraMatrix << std::endl;
+
+	distortionCoefficients = cv::Mat(5, 1, CV_64F);
+	for(int i=0; i<3; i++)
+		distortionCoefficients.at<double>(i,1) = msg->D[i];
+	std::cout << "distortionCoefficients" << std::endl << distortionCoefficients << std::endl;
+	std::cout << "/camera/camera_info successfully read out!" << std::endl;
 
 	cameraInfoSubscriber.shutdown();
 }
@@ -119,9 +123,37 @@ int CalibrationNode::storeData ()
 		cv::drawChessboardCorners (image, pattern, corners, patternWasFound);
 		cv::imshow (IMAGE_WINDOW, image);
 
-		imagePoints.push_back (corners);
+		//fill in imagePoints and objectPoints
+		imagePoints = cv::Mat(2, corners.size(), CV_64F);
+		objectPoints = cv::Mat(3, corners.size(), CV_64F);
 
-		std::cout << "The corner and the object points have been stored!\nPlease press a key to continue!\n";
+		for(int i=0; i < (int)corners.size(); i++){
+			imagePoints.at<double>(0,i) = corners[i].x;
+			imagePoints.at<double>(1,i) = corners[i].y;
+		}
+		std::cout << "imagePoints" << std::endl << imagePoints << std::endl;
+
+		for(int i=0; i < pattern.height; i++){
+			for(int j=0; j < pattern.width; j++){
+				objectPoints.at<double>(0,i*pattern.height+j)=i*pattern_size.height;
+				objectPoints.at<double>(1,i*pattern.height+j)=j*pattern_size.width;
+				objectPoints.at<double>(2,i*pattern.height+j)=0.0;
+			}
+		}
+		std::cout << "objectPoints" << std::endl << objectPoints << std::endl;
+
+		cv::Mat rvecs, tvecs;
+		cv::solvePnP (objectPoints,
+				imagePoints,
+				cameraMatrix,
+				distortionCoefficients,
+				rvecs,
+				tvecs);
+
+		std::cout << "rvecs" << std::endl << rvecs << std::endl;
+		std::cout << "tvecs" << std::endl << tvecs << std::endl;
+
+
 		cv::waitKey ();
 
 		return checkerboard_found;
@@ -135,39 +167,9 @@ int CalibrationNode::storeData ()
 	}
 }
 
-
-//int CalibrationNode::getObjectPoints ()
-//{
-//	cv::vector<cv::Point3f> temp_vector;
-//
-//	for (int i = 0; i < pattern.height; i++)
-//	{
-//		for (int j = 0; j < pattern.width; j++)
-//		{
-//			cv::Point3f temp_point = cv::Point3f (j * pattern_size.width, i * pattern_size.height, 0.0);
-//			temp_vector.push_back (temp_point);
-//		}
-//	}
-//
-//	objectPoints.push_back (temp_vector);
-//
-//	return objectPoints_stored;
-//}
-
-//cv::vector<cv::vector<cv::Point2f> > CalibrationNode::getImagePoints ()
-//{
-//	return imagePoints;
-//}
-//cv::vector<cv::vector<cv::Point3f> > CalibrationNode::getObjectPoints ()
-//{
-//	return objectPoints;
-//}
-
-
 int CalibrationNode::calibrateCamera ()
 {
-	cv::vector<cv::Mat> rvecs, tvecs;
-	cv::calibrateCamera (objectPoints, imagePoints, image_size, camera_matrix, distortion_coefficients, rvecs, tvecs);
+
 
 	return camera_calibrated;
 }

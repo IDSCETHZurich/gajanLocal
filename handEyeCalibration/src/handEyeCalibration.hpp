@@ -35,24 +35,18 @@ private:
 	ros::Subscriber robotPoseSubscriber;
 	ros::Subscriber cameraInfoSubscriber;
 
-	geometry_msgs::Pose robotPose;
-
 	cv::Size image_size;
 	cv::Size pattern;
 	cv::Size pattern_size;
 
 	cv::Mat image;
-
-	cv::vector<cv::vector<cv::Point2f> > imagePoints;
-	cv::vector<cv::vector<cv::Point3f> > objectPoints;
-	cv::vector<geometry_msgs::Pose> robotPoseVector;
-
+	cv::Mat imagePoints, objectPoints;
 	cv::Mat cameraMatrix, distortionCoefficients;
 
+	cv::vector<geometry_msgs::Pose> robotPoseVector;
+	geometry_msgs::Pose robotPose;
+
 	bool readPoseFlag;
-
-//	Eigen::Vector4d pattern_to_base;
-
 
 public:
 	CalibrationNode ();
