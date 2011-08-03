@@ -148,9 +148,8 @@ int CalibrationNode::storeData ()
 
 int CalibrationNode::calibrateCamera ()
 {
-//	cv::vector<cv::Mat> rvecs, tvecs;
-//	cv::calibrateCamera (getObjectPoints (), getImagePoints (), image_size,
-//			camera_matrix, distortion_coefficients, rvecs, tvecs);
+	cv::vector<cv::Mat> rvecs, tvecs;
+	cv::calibrateCamera (objectPoints, imagePoints, image_size, camera_matrix, distortion_coefficients, rvecs, tvecs);
 
 	return camera_calibrated;
 }
