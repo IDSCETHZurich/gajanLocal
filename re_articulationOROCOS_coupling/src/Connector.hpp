@@ -54,7 +54,7 @@ namespace re_articulationOROCOS_coupling
     tFriIntfState friState;
 
     RTT::OperationCaller<bool(void)> isRunningFRIServer;
-    RTT::OperationCaller<bool(void)> isRunningtrajectoryGeneratorJntPos;
+    RTT::OperationCaller<bool(void)> isRunningcartesianGenerator;
 
     /*********
     DATAPORTS

@@ -9,7 +9,7 @@
 #include "sensor_msgs/image_encodings.h"
 #include "geometry_msgs/Pose.h"
 #include <iostream>
-#include "quaternions.hpp"
+#include <Eigen/Eigen>
 
 const string IMAGE_WINDOW = "Image Window";
 
@@ -56,22 +56,29 @@ private:
 	Eigen::Matrix3f rotationCB;
 	Eigen::Vector3f translationCB;
 
+	Eigen::Matrix3f rotationCalib;
+	Eigen::Vector3f translationCalib;
+
 	bool readPoseFlag;
 
 public:
 	CalibrationNode ();
 
-	CalibrationNode (ros::NodeHandle& n);
+	CalibrationNode (ros::NodeHandle&);
 
 	~CalibrationNode ();
 
-	void imgCallback (const sensor_msgs::ImageConstPtr& msg);
+	void imgCallback (const sensor_msgs::ImageConstPtr&);
 	void cameraInfoCallback (const sensor_msgs::CameraInfoConstPtr&);
-	void poseCallback (const geometry_msgs::PoseConstPtr& msg);
+	void poseCallback (const geometry_msgs::PoseConstPtr&);
 
-	static void mouseCallback (int event, int x, int y, int flags, void* param);
+	static void mouseCallback (int, int, int, int, void*);
 
 	int storeData ();
+	void performEstimation();
+
+	//math
+	Eigen::Vector3f getLogTheta(Eigen::Matrix3f);
 
 };
 

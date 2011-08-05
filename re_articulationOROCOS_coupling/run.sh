@@ -1,1 +1,1 @@
-rosrun ocl deployer-gnulinux --start deploy/FRIServerCommandMode1_CartesianGeneratorPos_Connector.xml
+rosrun ocl deployer-gnulinux --start deploy/CartesianGeneratorCoupling.xml

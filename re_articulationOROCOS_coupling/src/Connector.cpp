@@ -66,32 +66,34 @@ namespace re_articulationOROCOS_coupling
 
 	toKRLintAttr = this->getPeer("FRIServer")->attributes()->getAttribute("toKRLint");
 
-	//wait while FRI Server + trajectoryGeneratorJntPos is running
-	std::cout << "wait while FRI Server + trajectoryGeneratorJntPos is running" << endl;
-	if(!this->hasPeer("trajectoryGeneratorJntPos") || !this->hasPeer("FRIServer"))
+	//wait while FRI Server + cartesianGenerator is running
+	std::cout << "wait while FRI Server + cartesianGenerator is running" << endl;
+	if(!this->hasPeer("cartesianGenerator") || !this->hasPeer("FRIServer"))
 		{std::cout << "Did not find my two peers" << std::endl; return false;}
 
 
 	isRunningFRIServer = this->getPeer("FRIServer")->getOperation("isRunning");
-	isRunningtrajectoryGeneratorJntPos = this->getPeer("trajectoryGeneratorJntPos")->getOperation("isRunning");
+	isRunningcartesianGenerator = this->getPeer("cartesianGenerator")->getOperation("isRunning");
 	do{
 		if(isRunningFRIServer()) std::cout << "FRI Server running" << std::endl;
 		else std::cout << "FRI Server NOT running" << std::endl;
 
 
 		sleep(1);
-	}while(!isRunningFRIServer() );//|| !isRunningtrajectoryGeneratorJntPos());
+	}while(!isRunningFRIServer() );//|| !isRunningcartesianGenerator());
 
 	do{
-		if(isRunningtrajectoryGeneratorJntPos()) std::cout << "trajectoryGenerator running" << std::endl;
-		else std::cout << "trajectoryGenerator NOT running" << std::endl;
+		if(isRunningcartesianGenerator()){
+			std::cout << "cartesianGenerator running" << std::endl;
+		}
+		else std::cout << "cartesianGenerator NOT running" << std::endl;
 
 		sleep(1);
-	}while(!isRunningtrajectoryGeneratorJntPos());
+	}while(!isRunningcartesianGenerator());
 
 
-	//Now FRIServer + trajectoryGeneratorJntPos is Running
- 	std::cout << "Now FRIServer + trajectoryGeneratorJntPos is Running " << endl;
+	//Now FRIServer + cartesianGenerator is Running
+ 	std::cout << "Now FRIServer + cartesianGenerator is Running " << endl;
 
 	//wait till FRI is in monitor mode
 	std::cout << "wait till FRI is in monitor mode and the quality is perfect" << endl;
@@ -102,6 +104,10 @@ namespace re_articulationOROCOS_coupling
 		FRIStatePort.read(friState);
 	}while(friState.state!=1 || friState.quality!=3);
 	std::cout << "FRI is in monitor mode." << endl;
+
+	RTT::OperationCaller<void(void)> resetPosition
+						= this->getPeer("cartesianGenerator")->getOperation("resetPosition");
+	resetPosition();
 
     // TODO:Wait for the robot to power up
 
@@ -133,7 +139,7 @@ namespace re_articulationOROCOS_coupling
 	std::cout << "All configuration OK !!" << endl;
 
 	//slow down velocity for learning
-	maxVel_property = this->getPeer("trajectoryGeneratorJntPos")->getProperty("max_vel");
+	maxVel_property = this->getPeer("cartesianGenerator")->getProperty("max_vel");
 	maxVel = maxVel_property.get();
 	if(learningSpeedFactor < 1){
 		std::cout << "learningSpeedFactor should be greater or equal to 1" << std::endl;

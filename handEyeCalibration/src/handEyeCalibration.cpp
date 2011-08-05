@@ -1,5 +1,6 @@
 #include "handEyeCalibration.hpp"
-#define DEBUG 0
+#define SIGLE_MEASUREMENT_DEBUG 1
+#define ESTIMATION_DEBUG 0
 
 using namespace Eigen;
 
@@ -54,14 +55,20 @@ void CalibrationNode::imgCallback (const sensor_msgs::ImageConstPtr& msg)
 
 void CalibrationNode::poseCallback (const geometry_msgs::PoseConstPtr& msg)
 {
-	if (readPoseFlag)
-	{
-		rotationRB = Eigen::Quaternionf(
-				Eigen::Quaternion<float>(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w));
-		translationRB = Eigen::Vector3f(msg->position.x, msg->position.y, msg->position.z);
 
-		readPoseFlag = false;
-	}
+	robotPose = *msg;
+//	if (readPoseFlag)
+//	{
+//
+//
+//#if SIGLE_MEASUREMENT_DEBUG
+//		std::cout << "@poseCallback" << std::endl;
+//		std::cout << "rotationRB" << std::endl << rotationRB << std::endl;
+//		std::cout << "translationRB" << std::endl << translationRB << std::endl;
+//#endif
+//
+//		readPoseFlag = false;
+//	}
 
 }
 
@@ -75,7 +82,8 @@ void CalibrationNode::mouseCallback (int event, int x, int y, int flags, void* c
 		break;
 
 	case CV_EVENT_RBUTTONDOWN:
-		std::cout << "CV_EVENT_RBUTTONDOWN" << std::endl;
+		std::cout << "Performing Estimation..." << std::endl;
+		(static_cast<CalibrationNode*> (calibrationNode))->performEstimation();
 		break;
 	}
 }
@@ -91,9 +99,11 @@ void CalibrationNode::cameraInfoCallback (const sensor_msgs::CameraInfoConstPtr&
 			cameraMatrix.at<double>(i,j) = msg->K[i*3+j];
 	std::cout << "cameraMatrix" << std::endl << cameraMatrix << std::endl;
 
+
 	distortionCoefficients = cv::Mat(5, 1, CV_64F);
 	for(int i=0; i<3; i++)
 		distortionCoefficients.at<double>(i,1) = msg->D[i];
+
 	std::cout << "distortionCoefficients" << std::endl << distortionCoefficients << std::endl;
 	std::cout << "/camera/camera_info successfully read out!" << std::endl;
 
@@ -132,7 +142,9 @@ int CalibrationNode::storeData ()
 			imagePoints.at<float>(i,1) = corners[i].y;
 		}
 
+#if SIGLE_MEASUREMENT_DEBUG
 		std::cout << "imagePoints" << std::endl << imagePoints << std::endl;
+#endif
 
 		for(int i=0; i < pattern.height; i++){
 			for(int j=0; j < pattern.width; j++){
@@ -141,24 +153,34 @@ int CalibrationNode::storeData ()
 				objectPoints.at<float>(i*pattern.width+j, 2) = 0.0;
 			}
 		}
+
+#if SIGLE_MEASUREMENT_DEBUG
 		std::cout << "objectPoints" << std::endl << objectPoints << std::endl;
+#endif
 
 		cv::Mat rvecs, tvecs;
 
 		cv::solvePnP (objectPoints, imagePoints, cameraMatrix, distortionCoefficients, rvecs, tvecs);
 
+#if SIGLE_MEASUREMENT_DEBUG
 		std::cout << "rvecs" << std::endl << rvecs << std::endl;
 		std::cout << "tvecs" << std::endl << tvecs << std::endl;
+#endif
 
-		cv::Mat rotMat = cv::Mat(3, 3, CV_32F);
+		cv::Mat rotMat = cv::Mat(3, 3, CV_64F);
 		cv::Rodrigues(rvecs, rotMat);
-
 
 		for(int i=0; i < 3; i++)
 			for(int j=0; j < 3; j++)
-				rotationCB(i,j) = rotMat.at<float>(i,j);
+				rotationCB(i,j) = rotMat.at<double>(i,j);
 
-		translationCB = Eigen::Vector3f(rvecs.at<float>(0,0), rvecs.at<float>(0,1), rvecs.at<float>(0,2));
+		translationCB = Vector3f(tvecs.at<double>(0,0), tvecs.at<double>(0,1), tvecs.at<double>(0,2));
+
+		//robotPose
+		rotationRB = Quaternionf(
+						Quaternion<float>(robotPose.orientation.x, robotPose.orientation.y, robotPose.orientation.z, robotPose.orientation.w));
+		translationRB = Vector3f(robotPose.position.x, robotPose.position.y, robotPose.position.z);
+
 
 		//pushing back data into vectors
 		rotationRB_vec.push_back(rotationRB);
@@ -166,17 +188,84 @@ int CalibrationNode::storeData ()
 		rotationCB_vec.push_back(rotationCB);
 		translationCB_vec.push_back(translationCB);
 
+		std::cout << "Checkerboard found. Measurements Updated." << std::endl;
+
+#if SIGLE_MEASUREMENT_DEBUG
+	std::cout << "rotationRB" << std::endl << rotationRB << std::endl;
+	std::cout << "translationRB" << std::endl << translationRB << std::endl;
+	std::cout << "rotationCB" << std::endl << rotationCB << std::endl;
+	std::cout << "translationCB" << std::endl << translationCB << std::endl;
+#endif
+
 		cv::waitKey ();
 
 		return checkerboard_found;
 	}
 	else
 	{
-		std::cout << "No checkerboard has been found or it is not completely visible" << std::endl;
+		std::cout << "No Checkerboard has been found or it is not completely visible" << std::endl;
 		cv::waitKey ();
 
 		return checkerboard_not_found;
 	}
+}
+
+void CalibrationNode::performEstimation(){
+	if(rotationRB_vec.size() < 3){
+		std::cout << "Insufficient data" << std::endl;
+		return;
+	}
+
+	//Calculate the rotational part of X
+	Matrix3f Ar1,Ar2,Br1,Br2;
+	Ar1 = rotationRB_vec[1].inverse()*rotationRB_vec[0];
+	Ar2 = rotationRB_vec[2].inverse()*rotationRB_vec[1];
+	Br1 = rotationCB_vec[1].inverse()*rotationCB_vec[0];
+	Br2 = rotationCB_vec[2].inverse()*rotationCB_vec[1];
+
+#if ESTIMATION_DEBUG
+	std::cout << "Ar1" << std::endl << Ar1 << std::endl;
+	std::cout << "Ar2" << std::endl << Ar2 << std::endl;
+	std::cout << "Br1" << std::endl << Br1 << std::endl;
+	std::cout << "Br2" << std::endl << Br2 << std::endl;
+#endif
+
+	Vector3f alpha1, alpha2, beta1, beta2;
+	alpha1 = getLogTheta(Ar1);
+	alpha2 = getLogTheta(Ar2);
+	beta1 = getLogTheta(Br1);
+	beta2 = getLogTheta(Br2);
+
+#if ESTIMATION_DEBUG
+	std::cout << "alpha1" << std::endl << alpha1 << std::endl;
+	std::cout << "alpha2" << std::endl << alpha2 << std::endl;
+	std::cout << "beta1" << std::endl << beta1 << std::endl;
+	std::cout << "beta2" << std::endl << beta2 << std::endl;
+#endif
+
+	Matrix3f Astylish, Bstylish;
+	Astylish << alpha1, alpha2, alpha1.cross(alpha2);
+	Bstylish << beta1, beta2, beta1.cross(beta2);
+
+#if ESTIMATION_DEBUG
+	std::cout << "Astylish" << std::endl << Astylish << std::endl;
+	std::cout << "Bstylish" << std::endl << Bstylish << std::endl;
+#endif
+
+	Matrix3f Xr_est = Astylish*Bstylish.inverse();
+	std::cout << "Xr_est" << std::endl << Xr_est << std::endl;
+
+	//calculate the translational part of X
+
+	return;
+
+}
+
+Vector3f CalibrationNode::getLogTheta(Matrix3f R){
+	AngleAxis<float> aa;
+	aa.fromRotationMatrix(R);
+	//return Vector3f(aa(1),aa(2),aa(3))*aa(0);
+	return Vector3f();
 }
 
 
