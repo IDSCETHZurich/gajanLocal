@@ -1,6 +1,6 @@
 #include "handEyeCalibration.hpp"
-#define SIGLE_MEASUREMENT_DEBUG 1
-#define ESTIMATION_DEBUG 0
+#define SIGLE_MEASUREMENT_DEBUG 0
+#define ESTIMATION_DEBUG 1
 
 using namespace Eigen;
 
@@ -57,18 +57,6 @@ void CalibrationNode::poseCallback (const geometry_msgs::PoseConstPtr& msg)
 {
 
 	robotPose = *msg;
-//	if (readPoseFlag)
-//	{
-//
-//
-//#if SIGLE_MEASUREMENT_DEBUG
-//		std::cout << "@poseCallback" << std::endl;
-//		std::cout << "rotationRB" << std::endl << rotationRB << std::endl;
-//		std::cout << "translationRB" << std::endl << translationRB << std::endl;
-//#endif
-//
-//		readPoseFlag = false;
-//	}
 
 }
 
@@ -190,7 +178,8 @@ int CalibrationNode::storeData ()
 
 		std::cout << "Checkerboard found. Measurements Updated." << std::endl;
 
-#if SIGLE_MEASUREMENT_DEBUG
+#if ESTIMATION_DEBUG
+	std::cout << "Adding data #" << rotationRB_vec.size() << std::endl;
 	std::cout << "rotationRB" << std::endl << rotationRB << std::endl;
 	std::cout << "translationRB" << std::endl << translationRB << std::endl;
 	std::cout << "rotationCB" << std::endl << rotationCB << std::endl;
@@ -264,8 +253,7 @@ void CalibrationNode::performEstimation(){
 Vector3f CalibrationNode::getLogTheta(Matrix3f R){
 	AngleAxis<float> aa;
 	aa.fromRotationMatrix(R);
-	//return Vector3f(aa(1),aa(2),aa(3))*aa(0);
-	return Vector3f();
+	return aa.axis()*aa.angle();
 }
 
 
@@ -281,3 +269,4 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
