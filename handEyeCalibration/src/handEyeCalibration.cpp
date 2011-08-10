@@ -1,6 +1,6 @@
 #include "handEyeCalibration.hpp"
 #define SIGLE_MEASUREMENT_DEBUG 0
-#define ESTIMATION_DEBUG 1
+#define ESTIMATION_DEBUG 0
 
 using namespace Eigen;
 
