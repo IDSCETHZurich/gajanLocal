@@ -74,12 +74,14 @@ namespace re_articulationOROCOS_coupling
     bool doPlayBack;
 
 
-    std::vector<sensor_msgs::JointState> recordedTrajectory;
+    std::vector<geometry_msgs::Pose> recordedTrajectory;
+    geometry_msgs::Pose msrCartPose;
+
     sensor_msgs::JointState measuredJntState;
     std::vector<double> measuredJntPos;
     int trajectoryPointer;
     int playDirection; // 1 open ... -1 close
-    double learningSpeedFactor;
+    double playingSpeedFactor;
     double newPeriod4PlayBack;
     RTT::Property<std::vector<double> > maxVel_property;
     std::vector<double> maxVel;

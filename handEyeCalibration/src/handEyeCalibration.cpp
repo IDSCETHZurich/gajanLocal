@@ -1,6 +1,6 @@
 #include "handEyeCalibration.hpp"
 #define SIGLE_MEASUREMENT_DEBUG 0
-#define ESTIMATION_DEBUG 0
+#define ESTIMATION_DEBUG 1
 
 using namespace Eigen;
 
@@ -13,10 +13,10 @@ CalibrationNode::CalibrationNode(ros::NodeHandle& n):
 	ROSNode.getParam ("handEyeCalibration/height", height);
 	image_size = cv::Size_<int> (width, height);
 
-	int points_per_column, points_per_row;
-	ROSNode.getParam ("handEyeCalibration/points_per_column", points_per_column);
-	ROSNode.getParam ("handEyeCalibration/points_per_row", points_per_row);
-	pattern = cv::Size_<int> (points_per_column, points_per_row);
+	int pt_width, pt_height; //8,6
+	ROSNode.getParam ("handEyeCalibration/points_per_column", pt_width);
+	ROSNode.getParam ("handEyeCalibration/points_per_row", pt_height);
+	pattern = cv::Size_<int> (width, height);
 
 	ROSNode.getParam ("handEyeCalibration/pattern_width", patternHeight);
 	ROSNode.getParam ("handEyeCalibration/pattern_height", patternWidth);
@@ -45,7 +45,7 @@ void CalibrationNode::imgCallback (const sensor_msgs::ImageConstPtr& msg)
 	}
 	catch (cv_bridge::Exception& e)
 	{
-		ROS_ERROR ("cv_bridge exeption: %s", e.what ());
+		ROS_ERROR ("cv_bridge exception: %s", e.what ());
 	}
 
 	image = img_ptr->image;
@@ -134,10 +134,14 @@ int CalibrationNode::storeData ()
 		std::cout << "imagePoints" << std::endl << imagePoints << std::endl;
 #endif
 
+		// cout << "hight & width" << pattern.height << " : " << pattern.width << endl;
+
+		//width - 8 - x
+		//height - 6 - y
 		for(int i=0; i < pattern.height; i++){
 			for(int j=0; j < pattern.width; j++){
-				objectPoints.at<float>(i*pattern.width+j, 0) = i*patternHeight;
-				objectPoints.at<float>(i*pattern.width+j, 1) = j*patternWidth;
+				objectPoints.at<float>(i*pattern.width+j, 0) = j*patternHeight;
+				objectPoints.at<float>(i*pattern.width+j, 1) = i*patternWidth;
 				objectPoints.at<float>(i*pattern.width+j, 2) = 0.0;
 			}
 		}
@@ -150,13 +154,17 @@ int CalibrationNode::storeData ()
 
 		cv::solvePnP (objectPoints, imagePoints, cameraMatrix, distortionCoefficients, rvecs, tvecs);
 
-#if SIGLE_MEASUREMENT_DEBUG
+#if ESTIMATION_DEBUG
 		std::cout << "rvecs" << std::endl << rvecs << std::endl;
 		std::cout << "tvecs" << std::endl << tvecs << std::endl;
 #endif
 
+
+
 		cv::Mat rotMat = cv::Mat(3, 3, CV_64F);
 		cv::Rodrigues(rvecs, rotMat);
+
+		// cout << "rotMat" << endl << rotMat << endl;
 
 		for(int i=0; i < 3; i++)
 			for(int j=0; j < 3; j++)
@@ -165,15 +173,25 @@ int CalibrationNode::storeData ()
 		translationCB = Vector3f(tvecs.at<double>(0,0), tvecs.at<double>(0,1), tvecs.at<double>(0,2));
 
 		//robotPose
-		rotationRB = Quaternionf(
-						Quaternion<float>(robotPose.orientation.x, robotPose.orientation.y, robotPose.orientation.z, robotPose.orientation.w));
+		//Debug [KDL::Rotation vs Eigen::Matrix3f comparision]
+//		KDL::Rotation tmp =
+//				KDL::Rotation::Quaternion(robotPose.orientation.x,robotPose.orientation.y,robotPose.orientation.z,robotPose.orientation.w);
+//
+//		cout << "tmp(rotationRB)" << endl;
+//		cout << tmp(0,0) << ", " << tmp(0,1) << ", " << tmp(0,2) << endl;
+//		cout << tmp(1,0) << ", " << tmp(1,1) << ", " << tmp(1,2) << endl;
+//		cout << tmp(2,0) << ", " << tmp(2,1) << ", " << tmp(2,2) << endl;
+//		cout << endl;
+		//end of Debug
+
+		rotationRB = Quaternionf(robotPose.orientation.w, robotPose.orientation.x, robotPose.orientation.y, robotPose.orientation.z);
 		translationRB = Vector3f(robotPose.position.x, robotPose.position.y, robotPose.position.z);
 
 
 		//pushing back data into vectors
 		rotationRB_vec.push_back(rotationRB);
 		translationRB_vec.push_back(translationRB);
-		rotationCB_vec.push_back(rotationCB);
+		rotationCB_vec.push_back(rotationCB.inverse());
 		translationCB_vec.push_back(translationCB);
 
 		std::cout << "Checkerboard found. Measurements Updated." << std::endl;
@@ -183,6 +201,7 @@ int CalibrationNode::storeData ()
 	std::cout << "rotationRB" << std::endl << rotationRB << std::endl;
 	std::cout << "translationRB" << std::endl << translationRB << std::endl;
 	std::cout << "rotationCB" << std::endl << rotationCB << std::endl;
+	std::cout << "rotationCB.inverse()" << std::endl << rotationCB.inverse() << std::endl;
 	std::cout << "translationCB" << std::endl << translationCB << std::endl;
 #endif
 

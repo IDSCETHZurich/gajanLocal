@@ -35,7 +35,7 @@ namespace re_articulationOROCOS_coupling
       this->addPort("cartPosCmdPort", cartPosCmdPort);
       this->addPort("jntPosCmdPort", jntPosCmdPort);
 
-      this->addProperty("learningSpeedFactor",learningSpeedFactor).doc("Speed Factor for learning");
+      this->addProperty("playingSpeedFactor",playingSpeedFactor).doc("Speed Factor for learning");
       this->addProperty("newPeriod4PlayBack",newPeriod4PlayBack).doc("New Period for play back");
     }
 
@@ -140,15 +140,15 @@ namespace re_articulationOROCOS_coupling
 
 	//slow down velocity for learning
 	maxVel_property = this->getPeer("cartesianGenerator")->getProperty("max_vel");
-	maxVel = maxVel_property.get();
-	if(learningSpeedFactor < 1){
-		std::cout << "learningSpeedFactor should be greater or equal to 1" << std::endl;
-		return false;
-	}
-
-	for(int i=0;i<(int)maxVel.size();i++)
-		maxVel[i]/= learningSpeedFactor;
-	maxVel_property.set(maxVel);
+//	maxVel = maxVel_property.get();
+//	if(playingSpeedFactor < 1){
+//		std::cout << "playingSpeedFactor should be greater or equal to 1" << std::endl;
+//		return false;
+//	}
+//
+//	for(int i=0;i<(int)maxVel.size();i++)
+//		maxVel[i]/= playingSpeedFactor;
+//	maxVel_property.set(maxVel);
 
 	return true;
     }   
@@ -177,27 +177,25 @@ namespace re_articulationOROCOS_coupling
 		if (client.call(srv)){
 			cartPosCmdPort.write(srv.response.commandPose);
 			//record measured position
-			jntPosPort.read(measuredJntPos);
-			measuredJntState.position.clear();
-			for(int i=0; i < 7; i++){
-				measuredJntState.position.push_back(measuredJntPos[i]);
-			}
-			recordedTrajectory.push_back(measuredJntState);
+			cartPosPort.read(msrCartPose);
+			recordedTrajectory.push_back(msrCartPose);
 
 			if(srv.response.learningFinished){
 				//Increase the velocity
 				std::cout << "recorded poses: " << recordedTrajectory.size() << std::endl;
-				trajectoryPointer = recordedTrajectory.size()-1-1; //0-offset + command to the last pose
+				trajectoryPointer = recordedTrajectory.size()-1-1; //0-offset + command to one before the last pose
 				playDirection=-1;
 				doLearning = false; doPlayBack = true;
 
 				//Increase Velocity for PlayBack
+				maxVel = maxVel_property.get();
 				std::cout << "Maximum Velocities" << std::endl;
 				for(int i=0;i<(int)maxVel.size();i++){
 					std::cout << "OldJoint" << i << ": " << maxVel[i];
-					maxVel[i]*= learningSpeedFactor;
+					maxVel[i]*= playingSpeedFactor;
 					std::cout << " ==> NewJoint" << i << ": " << maxVel[i] << std::endl;
 				}
+
 				maxVel_property.set(maxVel);
 				std::cout << "MaxVel Property Set" << std::endl;
 
@@ -216,18 +214,18 @@ namespace re_articulationOROCOS_coupling
 	}//end of doLearning
 
 	if(doPlayBack){
-		jntPosCmdPort.write(recordedTrajectory[trajectoryPointer]);
+		std::cout << "trajectoryPointer" << trajectoryPointer << std::endl;
+		cartPosCmdPort.write(recordedTrajectory[trajectoryPointer]);
 
 		if(trajectoryPointer==0){
 			playDirection=+1;
-			std::cout << "-----" << "Start Ripping" << std::endl;
 		}
 
 		if(trajectoryPointer==(int)recordedTrajectory.size()-1){
 			playDirection=-1;
 		}
 
-		std::cout << "trajectoryPointer" << trajectoryPointer << std::endl;
+
 
 		trajectoryPointer+=playDirection;
 

@@ -10,6 +10,7 @@
 #include "geometry_msgs/Pose.h"
 #include <iostream>
 #include <Eigen/Eigen>
+#include <kdl/frames.hpp>
 
 const string IMAGE_WINDOW = "Image Window";
 

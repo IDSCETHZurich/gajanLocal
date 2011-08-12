@@ -5,5 +5,5 @@
   <simple name="control_mode" type="long">
   <description>selected control mode, (1
 : position control,2 : velocity control, 3 : torque control, 4 : cartesian position control, 5 : cartesian TCP wrench control
-  </description><value>1</value></simple>
+  </description><value>4</value></simple>
 </properties>
