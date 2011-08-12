@@ -173,6 +173,7 @@ int CalibrationNode::storeData ()
 		translationCB = Vector3f(tvecs.at<double>(0,0), tvecs.at<double>(0,1), tvecs.at<double>(0,2));
 
 		//robotPose
+
 		//Debug [KDL::Rotation vs Eigen::Matrix3f comparision]
 //		KDL::Rotation tmp =
 //				KDL::Rotation::Quaternion(robotPose.orientation.x,robotPose.orientation.y,robotPose.orientation.z,robotPose.orientation.w);
@@ -186,7 +187,6 @@ int CalibrationNode::storeData ()
 
 		rotationRB = Quaternionf(robotPose.orientation.w, robotPose.orientation.x, robotPose.orientation.y, robotPose.orientation.z);
 		translationRB = Vector3f(robotPose.position.x, robotPose.position.y, robotPose.position.z);
-
 
 		//pushing back data into vectors
 		rotationRB_vec.push_back(rotationRB);
