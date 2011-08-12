@@ -13,10 +13,10 @@ CalibrationNode::CalibrationNode(ros::NodeHandle& n):
 	ROSNode.getParam ("handEyeCalibration/height", height);
 	image_size = cv::Size_<int> (width, height);
 
-	int pt_width, pt_height; //8,6
-	ROSNode.getParam ("handEyeCalibration/points_per_column", pt_width);
-	ROSNode.getParam ("handEyeCalibration/points_per_row", pt_height);
-	pattern = cv::Size_<int> (width, height);
+	int points_per_column, points_per_row; //8,6
+	ROSNode.getParam ("handEyeCalibration/points_per_column", points_per_column);
+	ROSNode.getParam ("handEyeCalibration/points_per_row", points_per_row);
+	pattern = cv::Size_<int> (points_per_column, points_per_row);
 
 	ROSNode.getParam ("handEyeCalibration/pattern_width", patternHeight);
 	ROSNode.getParam ("handEyeCalibration/pattern_height", patternWidth);
@@ -102,7 +102,8 @@ void CalibrationNode::cameraInfoCallback (const sensor_msgs::CameraInfoConstPtr&
 int CalibrationNode::storeData ()
 {
 	cv::vector<cv::Point2f> corners;
-	bool patternWasFound = cv::findChessboardCorners (image, pattern, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
+	bool patternWasFound = cv::findChessboardCorners (image, pattern, corners,
+			cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
 	if (patternWasFound)
 	{
 		readPoseFlag = true;
@@ -138,10 +139,11 @@ int CalibrationNode::storeData ()
 
 		//width - 8 - x
 		//height - 6 - y
+		//row by row, left to right in every row
 		for(int i=0; i < pattern.height; i++){
 			for(int j=0; j < pattern.width; j++){
-				objectPoints.at<float>(i*pattern.width+j, 0) = j*patternHeight;
-				objectPoints.at<float>(i*pattern.width+j, 1) = i*patternWidth;
+				objectPoints.at<float>(i*pattern.width+j, 0) = j*patternWidth;
+				objectPoints.at<float>(i*pattern.width+j, 1) = i*patternHeight;
 				objectPoints.at<float>(i*pattern.width+j, 2) = 0.0;
 			}
 		}
@@ -158,8 +160,6 @@ int CalibrationNode::storeData ()
 		std::cout << "rvecs" << std::endl << rvecs << std::endl;
 		std::cout << "tvecs" << std::endl << tvecs << std::endl;
 #endif
-
-
 
 		cv::Mat rotMat = cv::Mat(3, 3, CV_64F);
 		cv::Rodrigues(rvecs, rotMat);
@@ -198,11 +198,11 @@ int CalibrationNode::storeData ()
 
 #if ESTIMATION_DEBUG
 	std::cout << "Adding data #" << rotationRB_vec.size() << std::endl;
-	std::cout << "rotationRB" << std::endl << rotationRB << std::endl;
-	std::cout << "translationRB" << std::endl << translationRB << std::endl;
-	std::cout << "rotationCB" << std::endl << rotationCB << std::endl;
-	std::cout << "rotationCB.inverse()" << std::endl << rotationCB.inverse() << std::endl;
-	std::cout << "translationCB" << std::endl << translationCB << std::endl;
+	std::cout << "rotRB" << rotationRB_vec.size() << " = [ " << rotationRB << " ]; " <<std::endl;
+	std::cout << "transRB" << rotationRB_vec.size() << " = [ " << translationRB << " ]; " << std::endl;
+	std::cout << "rotCB" << rotationRB_vec.size() << " = [ " << rotationCB << " ]; " << std::endl;
+	std::cout << "rotCBin" << rotationRB_vec.size() << " = [ " << rotationCB.inverse() << " ]; " << std::endl;
+	std::cout << "transCB" << rotationRB_vec.size() << " = [ " << translationCB << " ]; " << std::endl;
 #endif
 
 		cv::waitKey ();
@@ -211,7 +211,7 @@ int CalibrationNode::storeData ()
 	}
 	else
 	{
-		std::cout << "No Checkerboard has been found or it is not completely visible" << std::endl;
+		std::cout << "No Checkerboard has been found !" << std::endl;
 		cv::waitKey ();
 
 		return checkerboard_not_found;
@@ -264,15 +264,23 @@ void CalibrationNode::performEstimation(){
 	std::cout << "Xr_est" << std::endl << Xr_est << std::endl;
 
 	//calculate the translational part of X
-
 	return;
 
 }
 
 Vector3f CalibrationNode::getLogTheta(Matrix3f R){
-	AngleAxis<float> aa;
-	aa.fromRotationMatrix(R);
-	return aa.axis()*aa.angle();
+//	theta =  acos((trace(R)-1)/2);
+//	logTheta = 0.5*theta/sin(theta)*(R-R');
+//	result = [logTheta(3,2);logTheta(1,3);logTheta(2,1)];
+
+	//Assumption R is never an Identity
+	float theta = acos((R.trace()-1)/2);
+	Matrix3f logTheta = 0.5*theta/sin(theta)*(R-R.transpose());
+	return Vector3f(logTheta(2,1), logTheta(0,2), logTheta(1,0));
+
+//	AngleAxis<float> aa;
+//	aa.fromRotationMatrix(R);
+//	return aa.axis()*aa.angle();
 }
 
 
