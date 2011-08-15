@@ -191,17 +191,16 @@ int CalibrationNode::storeData ()
 		//pushing back data into vectors
 		rotationRB_vec.push_back(rotationRB);
 		translationRB_vec.push_back(translationRB);
-		rotationCB_vec.push_back(rotationCB.inverse());
+		rotationCB_vec.push_back(rotationCB);
 		translationCB_vec.push_back(translationCB);
 
 		std::cout << "Checkerboard found. Measurements Updated." << std::endl;
 
 #if ESTIMATION_DEBUG
-	std::cout << "Adding data #" << rotationRB_vec.size() << std::endl;
+	std::cout << "%Adding data #" << rotationRB_vec.size() << std::endl;
 	std::cout << "rotRB" << rotationRB_vec.size() << " = [ " << rotationRB << " ]; " <<std::endl;
 	std::cout << "transRB" << rotationRB_vec.size() << " = [ " << translationRB << " ]; " << std::endl;
 	std::cout << "rotCB" << rotationRB_vec.size() << " = [ " << rotationCB << " ]; " << std::endl;
-	std::cout << "rotCBin" << rotationRB_vec.size() << " = [ " << rotationCB.inverse() << " ]; " << std::endl;
 	std::cout << "transCB" << rotationRB_vec.size() << " = [ " << translationCB << " ]; " << std::endl;
 #endif
 
@@ -219,52 +218,78 @@ int CalibrationNode::storeData ()
 }
 
 void CalibrationNode::performEstimation(){
-	if(rotationRB_vec.size() < 3){
+	if(rotationRB_vec.size() < 5 ){
 		std::cout << "Insufficient data" << std::endl;
 		return;
 	}
 
-	//Calculate the rotational part of X
-	Matrix3f Ar1,Ar2,Br1,Br2;
-	Ar1 = rotationRB_vec[1].inverse()*rotationRB_vec[0];
-	Ar2 = rotationRB_vec[2].inverse()*rotationRB_vec[1];
-	Br1 = rotationCB_vec[1].inverse()*rotationCB_vec[0];
-	Br2 = rotationCB_vec[2].inverse()*rotationCB_vec[1];
+	//perform least squares estimation
+	Matrix3f Ai, Bi, M;
+	M.setZero();
+	Vector3f ai, bi;
+	for(int i=0; i < (int)rotationRB_vec.size()-1; i++){
+		Ai = rotationRB_vec[i+1].inverse() * rotationRB_vec[i];
+		Bi = rotationCB_vec[i+1] * rotationCB_vec[i].inverse();
+		ai = getLogTheta(Ai);
+		bi = getLogTheta(Bi);
+		M += bi*ai.transpose();
+	}//end of for(.. i < rotationRB_vec.size()-1; ..)
 
 #if ESTIMATION_DEBUG
-	std::cout << "Ar1" << std::endl << Ar1 << std::endl;
-	std::cout << "Ar2" << std::endl << Ar2 << std::endl;
-	std::cout << "Br1" << std::endl << Br1 << std::endl;
-	std::cout << "Br2" << std::endl << Br2 << std::endl;
+	std::cout << "M = [ " << M << " ]; ";
 #endif
 
-	Vector3f alpha1, alpha2, beta1, beta2;
-	alpha1 = getLogTheta(Ar1);
-	alpha2 = getLogTheta(Ar2);
-	beta1 = getLogTheta(Br1);
-	beta2 = getLogTheta(Br2);
+	EigenSolver<Matrix3f> es(M);
+	Matrix3f D = es.eigenvalues().real().asDiagonal();
+	Matrix3f V = es.eigenvectors().real();
 
-#if ESTIMATION_DEBUG
-	std::cout << "alpha1" << std::endl << alpha1 << std::endl;
-	std::cout << "alpha2" << std::endl << alpha2 << std::endl;
-	std::cout << "beta1" << std::endl << beta1 << std::endl;
-	std::cout << "beta2" << std::endl << beta2 << std::endl;
-#endif
+	Matrix3f Lambda = D.inverse().array().sqrt();
 
-	Matrix3f Astylish, Bstylish;
-	Astylish << alpha1, alpha2, alpha1.cross(alpha2);
-	Bstylish << beta1, beta2, beta1.cross(beta2);
+	Matrix3f x_est = V * Lambda * V.inverse() * M.transpose();
 
-#if ESTIMATION_DEBUG
-	std::cout << "Astylish" << std::endl << Astylish << std::endl;
-	std::cout << "Bstylish" << std::endl << Bstylish << std::endl;
-#endif
+	std::cout << "x_est = [ " << x_est  << " ]; ";
 
-	Matrix3f Xr_est = Astylish*Bstylish.inverse();
-	std::cout << "Xr_est" << std::endl << Xr_est << std::endl;
-
-	//calculate the translational part of X
-	return;
+//	//Calculate the rotational part of X
+//	Matrix3f Ar1,Ar2,Br1,Br2;
+//	Ar1 = rotationRB_vec[1].inverse()*rotationRB_vec[0];
+//	Ar2 = rotationRB_vec[2].inverse()*rotationRB_vec[1];
+//	Br1 = rotationCB_vec[1].inverse()*rotationCB_vec[0];
+//	Br2 = rotationCB_vec[2].inverse()*rotationCB_vec[1];
+//
+//#if ESTIMATION_DEBUG
+//	std::cout << "Ar1" << std::endl << Ar1 << std::endl;
+//	std::cout << "Ar2" << std::endl << Ar2 << std::endl;
+//	std::cout << "Br1" << std::endl << Br1 << std::endl;
+//	std::cout << "Br2" << std::endl << Br2 << std::endl;
+//#endif
+//
+//	Vector3f alpha1, alpha2, beta1, beta2;
+//	alpha1 = getLogTheta(Ar1);
+//	alpha2 = getLogTheta(Ar2);
+//	beta1 = getLogTheta(Br1);
+//	beta2 = getLogTheta(Br2);
+//
+//#if ESTIMATION_DEBUG
+//	std::cout << "alpha1" << std::endl << alpha1 << std::endl;
+//	std::cout << "alpha2" << std::endl << alpha2 << std::endl;
+//	std::cout << "beta1" << std::endl << beta1 << std::endl;
+//	std::cout << "beta2" << std::endl << beta2 << std::endl;
+//#endif
+//
+//	Matrix3f Astylish, Bstylish;
+//	Astylish << alpha1, alpha2, alpha1.cross(alpha2);
+//	Bstylish << beta1, beta2, beta1.cross(beta2);
+//
+//#if ESTIMATION_DEBUG
+//	std::cout << "Astylish" << std::endl << Astylish << std::endl;
+//	std::cout << "Bstylish" << std::endl << Bstylish << std::endl;
+//#endif
+//
+//	Matrix3f Xr_est = Astylish*Bstylish.inverse();
+//	std::cout << "Xr_est" << std::endl << Xr_est << std::endl;
+//
+//	//calculate the translational part of X
+//	return;
 
 }
 
