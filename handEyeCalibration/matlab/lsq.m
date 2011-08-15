@@ -1,24 +1,43 @@
-% least squares solution 
-A = [rotRB2' * rotRB1;
-    rotRB3' * rotRB2;
-    rotRB4' * rotRB3;
-    rotRB5' * rotRB4;
-    rotRB6' * rotRB5;
-    rotRB7' * rotRB6;
-    rotRB8' * rotRB7;
-    rotRB9' * rotRB8;
-    rotRB10' * rotRB9;
-    rotRB1' * rotRB10];
+% LS solution
 
-B = [rotCBin2' * rotCBin1;
-    rotCBin3' * rotCBin2;
-    rotCBin4' * rotCBin3;
-    rotCBin5' * rotCBin4;
-    rotCBin6' * rotCBin5;
-    rotCBin7' * rotCBin6;
-    rotCBin8' * rotCBin7;
-    rotCBin9' * rotCBin8;
-    rotCBin10' * rotCBin9;
-    rotCBin1' * rotCBin10];
+Alpha = [];
+Beta = [];
+M = zeros(3,3);
+
+for i = 1:9
+    rbi1 = eval(['rotRB',num2str(i)]);
+    rbi2 = eval(['rotRB',num2str(i+1)]);
+    Ai = inv(rbi2)*rbi1;
+    alpha = getLogTheta(Ai);
+    Alpha = [Alpha alpha];
+    
+    cbi1 = eval(['rotCBin',num2str(i)]);
+    cbi2 = eval(['rotCBin',num2str(i+1)]);
+    Bi = inv(cbi2)*cbi1;
+    beta = getLogTheta(Bi);
+    Beta = [Beta beta];
+    M = M + beta*alpha';
+end
+
+display(Alpha);
+display(Beta);
+
+[V,D] = eig(M'*M);
+Lambda = diag([sqrt(1/D(1,1)),sqrt(1/D(2,2)), sqrt(1/D(3,3))]);
+
+x_est = V * Lambda * inv(V) * M';
+
+display(x_est);
 
 
+for i = 1:9
+    rbi1 = eval(['rotRB',num2str(i)]);
+    rbi2 = eval(['rotRB',num2str(i+1)]);
+    Ai = inv(rbi2)*rbi2;
+    
+    cbi1 = eval(['rotCBin',num2str(i)]);
+    cbi2 = eval(['rotCBin',num2str(i+1)]);
+    Bi = inv(cbi2)*cbi2;
+    
+    display( Ai * x_est -  x_est * Bi); 
+end
