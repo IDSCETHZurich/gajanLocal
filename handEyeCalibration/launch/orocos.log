@@ -1,6 +1,202 @@
 0.000 [ Info   ][Logger] No ORO_LOGLEVEL environment variable set.
 0.000 [ Info   ][Logger]  OROCOS version '2.4.0' compiled with GCC 4.4.3. Running in GNU/Linux.
 0.000 [ Info   ][Logger] Orocos Logging Activated at level : [ Warning] ( 4 ) 
-0.000 [ Info   ][Logger] Reference System Time is : 1312387302124468784 ticks ( 1.31239e+09 seconds ).
+0.000 [ Info   ][Logger] Reference System Time is : 1313481583380697883 ticks ( 1.31348e+09 seconds ).
 0.000 [ Info   ][Logger] Logging is relative to this time.
-0.000 [ Info   ][RosPublishActivity] RosPublishActivity cleans up: no more work.
+0.000 [ Info   ][Logger] Real-time memory: 14096 bytes free of 20480 allocated.
+0.000 [ Info   ][Logger] Setting OCL factory for real-time logging
+0.000 [ Info   ][Logger] RTT_COMPONENT_PATH was set to: /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/lib/orocos . Searching in: /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/lib/orocos:/opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/lib/orocos
+0.000 [ Info   ][Logger] plugin 'rtt' not loaded before.
+0.000 [ Info   ][Logger] Loading plugin libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/lib/orocos/gnulinux/./plugins ...
+0.000 [ Info   ][Logger] Loaded RTT Service 'marshalling' from 'rtt-marshalling'
+0.001 [ Info   ][Logger] Loaded RTT Service 'scripting' from 'rtt-scripting'
+0.001 [ Info   ][Logger] Loading plugin libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/lib/orocos/gnulinux/./plugins ...
+0.001 [ Info   ][Logger] typekit 'rtt' not loaded before.
+0.001 [ Info   ][Logger] Loading typekit libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/lib/orocos/gnulinux/./types ...
+0.002 [ Info   ][TypekitRepository::Import] Loading Transport mqueue://rtt-types.
+0.002 [ Info   ][Logger] Loaded RTT TypeKit/Transport 'rtt-mqueue-transport' from 'rtt-transport-mqueue'
+0.017 [ Info   ][TypekitRepository::Import] Loading Transport CORBA://rtt-types.
+0.017 [ Info   ][Logger] Loaded RTT TypeKit/Transport 'rtt-corba-types' from 'rtt-transport-corba'
+0.034 [ Info   ][TypekitRepository::Import] Loading Typekit rtt-types.
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'mqueue' transport for int
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for int
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'mqueue' transport for uint
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for uint
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'mqueue' transport for double
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for double
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'mqueue' transport for float
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for float
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'mqueue' transport for char
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for char
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'mqueue' transport for bool
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for bool
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for void
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for ConnPolicy
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for TaskContext
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for string
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'mqueue' transport for array
+0.034 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for array
+0.034 [ Info   ][Logger] Loaded RTT TypeKit/Transport 'rtt-types' from 'rtt-typekit'
+0.034 [ Info   ][Logger] Loading typekit libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/lib/orocos/gnulinux/./types ...
+0.035 [ Info   ][Thread] Creating Thread for scheduler: 0
+0.035 [ Info   ][Deployer] Thread created with scheduler type '0', priority 0, cpu affinity 15 and period 0.
+0.035 [ Info   ][Thread] Creating Thread for scheduler: 0
+0.035 [ Info   ][GlobalEngine] Thread created with scheduler type '0', priority 0, cpu affinity 15 and period 0.
+0.035 [ Info   ][DeploymentComponent::configure] RTT_COMPONENT_PATH was set to /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/lib/orocos
+0.035 [ Info   ][DeploymentComponent::configure] Re-scanning for plugins and components...
+0.035 [ Info   ][DeploymentComponent::configure] Importing directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt/install/lib/orocos ...
+0.035 [ Info   ][Logger] No site file was found. Importing 'ocl' by default.
+0.050 [ Info   ][DeploymentComponent::import] Importing directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/ocl/lib/orocos/gnulinux ...
+0.052 [ Info   ][DeploymentComponent::import] Loaded multi component library '/opt/ros/diamondback/stacks/orocos_toolchain_ros/ocl/lib/orocos/gnulinux/liborocos-ocl-timer-gnulinux.so'
+0.053 [ Info   ][DeploymentComponent::import] Loaded multi component library '/opt/ros/diamondback/stacks/orocos_toolchain_ros/ocl/lib/orocos/gnulinux/liborocos-ocl-reporting-gnulinux.so'
+0.055 [ Info   ][DeploymentComponent::import] Loaded component type 'OCL::HelloWorld'
+0.056 [ Info   ][DeploymentComponent::import] Loaded component type 'OCL::LuaComponent'
+0.058 [ Info   ][DeploymentComponent::import] Loaded multi component library '/opt/ros/diamondback/stacks/orocos_toolchain_ros/ocl/lib/orocos/gnulinux/liborocos-ocl-common-gnulinux.so'
+0.059 [ Info   ][DeploymentComponent::import] Loaded multi component library '/opt/ros/diamondback/stacks/orocos_toolchain_ros/ocl/lib/orocos/gnulinux/liborocos-ocl-logging-gnulinux.so'
+0.064 [ Info   ][DeploymentComponent::import] Loaded component type 'OCL::logging::Log4cxxAppender'
+0.064 [ Info   ][DeploymentComponent::import] Loading typekit libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/ocl/lib/orocos/gnulinux/types ...
+0.069 [ Info   ][TypekitRepository::Import] Loading Typekit OCLTypekit.
+0.069 [ Info   ][DeploymentComponent::import] Loaded RTT TypeKit/Transport 'OCLTypekit' from 'ocl'
+0.070 [ Info   ][DeploymentComponent::import] Loading plugin libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/ocl/lib/orocos/gnulinux/plugins ...
+0.070 [ Info   ][DeploymentComponent::import] Loaded RTT Service 'Lua' from 'rttlua-plugin'
+0.071 [ Info   ][DeploymentComponent::import] Loaded RTT Service 'print' from 'print'
+0.072 [ Info   ][DeploymentComponent::import] Loaded RTT Service 'os' from 'os'
+0.072 [ Info   ][DeploymentComponent::loadComponents] Loading 'FRIServer.xml' in group 0.
+0.073 [ Info   ][DeploymentComponent::loadComponents] Validating new configuration...
+0.094 [ Info   ][DeploymentComponent::import] Importing directory /home/demo/ros/stacks/orocos_kinematics_dynamics/kdl_typekit/lib/orocos/gnulinux ...
+0.094 [ Info   ][DeploymentComponent::import] Loading typekit libraries from directory /home/demo/ros/stacks/orocos_kinematics_dynamics/kdl_typekit/lib/orocos/gnulinux/types ...
+0.129 [ Info   ][TypekitRepository::Import] Loading Typekit KDL.
+0.130 [ Info   ][DeploymentComponent::import] Loaded RTT TypeKit/Transport 'KDL' from 'kdl_typekit'
+0.278 [ Info   ][DeploymentComponent::import] Importing directory /home/demo/ros/stacks/trajectory-generator/lwr_fri/lib/orocos/gnulinux ...
+0.314 [ Info   ][DeploymentComponent::import] Loaded multi component library '/home/demo/ros/stacks/trajectory-generator/lwr_fri/lib/orocos/gnulinux/liblwr_fri-gnulinux.so'
+0.314 [ Info   ][DeploymentComponent::import] Loaded component type 'lwr_fri::FRIComponent'
+0.372 [ Info   ][DeploymentComponent::import] Importing directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration/lib/orocos/gnulinux ...
+0.372 [ Info   ][DeploymentComponent::import] Loading typekit libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration/lib/orocos/gnulinux/types ...
+0.422 [ Info   ][TypekitRepository::Import] Loading Typekit ros-primitives.
+0.423 [ Info   ][TypekitRepository::Import] TypeInfo for type 'int32' already exists as 'int': I'll alias the original and install the new instance.
+0.423 [ Info   ][TypekitRepository::Import] TypeInfo for type 'int32[]' already exists as 'ints': I'll alias the original and install the new instance.
+0.423 [ Info   ][TypekitRepository::Import] TypeInfo for type 'uint32' already exists as 'uint': I'll alias the original and install the new instance.
+0.423 [ Info   ][TypekitRepository::Import] TypeInfo for type 'float32' already exists as 'float': I'll alias the original and install the new instance.
+0.423 [ Info   ][TypekitRepository::Import] TypeInfo for type 'float64' already exists as 'double': I'll alias the original and install the new instance.
+0.423 [ Info   ][TypekitRepository::Import] TypeInfo for type 'float64[]' already exists as 'array': I'll alias the original and install the new instance.
+0.423 [ Info   ][TypekitRepository::Import] Registered new 'CORBA' transport for string
+0.423 [ Info   ][DeploymentComponent::import] Loaded RTT TypeKit/Transport 'ros-primitives' from 'rtt-ros-primitives-typekit'
+0.423 [ Info   ][DeploymentComponent::import] Loading plugin libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration/lib/orocos/gnulinux/plugins ...
+0.423 [ Info   ][DeploymentComponent::import] Initializing ROS node
+0.424 [ ERROR  ][DeploymentComponent::import] No ros::master available
+0.424 [ ERROR  ][DeploymentComponent::import] Failed to load RTT Plugin 'ros_integration': plugin refused to load into this process. Unloading.
+0.424 [ ERROR  ][DeploymentComponent::import] Some found plugins could not be loaded !
+0.486 [ Info   ][DeploymentComponent::import] Importing directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration/lib/orocos/gnulinux ...
+0.486 [ Info   ][DeploymentComponent::import] Loading typekit libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration/lib/orocos/gnulinux/types ...
+0.486 [ Info   ][DeploymentComponent::import] Loading plugin libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration/lib/orocos/gnulinux/plugins ...
+0.486 [ Info   ][DeploymentComponent::import] Initializing ROS node
+5.894 [ Info   ][DeploymentComponent::import] ROS node spinner started
+5.894 [ Info   ][DeploymentComponent::import] Loaded RTT Service 'ros_integration' from 'rtt_ros_integration'
+5.894 [ Info   ][DeploymentComponent::import] Importing directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration_std_msgs/lib/orocos/gnulinux ...
+5.894 [ Info   ][DeploymentComponent::import] Loading typekit libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration_std_msgs/lib/orocos/gnulinux/types ...
+5.913 [ Info   ][TypekitRepository::Import] Loading Transport ros://ros-std_msgs.
+5.913 [ Info   ][DeploymentComponent::import] Loaded RTT TypeKit/Transport 'rtt-ros-std_msgs-transport' from 'rtt-ros-std_msgs-transport'
+6.091 [ Info   ][TypekitRepository::Import] Loading Typekit ros-std_msgs.
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/ColorRGBA
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/UInt32MultiArray
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/UInt32
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/UInt64
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/UInt64MultiArray
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/String
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Empty
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/ByteMultiArray
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/UInt8MultiArray
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Int64
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/UInt16
+6.091 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Int64MultiArray
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Duration
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Float32MultiArray
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Int8MultiArray
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Byte
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Int16MultiArray
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Int16
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/UInt16MultiArray
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Float64MultiArray
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Time
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Header
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Float64
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Int32MultiArray
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Int8
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/MultiArrayDimension
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Float32
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Bool
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Char
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/UInt8
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/Int32
+6.092 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /std_msgs/MultiArrayLayout
+6.092 [ Info   ][DeploymentComponent::import] Loaded RTT TypeKit/Transport 'ros-std_msgs' from 'rtt-ros-std_msgs-typekit'
+6.195 [ Info   ][DeploymentComponent::import] Importing directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration_geometry_msgs/lib/orocos/gnulinux ...
+6.196 [ Info   ][DeploymentComponent::import] Loading typekit libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration_geometry_msgs/lib/orocos/gnulinux/types ...
+6.325 [ Info   ][TypekitRepository::Import] Loading Typekit ros-geometry_msgs.
+6.326 [ Info   ][DeploymentComponent::import] Loaded RTT TypeKit/Transport 'ros-geometry_msgs' from 'rtt-ros-geometry_msgs-typekit'
+6.341 [ Info   ][TypekitRepository::Import] Loading Transport ros://ros-geometry_msgs.
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Point
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Point32
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/PointStamped
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Polygon
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/PolygonStamped
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Pose
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Pose2D
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/PoseArray
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/PoseStamped
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/PoseWithCovariance
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/PoseWithCovarianceStamped
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Quaternion
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/QuaternionStamped
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Transform
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/TransformStamped
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Twist
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/TwistStamped
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/TwistWithCovariance
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/TwistWithCovarianceStamped
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Vector3
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Vector3Stamped
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/Wrench
+6.341 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /geometry_msgs/WrenchStamped
+6.342 [ Info   ][DeploymentComponent::import] Loaded RTT TypeKit/Transport 'rtt-ros-geometry_msgs-transport' from 'rtt-ros-geometry_msgs-transport'
+6.345 [ Info   ][DeploymentComponent::import] Importing directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration_sensor_msgs/lib/orocos/gnulinux ...
+6.345 [ Info   ][DeploymentComponent::import] Loading typekit libraries from directory /opt/ros/diamondback/stacks/orocos_toolchain_ros/rtt_ros_integration_sensor_msgs/lib/orocos/gnulinux/types ...
+6.428 [ Info   ][TypekitRepository::Import] Loading Typekit ros-sensor_msgs.
+6.429 [ Info   ][DeploymentComponent::import] Loaded RTT TypeKit/Transport 'ros-sensor_msgs' from 'rtt-ros-sensor_msgs-typekit'
+6.439 [ Info   ][TypekitRepository::Import] Loading Transport ros://ros-sensor_msgs.
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/CameraInfo
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/ChannelFloat32
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/CompressedImage
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/Image
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/Imu
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/JointState
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/LaserScan
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/NavSatFix
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/NavSatStatus
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/PointCloud
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/PointCloud2
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/PointField
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/Range
+6.439 [ Info   ][TypekitRepository::Import] Registered new 'ros' transport for /sensor_msgs/RegionOfInterest
+6.439 [ Info   ][DeploymentComponent::import] Loaded RTT TypeKit/Transport 'rtt-ros-sensor_msgs-transport' from 'rtt-ros-sensor_msgs-transport'
+6.440 [ Info   ][DeploymentComponent::import] Component package 'rtt_ros_integration_geometry_msgs' already imported.
+6.440 [ Info   ][Thread] Creating Thread for scheduler: 0
+6.440 [ Info   ][FRIServer] Thread created with scheduler type '0', priority 0, cpu affinity 15 and period 0.
+6.440 [ Info   ][DeploymentComponent::loadComponent] Adding FRIServer as new peer:  OK.
+6.441 [ Info   ][DeploymentComponent::loadComponents] Added component FRIServer to group 0
+6.441 [ ERROR  ][Logger] Failed to load a component: aborting kick-start.
+6.441 [ Info   ][Thread] Creating Thread for scheduler: 0
+6.441 [ Info   ][TaskBrowser] Thread created with scheduler type '0', priority 0, cpu affinity 15 and period 0.
+6.441 [ Info   ][Logger] Entering Task Deployer
+8.534 [ Info   ][DeploymentComponent::stopComponentsGroup] Stopping group 1
+8.534 [ Info   ][DeploymentComponent::cleanupComponentsGroup] Cleaning up group 1
+8.534 [ Info   ][Logger] Unloading group 1
+8.534 [ Info   ][Logger] Kick-out of group 1 successful.
+8.534 [ Info   ][DeploymentComponent::stopComponentsGroup] Stopping group 0
+8.534 [ Info   ][DeploymentComponent::stopComponentsGroup] Stopped FRIServer
+8.534 [ Info   ][DeploymentComponent::cleanupComponentsGroup] Cleaning up group 0
+8.534 [ Info   ][DeploymentComponent::cleanupComponentsGroup] Cleaned up FRIServer
+8.534 [ Info   ][Logger] Unloading group 0
+8.535 [ Info   ][Logger] Disconnected and destroyed FRIServer
+8.535 [ Info   ][Logger] Kick-out of group 0 successful.
+8.535 [ Info   ][Logger] Orocos Logging Deactivated.

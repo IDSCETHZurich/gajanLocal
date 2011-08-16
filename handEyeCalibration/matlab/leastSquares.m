@@ -11,9 +11,9 @@ for i = 1:9
     alpha = getLogTheta(Ai);
     Alpha = [Alpha alpha];
     
-    cbi1 = eval(['rotCBin',num2str(i)]);
-    cbi2 = eval(['rotCBin',num2str(i+1)]);
-    Bi = inv(cbi2)*cbi1;
+    cbi1 = eval(['rotCB',num2str(i)]);
+    cbi2 = eval(['rotCB',num2str(i+1)]);
+    Bi = cbi2*inv(cbi1);
     beta = getLogTheta(Bi);
     Beta = [Beta beta];
     M = M + beta*alpha';
@@ -33,11 +33,11 @@ display(x_est);
 for i = 1:9
     rbi1 = eval(['rotRB',num2str(i)]);
     rbi2 = eval(['rotRB',num2str(i+1)]);
-    Ai = inv(rbi2)*rbi2;
+    Ai = inv(rbi2)*rbi1;
     
-    cbi1 = eval(['rotCBin',num2str(i)]);
-    cbi2 = eval(['rotCBin',num2str(i+1)]);
-    Bi = inv(cbi2)*cbi2;
+    cbi1 = eval(['rotCB',num2str(i)]);
+    cbi2 = eval(['rotCB',num2str(i+1)]);
+    Bi = cbi2*inv(cbi1);
     
     display( Ai * x_est -  x_est * Bi); 
 end
