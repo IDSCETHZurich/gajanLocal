@@ -21,7 +21,7 @@ CalibrationNode::CalibrationNode(ros::NodeHandle& n):
 	ROSNode.getParam ("handEyeCalibration/pattern_width", patternHeight);
 	ROSNode.getParam ("handEyeCalibration/pattern_height", patternWidth);
 
-	calibrationImageSubscriber = imageTransport.subscribe("/camera/image_color", 1, &CalibrationNode::imgCallback, this);
+	calibrationImageSubscriber = imageTransport.subscribe("/camera/image_rect", 1, &CalibrationNode::imgCallback, this);
 	robotPoseSubscriber = ROSNode.subscribe ("/msrCartPos", 1, &CalibrationNode::poseCallback, this);
 	cameraInfoSubscriber =ROSNode.subscribe ("/camera/camera_info", 1, &CalibrationNode::cameraInfoCallback, this);
 
@@ -89,8 +89,10 @@ void CalibrationNode::cameraInfoCallback (const sensor_msgs::CameraInfoConstPtr&
 
 
 	distortionCoefficients = cv::Mat(5, 1, CV_64F);
-	for(int i=0; i<3; i++)
-		distortionCoefficients.at<double>(i,1) = msg->D[i];
+//	for(int i=0; i<3; i++)
+//		distortionCoefficients.at<double>(i,1) = msg->D[i];
+	for(int i=0; i<5; i++)
+		distortionCoefficients.at<double>(i,1) = 0.0;
 
 	std::cout << "distortionCoefficients" << std::endl << distortionCoefficients << std::endl;
 	std::cout << "/camera/camera_info successfully read out!" << std::endl;
@@ -248,48 +250,6 @@ void CalibrationNode::performEstimation(){
 	Matrix3f x_est = V * Lambda * V.inverse() * M.transpose();
 
 	std::cout << "x_est = [ " << x_est  << " ]; ";
-
-//	//Calculate the rotational part of X
-//	Matrix3f Ar1,Ar2,Br1,Br2;
-//	Ar1 = rotationRB_vec[1].inverse()*rotationRB_vec[0];
-//	Ar2 = rotationRB_vec[2].inverse()*rotationRB_vec[1];
-//	Br1 = rotationCB_vec[1].inverse()*rotationCB_vec[0];
-//	Br2 = rotationCB_vec[2].inverse()*rotationCB_vec[1];
-//
-//#if ESTIMATION_DEBUG
-//	std::cout << "Ar1" << std::endl << Ar1 << std::endl;
-//	std::cout << "Ar2" << std::endl << Ar2 << std::endl;
-//	std::cout << "Br1" << std::endl << Br1 << std::endl;
-//	std::cout << "Br2" << std::endl << Br2 << std::endl;
-//#endif
-//
-//	Vector3f alpha1, alpha2, beta1, beta2;
-//	alpha1 = getLogTheta(Ar1);
-//	alpha2 = getLogTheta(Ar2);
-//	beta1 = getLogTheta(Br1);
-//	beta2 = getLogTheta(Br2);
-//
-//#if ESTIMATION_DEBUG
-//	std::cout << "alpha1" << std::endl << alpha1 << std::endl;
-//	std::cout << "alpha2" << std::endl << alpha2 << std::endl;
-//	std::cout << "beta1" << std::endl << beta1 << std::endl;
-//	std::cout << "beta2" << std::endl << beta2 << std::endl;
-//#endif
-//
-//	Matrix3f Astylish, Bstylish;
-//	Astylish << alpha1, alpha2, alpha1.cross(alpha2);
-//	Bstylish << beta1, beta2, beta1.cross(beta2);
-//
-//#if ESTIMATION_DEBUG
-//	std::cout << "Astylish" << std::endl << Astylish << std::endl;
-//	std::cout << "Bstylish" << std::endl << Bstylish << std::endl;
-//#endif
-//
-//	Matrix3f Xr_est = Astylish*Bstylish.inverse();
-//	std::cout << "Xr_est" << std::endl << Xr_est << std::endl;
-//
-//	//calculate the translational part of X
-//	return;
 
 }
 
