@@ -2,6 +2,7 @@
 
 % import data into matlab
 dataset10
+numberOfData = 10;
 
 M = zeros(3,3);
 C = [];
@@ -10,8 +11,9 @@ bB = [];
 
 numberOfSamples = 0;
 
-for i = 1:9
-%    for j=(i+1):10
+for i = 1:numberOfData
+    for j=1:numberOfdata
+        if (i ~= j)
         numberOfSamples = numberOfSamples + 1;
 
         j = i+1;
