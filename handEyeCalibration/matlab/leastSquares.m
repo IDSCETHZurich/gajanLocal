@@ -1,8 +1,8 @@
 % LS solution
 
 % import data into matlab
-dataset10
-numberOfData = 10;
+dataset20
+numberOfData = 20;
 
 M = zeros(3,3);
 C = [];
@@ -12,17 +12,17 @@ bB = [];
 numberOfSamples = 0;
 
 for i = 1:numberOfData
-    for j=1:numberOfdata
+    for j=1:numberOfData
         if (i ~= j)
         numberOfSamples = numberOfSamples + 1;
 
-        j = i+1;
+        %j = i+1;
         rbi1 = [eval(['rotRB',num2str(i)])  eval(['transRB',num2str(i)]); 0 0 0 1];
-        rbi2 = [eval(['rotRB',num2str(i+1)])  eval(['transRB',num2str(j)]); 0 0 0 1];
+        rbi2 = [eval(['rotRB',num2str(j)])  eval(['transRB',num2str(j)]); 0 0 0 1];
         Bi = inv(rbi2)*rbi1;
 
         cbi1 = [eval(['rotCB',num2str(i)])  eval(['transCB',num2str(i)]); 0 0 0 1];
-        cbi2 = [eval(['rotCB',num2str(i+1)])  eval(['transCB',num2str(j)]); 0 0 0 1];
+        cbi2 = [eval(['rotCB',num2str(j)])  eval(['transCB',num2str(j)]); 0 0 0 1];
         Ai = cbi2*inv(cbi1);
         
         alpha = getLogTheta(Ai(1:3,1:3));
@@ -32,7 +32,8 @@ for i = 1:numberOfData
         C = [C; eye(3) - Ai(1:3,1:3)];
         bA = [bA; Ai(1:3,4)];
         bB = [bB; Bi(1:3,4)];
-%    end
+        end; 
+    end
 end
 
 [V,D] = eig(M'*M);
