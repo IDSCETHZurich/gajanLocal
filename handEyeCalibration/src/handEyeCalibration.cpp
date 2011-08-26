@@ -226,16 +226,59 @@ void CalibrationNode::performEstimation(){
 	}
 
 	//perform least squares estimation
-	Matrix3f Ai, Bi, M;
-	M.setZero();
+	Matrix3f M;
+	Matrix4f rbi, rbj, cbi, cbj;
+	Matrix4f A, B;
+
+	Matrix3f I;
+	I.setIdentity();
+
+	MatrixXf C(0,3), bA(3,0), bB(3,0);
+
 	Vector3f ai, bi;
-	for(int i=0; i < (int)rotationRB_vec.size()-1; i++){
-		Ai = rotationRB_vec[i+1].inverse() * rotationRB_vec[i];
-		Bi = rotationCB_vec[i+1] * rotationCB_vec[i].inverse();
-		ai = getLogTheta(Ai);
-		bi = getLogTheta(Bi);
-		M += bi*ai.transpose();
-	}//end of for(.. i < rotationRB_vec.size()-1; ..)
+
+	M.setZero();
+
+	for(int i=0; i < (int)rotationRB_vec.size(); i++){
+		for(int j=0; j < (int)rotationRB_vec.size(); j++){
+			if(i!=j){
+				rbi << rotationRB_vec[i] , translationRB_vec[i] ,  0, 0, 0, 1;
+				rbj << rotationRB_vec[j] , translationRB_vec[j] ,  0, 0, 0, 1;
+				B = rbj.inverse()*rbi;
+
+				cbi << rotationCB_vec[i] , translationCB_vec[i] ,  0, 0, 0, 1;
+				cbj << rotationCB_vec[j] , translationCB_vec[j] ,  0, 0, 0, 1;
+				A = cbj*cbi.inverse();
+
+				ai = getLogTheta(A.block(0,0,3,3));
+				bi = getLogTheta(B.block(0,0,3,3));
+
+#if ESTIMATION_DEBUG
+				std::cout << "A = [ " << A << " ]; ";
+				std::cout << "B = [ " << B << " ]; ";
+#endif
+				M += bi*ai.transpose();
+
+				C.resize(C.rows()+3, NoChange);
+				C.block(C.rows()-3, 0,3,3) =  Matrix3f::Identity() - A.block(0,0,3,3);
+
+				bA.resize(bA.rows()+3, NoChange);
+				bA.block(bA.rows()-3,0,3,1) = A.block(0,4,3,1);
+
+				bB.resize(bB.rows()+3, NoChange);
+				bB.block(bB.rows()-3,0,3,1) = B.block(0,4,3,1);
+//		        C = [C; eye(3) - Ai(1:3,1:3)];
+//		        bA = [bA; Ai(1:3,4)];
+//		        bB = [bB; Bi(1:3,4)];
+
+#if ESTIMATION_DEBUG
+				std::cout << "C = [ " << C << " ]; ";
+				std::cout << "bA = [ " << bA << " ]; ";
+				std::cout << "bB = [ " << bB << " ]; ";
+#endif
+			}//end of if i!=j
+		}
+	}//end of for(.. i < rotationRB_vec.size(); ..)
 
 #if ESTIMATION_DEBUG
 	std::cout << "M = [ " << M << " ]; ";
@@ -244,6 +287,9 @@ void CalibrationNode::performEstimation(){
 	EigenSolver<Matrix3f> es(M);
 	Matrix3f D = es.eigenvalues().real().asDiagonal();
 	Matrix3f V = es.eigenvectors().real();
+
+	std::cout << "D = " << D << endl;
+	std::cout << "V = " << V << endl;
 
 	Matrix3f Lambda = D.inverse().array().sqrt();
 
@@ -254,18 +300,12 @@ void CalibrationNode::performEstimation(){
 }
 
 Vector3f CalibrationNode::getLogTheta(Matrix3f R){
-//	theta =  acos((trace(R)-1)/2);
-//	logTheta = 0.5*theta/sin(theta)*(R-R');
-//	result = [logTheta(3,2);logTheta(1,3);logTheta(2,1)];
 
 	//Assumption R is never an Identity
 	float theta = acos((R.trace()-1)/2);
 	Matrix3f logTheta = 0.5*theta/sin(theta)*(R-R.transpose());
 	return Vector3f(logTheta(2,1), logTheta(0,2), logTheta(1,0));
 
-//	AngleAxis<float> aa;
-//	aa.fromRotationMatrix(R);
-//	return aa.axis()*aa.angle();
 }
 
 
@@ -281,4 +321,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
