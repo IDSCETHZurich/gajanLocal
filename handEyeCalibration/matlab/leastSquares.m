@@ -1,8 +1,12 @@
 % LS solution
+clear; clc;
+numberOfData = 20;
 
 % import data into matlab
 dataset20
-numberOfData = 20;
+
+% generateRandomData
+%generateData(numberOfData);
 
 M = zeros(3,3);
 C = [];
@@ -19,11 +23,11 @@ for i = 1:numberOfData
         %j = i+1;
         rbi1 = [eval(['rotRB',num2str(i)])  eval(['transRB',num2str(i)]); 0 0 0 1];
         rbi2 = [eval(['rotRB',num2str(j)])  eval(['transRB',num2str(j)]); 0 0 0 1];
-        Bi = inv(rbi2)*rbi1;
+        Ai = inv(rbi2)*rbi1;
 
         cbi1 = [eval(['rotCB',num2str(i)])  eval(['transCB',num2str(i)]); 0 0 0 1];
         cbi2 = [eval(['rotCB',num2str(j)])  eval(['transCB',num2str(j)]); 0 0 0 1];
-        Ai = cbi2*inv(cbi1);
+        Bi = cbi2*inv(cbi1);
         
         alpha = getLogTheta(Ai(1:3,1:3));
         beta = getLogTheta(Bi(1:3, 1:3));
