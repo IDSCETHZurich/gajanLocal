@@ -11,7 +11,6 @@ Xt = randn(3,1); Xt = Xt / norm(Xt);
 Br1 = inv(Xr)*Ar1*Xr;
 Br2 = inv(Xr)*Ar2*Xr;
 
-
 %Generate random rotational matrices At, Bt
 At1 = randn(3,1); At1 = At1 / norm(At1);
 At2 = randn(3,1); At2 = At2 / norm(At2);
@@ -21,7 +20,6 @@ Bt2 = inv(Xr)*(Ar2*Xt -Xt + At2);
 
 % [Ar1 At1; 0 0 0 1]*[Xr Xt; 0 0 0 1] - [Xr Xt; 0 0 0 1]*[Br1 Bt1; 0 0 0 1]
 % [Ar2 At2; 0 0 0 1]*[Xr Xt; 0 0 0 1] - [Xr Xt; 0 0 0 1]*[Br2 Bt2; 0 0 0 1]
-
 
 Alpha1 = getLogTheta(Ar1);
 Alpha2 = getLogTheta(Ar2);
@@ -37,7 +35,6 @@ Xr_est = Astylish*inv(Bstylish);
 display(Xr - Xr_est);
 
 end
-
 
 function [result]=crossProduct(V1,V2)
 %CROSS_PRODUCT calculates the cross product of two vectors.

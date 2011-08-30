@@ -76,6 +76,7 @@ public:
 	static void mouseCallback (int, int, int, int, void*);
 
 	int storeData ();
+	bool generateData ();
 	void performEstimation();
 
 	//math

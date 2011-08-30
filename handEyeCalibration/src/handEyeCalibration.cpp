@@ -297,6 +297,20 @@ void CalibrationNode::performEstimation(){
 
 }
 
+bool generateData(){
+	int numberOfSamples = 10;
+	Matrix3f offset_R, checkBoard_R;
+	Vector3f offset_T, checkBoard_T;
+
+	offset_R << 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+	offset_T << 0.0, 0.17, 0.0;
+
+	checkBoard_R = Matrix3f::Identity();
+	checkBoard_T << 1.0, 1.0, 1.0;
+
+}
+
+
 Vector3f CalibrationNode::getLogTheta(Matrix3f R){
 
 	//Assumption R is never an Identity
@@ -315,7 +329,9 @@ int main(int argc, char **argv)
 
 	CalibrationNode CalibrationObject (n); // start the ball detector node with the node handle n
 
-	ros::spin();
+	CalibrationObject.genrateData();
+
+	//ros::spin();
 
 	return 0;
 }
