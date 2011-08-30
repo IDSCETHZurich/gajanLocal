@@ -220,7 +220,7 @@ int CalibrationNode::storeData ()
 }
 
 void CalibrationNode::performEstimation(){
-	if(rotationRB_vec.size() < 5 ){
+	if(rotationRB_vec.size() < 3 ){
 		std::cout << "Insufficient data" << std::endl;
 		return;
 	}
@@ -262,19 +262,17 @@ void CalibrationNode::performEstimation(){
 				C.resize(C.rows()+3, NoChange);
 				C.block(C.rows()-3, 0,3,3) =  Matrix3f::Identity() - A.block(0,0,3,3);
 
-				bA.resize(bA.rows()+3, NoChange);
-				bA.block(bA.rows()-3,0,3,1) = A.block(0,4,3,1);
+//				bA.resize(bA.rows()+3, NoChange);
+//				bA.block(bA.rows()-3,0,3,1) = A.block(0,4,3,1);
+//
+//				bB.resize(bB.rows()+3, NoChange);
+//				bB.block(bB.rows()-3,0,3,1) = B.block(0,4,3,1);
 
-				bB.resize(bB.rows()+3, NoChange);
-				bB.block(bB.rows()-3,0,3,1) = B.block(0,4,3,1);
-//		        C = [C; eye(3) - Ai(1:3,1:3)];
-//		        bA = [bA; Ai(1:3,4)];
-//		        bB = [bB; Bi(1:3,4)];
 
 #if ESTIMATION_DEBUG
 				std::cout << "C = [ " << C << " ]; ";
-				std::cout << "bA = [ " << bA << " ]; ";
-				std::cout << "bB = [ " << bB << " ]; ";
+//				std::cout << "bA = [ " << bA << " ]; ";
+//				std::cout << "bB = [ " << bB << " ]; ";
 #endif
 			}//end of if i!=j
 		}
@@ -293,9 +291,9 @@ void CalibrationNode::performEstimation(){
 
 	Matrix3f Lambda = D.inverse().array().sqrt();
 
-	Matrix3f x_est = V * Lambda * V.inverse() * M.transpose();
+	//Matrix3f x_est = V * Lambda * V.inverse() * M.transpose();
 
-	std::cout << "x_est = [ " << x_est  << " ]; ";
+	//std::cout << "x_est = [ " << x_est  << " ]; ";
 
 }
 
