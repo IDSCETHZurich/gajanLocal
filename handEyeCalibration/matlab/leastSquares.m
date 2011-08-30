@@ -1,6 +1,6 @@
 % LS solution
 clear; clc;
-numberOfData = 20;
+numberOfData = 3;
 
 % import data into matlab
 dataset20cpp
@@ -36,7 +36,7 @@ for i = 1:numberOfData
         C = [C; eye(3) - Ai(1:3,1:3)];
         bA = [bA; Ai(1:3,4)];
         bB = [bB; Bi(1:3,4)];
-        end; 
+        end;
     end
 end
 display(M);

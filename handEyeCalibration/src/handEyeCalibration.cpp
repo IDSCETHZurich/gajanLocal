@@ -233,9 +233,12 @@ void CalibrationNode::performEstimation(){
 	Matrix3f I;
 	I.setIdentity();
 
-	MatrixXf C(0,3), bA(3,0), bB(3,0);
+	MatrixXf C(0,3), bA(0,1), bB(0,1);
 
 	Vector3f ai, bi;
+
+	VectorXf V_tmp;
+	MatrixXf C_tmp;
 
 	M.setZero();
 
@@ -255,21 +258,18 @@ void CalibrationNode::performEstimation(){
 
 				M += bi*ai.transpose();
 
+				MatrixXf C_tmp = C;
 				C.resize(C.rows()+3, NoChange);
-				C.block(C.rows()-3, 0,3,3) =  Matrix3f::Identity() - A.block(0,0,3,3);
+				C << C_tmp,  Matrix3f::Identity() - A.block(0,0,3,3);
 
-//				bA.resize(bA.rows()+3, NoChange);
-//				bA.block(bA.rows()-3,0,3,1) = A.block(0,4,3,1);
-//
-//				bB.resize(bB.rows()+3, NoChange);
-//				bB.block(bB.rows()-3,0,3,1) = B.block(0,4,3,1);
+				V_tmp = bA;
+				bA.resize(bA.rows()+3, NoChange);
+				bA << V_tmp, A.block(0,3,3,1);
 
+				V_tmp = bB;
+				bB.resize(bB.rows()+3, NoChange);
+				bB << V_tmp, B.block(0,3,3,1);
 
-#if 0
-				std::cout << "C = [ " << C << " ]; ";
-//				std::cout << "bA = [ " << bA << " ]; ";
-//				std::cout << "bB = [ " << bB << " ]; ";
-#endif
 			}//end of if i!=j
 		}
 	}//end of for(.. i < rotationRB_vec.size(); ..)
@@ -282,16 +282,20 @@ void CalibrationNode::performEstimation(){
 	Matrix3cf D = es.eigenvalues().asDiagonal();
 	Matrix3cf V = es.eigenvectors();
 
-	std::cout << "D = [ " << D << " ];" << endl;
-	std::cout << "V = [ " << V << " ];" << endl;
-
+	//std::cout << "D = [ " << D << " ];" << endl;
+	//std::cout << "V = [ " << V << " ];" << endl;
 	Matrix3cf Lambda = D.inverse().array().sqrt();
-
-	std::cout << "Lambda = [ " << Lambda  << " ]; " << endl;
-
+	//std::cout << "Lambda = [ " << Lambda  << " ]; " << endl;
 	Matrix3cf x_est = V * Lambda * V.inverse() * M.transpose();
-
 	std::cout << "x_est = [ " << x_est.real()  << " ]; " << endl;
+
+	//Estimating translational offset
+	for(int i=0; i < bB.rows()/3; i++){
+		bB.block(i*3,0,3,1) = x_est.real()*bB.block(i*3,0,3,1);
+	}
+	bA = bA - bB; // this is d. saving memory
+	cout << "bX = [ " << (C.transpose()*C).inverse() * C.transpose() * bA << " ]; " << endl;
+
 }
 
 bool CalibrationNode::generateData(){
