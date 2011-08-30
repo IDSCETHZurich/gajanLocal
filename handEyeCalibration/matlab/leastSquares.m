@@ -3,7 +3,7 @@ clear; clc;
 numberOfData = 20;
 
 % import data into matlab
-dataset20
+dataset20cpp
 
 % generateRandomData
 %generateData(numberOfData);
@@ -39,8 +39,10 @@ for i = 1:numberOfData
         end; 
     end
 end
-
-[V,D] = eig(M'*M);
+display(M);
+[V,D] = eig(M'*M); 
+display(V);
+display(D);
 Lambda = diag([sqrt(1/D(1,1)),sqrt(1/D(2,2)), sqrt(1/D(3,3))]);
 
 x_est = V * Lambda * inv(V) * M';

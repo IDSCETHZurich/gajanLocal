@@ -244,19 +244,15 @@ void CalibrationNode::performEstimation(){
 			if(i!=j){
 				rbi << rotationRB_vec[i] , translationRB_vec[i] ,  0, 0, 0, 1;
 				rbj << rotationRB_vec[j] , translationRB_vec[j] ,  0, 0, 0, 1;
-				B = rbj.inverse()*rbi;
+				A = rbj.inverse()*rbi;
 
 				cbi << rotationCB_vec[i] , translationCB_vec[i] ,  0, 0, 0, 1;
 				cbj << rotationCB_vec[j] , translationCB_vec[j] ,  0, 0, 0, 1;
-				A = cbj*cbi.inverse();
+				B = cbj*cbi.inverse();
 
 				ai = getLogTheta(A.block(0,0,3,3));
 				bi = getLogTheta(B.block(0,0,3,3));
 
-#if ESTIMATION_DEBUG
-				std::cout << "A = [ " << A << " ]; ";
-				std::cout << "B = [ " << B << " ]; ";
-#endif
 				M += bi*ai.transpose();
 
 				C.resize(C.rows()+3, NoChange);
@@ -269,7 +265,7 @@ void CalibrationNode::performEstimation(){
 //				bB.block(bB.rows()-3,0,3,1) = B.block(0,4,3,1);
 
 
-#if ESTIMATION_DEBUG
+#if 0
 				std::cout << "C = [ " << C << " ]; ";
 //				std::cout << "bA = [ " << bA << " ]; ";
 //				std::cout << "bB = [ " << bB << " ]; ";
@@ -279,34 +275,67 @@ void CalibrationNode::performEstimation(){
 	}//end of for(.. i < rotationRB_vec.size(); ..)
 
 #if ESTIMATION_DEBUG
-	std::cout << "M = [ " << M << " ]; ";
+	std::cout << "M = [ " << M << " ]; " << endl;
 #endif
 
-	EigenSolver<Matrix3f> es(M);
-	Matrix3f D = es.eigenvalues().real().asDiagonal();
-	Matrix3f V = es.eigenvectors().real();
+	EigenSolver<Matrix3f> es(M.transpose()*M);
+	Matrix3cf D = es.eigenvalues().asDiagonal();
+	Matrix3cf V = es.eigenvectors();
 
-	std::cout << "D = " << D << endl;
-	std::cout << "V = " << V << endl;
+	std::cout << "D = [ " << D << " ];" << endl;
+	std::cout << "V = [ " << V << " ];" << endl;
 
-	Matrix3f Lambda = D.inverse().array().sqrt();
+	Matrix3cf Lambda = D.inverse().array().sqrt();
 
-	//Matrix3f x_est = V * Lambda * V.inverse() * M.transpose();
+	std::cout << "Lambda = [ " << Lambda  << " ]; " << endl;
 
-	//std::cout << "x_est = [ " << x_est  << " ]; ";
+	Matrix3cf x_est = V * Lambda * V.inverse() * M.transpose();
 
+	std::cout << "x_est = [ " << x_est.real()  << " ]; " << endl;
 }
 
-bool generateData(){
-	int numberOfSamples = 10;
+bool CalibrationNode::generateData(){
+	int numberOfSamples = 20;
 	Matrix3f offset_R, checkBoard_R;
 	Vector3f offset_T, checkBoard_T;
 
-	offset_R << 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0;
-	offset_T << 0.0, 0.17, 0.0;
+	offset_R << 0.0, -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+	offset_T << 0.17, 0.02, 0.03;
 
 	checkBoard_R = Matrix3f::Identity();
 	checkBoard_T << 1.0, 1.0, 1.0;
+
+	Matrix3f tmp_m3f;
+	Vector3f tmp_v3f;
+	Matrix4f A, B, C, D; // ABC=D
+
+	B << offset_R, offset_T, 0.0, 0.0, 0.0, 1.0;
+	D << checkBoard_R, checkBoard_T, 0.0, 0.0, 0.0, 1.0;
+
+
+	for(int i=1; i <= numberOfSamples; i++){
+		tmp_v3f = Vector3f::Random().normalized();
+		tmp_m3f = AngleAxisf((double(rand())/RAND_MAX), Vector3f::Random().normalized());
+
+		cout << "rotRB" << i << " = [ " << tmp_m3f << " ]; " << endl;
+		cout << "transRB" << i << " = [ " << tmp_v3f << " ]; " << endl;
+
+		A << tmp_m3f, tmp_v3f, 0.0, 0.0, 0.0, 1.0;
+		C = (A*B).inverse() * D;
+
+		cout << "rotCB" << i << " = [ " << C.block(0,0,3,3) << " ]; " << endl;
+		cout << "transCB" << i << " = [ " << C.block(0,3,3,1) << " ]; " << endl;
+
+		//pushing back data into vectors
+		rotationRB_vec.push_back(tmp_m3f);
+		translationRB_vec.push_back(tmp_v3f);
+		rotationCB_vec.push_back(C.block(0,0,3,3));
+		translationCB_vec.push_back(C.block(0,3,3,1));
+	}
+
+	cout << "Data size: " << rotationRB_vec.size() << endl;
+
+	return true;
 
 }
 
@@ -329,9 +358,13 @@ int main(int argc, char **argv)
 
 	CalibrationNode CalibrationObject (n); // start the ball detector node with the node handle n
 
-	CalibrationObject.genrateData();
+	CalibrationObject.generateData();
 
-	//ros::spin();
+	cout << endl << "-------------------" << endl ;
+
+	CalibrationObject.performEstimation();
+
+	ros::spin();
 
 	return 0;
 }
