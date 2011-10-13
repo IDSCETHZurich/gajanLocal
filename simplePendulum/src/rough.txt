@@ -1,0 +1,22 @@
+
+
+//    //Do canny edge detection
+//    cv::Canny(cv_ptr->image, cv_ptr->image, 40.0, 120.0, 3);
+//
+//    circles.clear();
+//    HoughCircles(cv_ptr->image, circles, CV_HOUGH_GRADIENT, 2, cv_ptr->image.rows/4, 200, 100, 0,  100 );
+
+
+
+//    std::cout << "# of circles found: " << circles.size() << std::endl;
+//
+//
+//    for( size_t i = 0; i < circles.size(); i++ )
+//	{
+//		 Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+//		 int radius = cvRound(circles[i][2]);
+//		 // draw the circle center
+//		 circle( cv_ptr->image, center, 3, Scalar(255,255,255));
+//		 // draw the circle outline
+//		 circle( cv_ptr->image, center, radius, Scalar(255,255,255));
+//	}

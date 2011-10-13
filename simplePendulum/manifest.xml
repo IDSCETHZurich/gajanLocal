@@ -9,11 +9,15 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/simplePendulum</url>
   <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
   <depend package="opencv2"/>
   <depend package="cv_bridge"/>
   <depend package="roscpp"/>
   <depend package="std_msgs"/>
   <depend package="image_transport"/>
+  <depend package="rtt"/>
+  <depend package="ocl"/>
+  <depend package="orocos_kdl"/>
 
 </package>
 
