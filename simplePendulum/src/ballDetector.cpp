@@ -4,10 +4,12 @@
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include "geometry_msgs/Point.h"
 
 namespace enc = sensor_msgs::image_encodings;
 
 using namespace cv;
+using namespace std;
 
 static const char WINDOW[] = "Image window";
 
@@ -17,14 +19,46 @@ class ImageConverter
   image_transport::ImageTransport it_;
   image_transport::Subscriber image_sub_;
   image_transport::Publisher image_pub_;
+  geometry_msgs::Point pendTip;
+
+  ros::Publisher pendTipPub;
+
   vector<Vec3f> circles;
+  cv::Moments tmp_moments;
   
+  //parameters needed to estimate the pendulumTip
+
+  //camera relative position
+  double ox, oy, oz, f, pSize, sWidth, sHeight, l;
+
+  //tmp variables
+  double px, py, t;
+  double a, b, c;
+
+
 public:
   ImageConverter()
     : it_(nh_)
   {
     image_pub_ = it_.advertise("/ballDetectorOut", 1);
+    pendTipPub = nh_.advertise<geometry_msgs::Point>("pendTip", 2, true);
+
     image_sub_ = it_.subscribe("/camera/image_rect", 1, &ImageConverter::imageCb, this);
+
+    ox = 0.0;
+    oy = -0.17;
+    oz = -0.03;
+
+    //focal lenght
+    f = 0.0047;
+
+    pSize = 9.9e-06;
+
+    sWidth = 659;
+    sHeight = 493;
+
+	//lenght of the pendulem
+    l = 0.95;
 
     cv::namedWindow(WINDOW);
   }
@@ -50,38 +84,41 @@ public:
     cv_ptr->image = ~(cv_ptr->image);
     cv::threshold(cv_ptr->image, cv_ptr->image, 180, 255, cv::THRESH_TOZERO);
 
-//    //perform erosion and dilation
-//    int type = cv::MORPH_CROSS;
-//    int size = 20;
-//    cv::Mat element = cv::getStructuringElement( type,cv::Size( 2*size + 1, 2*size+1 ), cv::Point( size, size ) );
-//    cv::erode(cv_ptr->image, cv_ptr->image,element);
-//    cv::dilate(cv_ptr->image, cv_ptr->image,element);
-
-//    //Do canny edge detection
-    cv::Canny(cv_ptr->image, cv_ptr->image, 40.0, 120.0, 3);
-//
-    circles.clear();
-    HoughCircles(cv_ptr->image, circles, CV_HOUGH_GRADIENT, 2, cv_ptr->image.rows/4, 200, 100, 0,  100 );
-
-
-
-    std::cout << "# of circles found: " << circles.size() << std::endl;
-
-
-    for( size_t i = 0; i < circles.size(); i++ )
-	{
-		 Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-		 int radius = cvRound(circles[i][2]);
-		 // draw the circle center
-		 circle( cv_ptr->image, center, 3, Scalar(255,255,255));
-		 // draw the circle outline
-		 circle( cv_ptr->image, center, radius, Scalar(255,255,255));
-	}
-
-
+    //perform erosion and dilation
+    int type = cv::MORPH_CROSS;
+    int size = 19;
+    cv::Mat element = cv::getStructuringElement( type,cv::Size( 2*size + 1, 2*size+1 ), cv::Point( size, size ) );
+    cv::erode(cv_ptr->image, cv_ptr->image,element);
+    cv::dilate(cv_ptr->image, cv_ptr->image,element);
 
     //cvMoments
+    tmp_moments = cv::moments( cv_ptr->image, 0 );
 
+    //process only if the ball is detected
+    if(tmp_moments.m00 > 0.0){
+		Point center(tmp_moments.m10/tmp_moments.m00, tmp_moments.m01/tmp_moments.m00);
+		circle( cv_ptr->image, center, 10, Scalar(255,255,255));
+
+		//calculate pendTip
+		px = pSize*(tmp_moments.m10/tmp_moments.m00 - sWidth/2);
+		py = pSize*(tmp_moments.m01/tmp_moments.m00 - sHeight/2);
+
+		a = px*px + py*py + f*f;
+		b = px*ox + py*oy + f*oz;
+		c = ox*ox + oy*oy + oz*oz - l*l;
+
+		t = (-b + sqrt(b*b - 4*a*c))/(2*a);
+
+		pendTip.x = ox + t * px;
+		pendTip.y = oy + t * py;
+		pendTip.z = 0.0; // since we care only about the projection;
+
+		//publish pendTip
+		pendTipPub.publish(pendTip);
+
+    }else{
+    	std::cout << "Could not find the ball" << std::endl;
+    }
 
     cv::imshow(WINDOW, cv_ptr->image);
     cv::waitKey(3);
