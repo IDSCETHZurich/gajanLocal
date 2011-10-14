@@ -56,6 +56,11 @@ namespace simplePendulum
         //temporary variables
         double xr, yr;
 
+        std::vector<double> s_t, s_tm1, u_t, u_tm1;
+        std::vector<double> gainLQR;
+        double dT;
+        double xr_dot, yr_dot;
+        double xr_tm1, yr_tm1;
 
     protected:
       RTT::InputPort< geometry_msgs::Point >   		pendProjPoint_inputPort;

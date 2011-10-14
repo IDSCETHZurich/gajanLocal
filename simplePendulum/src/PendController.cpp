@@ -23,6 +23,20 @@ namespace simplePendulum
     	Xr = 0.08;
     	Yr = 0.08;
 
+    	s_t = std::vector<double>(8, 0.0);
+    	s_tm1 = std::vector<double>(8, 0.0); //not used now
+    	double inputArr[] = { 10.7359,   34.3973,   -2.6273,   -1.2995, 10.7359,   34.3973,   -2.6273,   -1.2995};
+    	gainLQR = std::vector<double>(inputArr,inputArr+sizeof(inputArr)/sizeof(double));
+
+    	u_t = std::vector<double>(2, 0.0);
+    	u_tm1 = std::vector<double>(2, 0.0);//not used now
+    	dT = 0.02;
+
+    	xr_dot = 0.0;
+    	yr_dot = 0.0;
+
+    	xr_tm1 = 0.0;
+    	yr_tm1 = 0.0;
 
         //Creating TaskContext
         //Adding Ports
@@ -52,10 +66,27 @@ namespace simplePendulum
 
     void PendController::updateHook()
     {
+    	//controller (spits out xr, yr for the robot
+    	for(int i=0; i<4;i++){
+    		u_t[0] += gainLQR[i]*s_t[i];
+    	}
+    	for(int i=4; i<8;i++){
+			u_t[1] += gainLQR[i]*s_t[i];
+		}
+
+    	//updating position and velocity (order matters !)
+    	s_t[3] = s_t[3] + 0.5*s_t[2]*(s_t[2] + dT * u_t[0]); // xr
+    	s_t[2] = s_t[2] + dT * u_t[0] ; // xr_dot;
+
+    	s_t[7] = s_t[7] + 0.5*s_t[6]*(s_t[6] + dT * u_t[1]); // yr
+    	s_t[6] = s_t[6] + dT * u_t[1] ; // yr_dot;
+
+    	xr = s_t[3];
+    	yr = s_t[7];
 
     	//generate random xr, yr;
-        xr = -Xr + 2*Xr*(double)rand()/(double)RAND_MAX;
-        yr = -Yr + 2*Yr*(double)rand()/(double)RAND_MAX;
+        //xr = -Xr + 2*Xr*(double)rand()/(double)RAND_MAX;
+        //yr = -Yr + 2*Yr*(double)rand()/(double)RAND_MAX;
 
         if(abs(xr)>Xr || abs(yr)>Yr){
         	cout << "PendController::Commanded Value out of Range" << endl;
@@ -111,7 +142,22 @@ namespace simplePendulum
     	geometry_msgs::Point pendTipProj;
     	pendProjPoint_inputPort.read(pendTipProj);
 
-    	cout << "x = " << pendTipProj.x << endl << "y = " << pendTipProj.y << endl;
+    	//cout << "x = " << pendTipProj.x << endl << "y = " << pendTipProj.y << endl;
+
+    	s_t[0] = pendTipProj.x;
+    	s_t[4] = pendTipProj.y;
+
+
+    	xr_dot = (pendTipProj.x - xr_tm1)/dT;
+    	yr_dot = (pendTipProj.y - yr_tm1)/dT;
+
+    	s_t[2] = xr_dot;
+    	s_t[5] = yr_dot;
+
+    	xr_tm1 = pendTipProj.x;
+    	yr_tm1 = pendTipProj.y;
+
+    	//cout << "xr_dot = " << xr_dot << endl << "yr_dot = " << yr_dot << endl;
 
     	return true;
     }

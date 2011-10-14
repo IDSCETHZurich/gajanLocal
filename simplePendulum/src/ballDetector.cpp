@@ -20,8 +20,9 @@ class ImageConverter
   image_transport::Subscriber image_sub_;
   image_transport::Publisher image_pub_;
   geometry_msgs::Point pendTip;
-
+  geometry_msgs::Point pendTipFil;
   ros::Publisher pendTipPub;
+  ros::Publisher pendTipFilPub;
 
   vector<Vec3f> circles;
   cv::Moments tmp_moments;
@@ -35,6 +36,8 @@ class ImageConverter
   double px, py, t;
   double a, b, c;
 
+  std::vector<double> pos_km1, pos_km2, pos_km3, pos_km4, pos_km5;
+
 
 public:
   ImageConverter()
@@ -42,6 +45,7 @@ public:
   {
     image_pub_ = it_.advertise("/ballDetectorOut", 1);
     pendTipPub = nh_.advertise<geometry_msgs::Point>("pendTip", 2, true);
+    pendTipFilPub = nh_.advertise<geometry_msgs::Point>("pendTipFil", 2, true);
 
     image_sub_ = it_.subscribe("/camera/image_rect", 1, &ImageConverter::imageCb, this);
 
@@ -59,6 +63,12 @@ public:
 
 	//lenght of the pendulem
     l = 0.95;
+
+    pos_km1 = std::vector<double>(2,0.0);
+    pos_km2 = std::vector<double>(2,0.0);
+    pos_km3 = std::vector<double>(2,0.0);
+    pos_km4 = std::vector<double>(2,0.0);
+    pos_km5 = std::vector<double>(2,0.0);
 
     cv::namedWindow(WINDOW);
   }
@@ -85,8 +95,8 @@ public:
     cv::threshold(cv_ptr->image, cv_ptr->image, 180, 255, cv::THRESH_TOZERO);
 
     //perform erosion and dilation
-    int type = cv::MORPH_CROSS;
-    int size = 19;
+    int type = cv::MORPH_ELLIPSE;
+    int size = 17;
     cv::Mat element = cv::getStructuringElement( type,cv::Size( 2*size + 1, 2*size+1 ), cv::Point( size, size ) );
     cv::erode(cv_ptr->image, cv_ptr->image,element);
     cv::dilate(cv_ptr->image, cv_ptr->image,element);
@@ -116,10 +126,23 @@ public:
 		//publish pendTip
 		pendTipPub.publish(pendTip);
 
+
+		//do mean filtering
+		pendTipFil.x = (pendTip.x + pos_km1[0] + pos_km2[0] + pos_km3[0] + pos_km4[0] + pos_km5[0])/6;
+		pendTipFil.y = (pendTip.y + pos_km1[1] + pos_km2[1] + pos_km3[1] + pos_km4[1] + pos_km5[1])/6;
+		pendTipFil.z = 0.0;
+
+		//save old values
+		pos_km5 = pos_km4;
+		pos_km4 = pos_km3;
+		pos_km3 = pos_km2;
+		pos_km2 = pos_km1;
+		pos_km1[0] = pendTip.x; pos_km1[1] = pendTip.y;
+		pendTipFilPub.publish(pendTipFil);
+
     }else{
     	std::cout << "Could not find the ball" << std::endl;
     }
-
     cv::imshow(WINDOW, cv_ptr->image);
     cv::waitKey(3);
     
