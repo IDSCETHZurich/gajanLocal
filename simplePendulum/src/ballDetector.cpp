@@ -24,7 +24,7 @@ class ImageConverter
   ros::Publisher pendTipPub;
   ros::Publisher pendTipFilPub;
 
-  vector<Vec3f> circles;
+  cv::Mat element;
   cv::Moments tmp_moments;
   
   //parameters needed to estimate the pendulumTip
@@ -49,20 +49,26 @@ public:
 
     image_sub_ = it_.subscribe("/camera/image_rect", 1, &ImageConverter::imageCb, this);
 
+    int type = cv::MORPH_RECT;
+	int size = 9;
+	element = cv::getStructuringElement( type,cv::Size( 2*size + 1, 2*size+1 ), cv::Point( size, size ) );
+
     ox = 0.0;
     oy = -0.17;
-    oz = -0.03;
+    oz = -0.08;
 
-    //focal lenght
-    f = 0.0047;
+
 
     pSize = 9.9e-06;
+
+    //focal lenght
+    f = 504*pSize;
 
     sWidth = 659;
     sHeight = 493;
 
 	//lenght of the pendulem
-    l = 0.95;
+    l = 1.082;
 
     pos_km1 = std::vector<double>(2,0.0);
     pos_km2 = std::vector<double>(2,0.0);
@@ -95,12 +101,9 @@ public:
     cv::threshold(cv_ptr->image, cv_ptr->image, 180, 255, cv::THRESH_TOZERO);
 
     //perform erosion and dilation
-    int type = cv::MORPH_ELLIPSE;
-    int size = 17;
-    cv::Mat element = cv::getStructuringElement( type,cv::Size( 2*size + 1, 2*size+1 ), cv::Point( size, size ) );
+
     cv::erode(cv_ptr->image, cv_ptr->image,element);
     cv::dilate(cv_ptr->image, cv_ptr->image,element);
-
     //cvMoments
     tmp_moments = cv::moments( cv_ptr->image, 0 );
 
