@@ -16,11 +16,18 @@
   		<simple name="name_id" type="string"><value>joint_states</value></simple>
 	</struct>
 	
-	<struct name="ROSConPointIn" type="ConnPolicy">
+	<struct name="ROSConPosIn" type="ConnPolicy">
   		<simple name="type" type="short"><value>0</value></simple>
   		<simple name="size" type="short"><value>1</value></simple>
   		<simple name="transport" type="short"><value>3</value></simple>
-  		<simple name="name_id" type="string"><value>pendTipFil</value></simple>
+  		<simple name="name_id" type="string"><value>pendPosFromROS</value></simple>
+	</struct>
+	
+	<struct name="pendPosToROS" type="ConnPolicy">
+  		<simple name="type" type="short"><value>0</value></simple>
+  		<simple name="size" type="short"><value>1</value></simple>
+  		<simple name="transport" type="short"><value>3</value></simple>
+  		<simple name="name_id" type="string"><value>pendPosToROS</value></simple>
 	</struct>
 	
 	<struct name="kukaIKComponent" type="kuka_IK::kuka_IK">
@@ -61,7 +68,8 @@
 		<simple name="AutoStart" type="boolean"><value>1</value></simple>
 		<struct name="Ports" type="PropertyBag">
 				<simple name="pendPos_outputPort" type="string"><value>pendPos</value></simple>
-    			<simple name="PendProjPointInput" type="string"><value>ROSConPointIn</value></simple>
+    			<simple name="PendProjPointInput" type="string"><value>ROSConPosIn</value></simple>
+    			<simple name="pendPosToROS" type="string"><value>pendPosToROS</value></simple>
   		</struct>
 	</struct>
 	

@@ -14,6 +14,7 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Point.h>
 
+
 using namespace std;
 namespace simplePendulum
 {
@@ -32,11 +33,16 @@ namespace simplePendulum
 
     private:
         bool processPendProjPoint(RTT::base::PortInterface* portInterface);
+        bool butterWorthLowpass();
         geometry_msgs::Point pendPosFromROS;
+        geometry_msgs::Point pendPosBWFiltered;
+
+        std::vector<double> xr, xr_est, yr, yr_est;
 
 
     protected:
       RTT::InputPort<geometry_msgs::Point>   		pendProjPoint_inputPort;
+      RTT::OutputPort<geometry_msgs::Point>   		pendProjPoint_outputPort;
       RTT::OutputPort<std::vector<double> >			pendPos_outputPort;
 
   }; // class
