@@ -1,6 +1,8 @@
 #include "PendController.hpp"
 #include <ocl/Component.hpp>
-ORO_CREATE_COMPONENT(simplePendulum::PendController);
+ORO_CREATE_COMPONENT_TYPE();
+ORO_LIST_COMPONENT_TYPE(simplePendulum::PendController);
+//ORO_CREATE_COMPONENT(simplePendulum::PendController);
 
 using namespace std;
 
@@ -38,11 +40,10 @@ namespace simplePendulum
     	xr_tm1 = 0.0;
     	yr_tm1 = 0.0;
 
-        //Creating TaskContext
         //Adding Ports
-    	this->addEventPort("PendProjPointInput", pendProjPoint_inputPort,
-    			boost::bind(&PendController::processPendProjPoint, this, _1));
     	this->addPort("CartesianPoseOutput", m_position_desi);
+    	this->addPort("pendPos_inputPort", pendPos_inputPort);
+
     	this->addOperation("moveToInitialPose",&PendController::moveToInitialPose,this,OwnThread);
 
     }
@@ -136,29 +137,5 @@ namespace simplePendulum
 		m_position_desi.write(pose);
 
 		return true;
-    }
-
-    bool PendController::processPendProjPoint(RTT::base::PortInterface* portInterface){
-    	geometry_msgs::Point pendTipProj;
-    	pendProjPoint_inputPort.read(pendTipProj);
-
-    	//cout << "x = " << pendTipProj.x << endl << "y = " << pendTipProj.y << endl;
-
-    	s_t[0] = pendTipProj.x;
-    	s_t[4] = pendTipProj.y;
-
-
-    	xr_dot = (pendTipProj.x - xr_tm1)/dT;
-    	yr_dot = (pendTipProj.y - yr_tm1)/dT;
-
-    	s_t[2] = xr_dot;
-    	s_t[5] = yr_dot;
-
-    	xr_tm1 = pendTipProj.x;
-    	yr_tm1 = pendTipProj.y;
-
-    	//cout << "xr_dot = " << xr_dot << endl << "yr_dot = " << yr_dot << endl;
-
-    	return true;
     }
 }//namespace

@@ -47,6 +47,20 @@
 		<simple name="AutoStart" type="boolean"><value>0</value></simple>
 		<struct name="Ports" type="PropertyBag">
 				<simple name="CartesianPoseOutput" type="string"><value>pendCont2KukaIK</value></simple>
+    			<simple name="pendPos_inputPort" type="string"><value>pendPos</value></simple>
+  		</struct>
+	</struct>
+	
+	<struct name="pendFilter" type="simplePendulum::PendFilter">
+		<struct name="Activity" type="PeriodicActivity">
+			<simple name="Period" type="double"><value>0.02</value></simple>
+			<simple name="Priority" type="short"><value>1</value></simple>
+    			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  		</struct>
+		<simple name="AutoConf" type="boolean"><value>1</value></simple>
+		<simple name="AutoStart" type="boolean"><value>1</value></simple>
+		<struct name="Ports" type="PropertyBag">
+				<simple name="pendPos_outputPort" type="string"><value>pendPos</value></simple>
     			<simple name="PendProjPointInput" type="string"><value>ROSConPointIn</value></simple>
   		</struct>
 	</struct>

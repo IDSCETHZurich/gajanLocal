@@ -17,11 +17,11 @@
 using namespace std;
 namespace simplePendulum
 {
-    class PendController : public RTT::TaskContext
+    class PendFilter : public RTT::TaskContext
     {
     public:
-    	PendController(std::string name);
-        virtual ~PendController();
+    	PendFilter(std::string name);
+        virtual ~PendFilter();
 
         virtual bool configureHook();
         virtual bool startHook();
@@ -29,24 +29,15 @@ namespace simplePendulum
         virtual void stopHook();
         virtual void cleanupHook();
 
-        bool moveToInitialPose();
 
     private:
-        double originX, originY, originZ;
-        double Xr, Yr;
+        bool processPendProjPoint(RTT::base::PortInterface* portInterface);
+        geometry_msgs::Point pendPosFromROS;
 
-        //temporary variables
-        double xr, yr;
-
-        std::vector<double> s_t, s_tm1, u_t, u_tm1;
-        std::vector<double> gainLQR;
-        double dT;
-        double xr_dot, yr_dot;
-        double xr_tm1, yr_tm1;
 
     protected:
-      RTT::InputPort<std::vector<double> >   		pendPos_inputPort;
-      RTT::OutputPort<geometry_msgs::Pose >			m_position_desi;
+      RTT::InputPort<geometry_msgs::Point>   		pendProjPoint_inputPort;
+      RTT::OutputPort<std::vector<double> >			pendPos_outputPort;
 
   }; // class
 }//namespace
