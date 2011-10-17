@@ -14,6 +14,12 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Point.h>
 
+#include "PendFilter.hpp"
+
+//Butterworth
+#define NZEROS 4
+#define NPOLES 4
+
 using namespace std;
 namespace simplePendulum
 {
@@ -34,6 +40,7 @@ namespace simplePendulum
     private:
         double originX, originY, originZ;
         double Xr, Yr;
+        geometry_msgs::Point filteredPos;
 
         //temporary variables
         double xr, yr;
@@ -41,11 +48,11 @@ namespace simplePendulum
         std::vector<double> s_t, s_tm1, u_t, u_tm1;
         std::vector<double> gainLQR;
         double dT;
-        double xr_dot, yr_dot;
         double xr_tm1, yr_tm1;
+        std::vector<double> xrdot, xrdot_est, yrdot, yrdot_est;
 
     protected:
-      RTT::InputPort<std::vector<double> >   		pendPos_inputPort;
+      RTT::InputPort<geometry_msgs::Point >   		pendPos_inputPort;
       RTT::OutputPort<geometry_msgs::Pose >			m_position_desi;
 
   }; // class

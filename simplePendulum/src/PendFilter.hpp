@@ -29,21 +29,20 @@ namespace simplePendulum
         virtual void updateHook();
         virtual void stopHook();
         virtual void cleanupHook();
-
+        static double butterWorthLowpass(double, std::vector<double> &, std::vector<double> &);
 
     private:
-        bool processPendProjPoint(RTT::base::PortInterface* portInterface);
-        bool butterWorthLowpass();
+        /*bool processPendProjPoint(RTT::base::PortInterface* portInterface);*/
         geometry_msgs::Point pendPosFromROS;
         geometry_msgs::Point pendPosBWFiltered;
 
         std::vector<double> xr, xr_est, yr, yr_est;
+        double xr_tm1, yr_tm1;
 
 
     protected:
       RTT::InputPort<geometry_msgs::Point>   		pendProjPoint_inputPort;
       RTT::OutputPort<geometry_msgs::Point>   		pendProjPoint_outputPort;
-      RTT::OutputPort<std::vector<double> >			pendPos_outputPort;
 
   }; // class
 }//namespace

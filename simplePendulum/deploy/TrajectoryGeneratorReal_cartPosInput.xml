@@ -11,6 +11,20 @@
 	<simple name="Import" type="string"><value>kuka_IK</value></simple>
 	<simple name="Import" type="string"><value>simplePendulum</value></simple>
 	
+	<struct name="ROSConPosIn" type="ConnPolicy">
+  		<simple name="type" type="short"><value>0</value></simple>
+  		<simple name="size" type="short"><value>1</value></simple>
+  		<simple name="transport" type="short"><value>3</value></simple>
+  		<simple name="name_id" type="string"><value>pendPosFromROS</value></simple>
+	</struct>
+	
+	<struct name="pendPosToROS" type="ConnPolicy">
+  		<simple name="type" type="short"><value>0</value></simple>
+  		<simple name="size" type="short"><value>1</value></simple>
+  		<simple name="transport" type="short"><value>3</value></simple>
+  		<simple name="name_id" type="string"><value>pendPosToROS</value></simple>
+	</struct>
+	
 	<struct name="ROSConJntPosOut" type="ConnPolicy">
   		<simple name="type" type="short"><value>0</value></simple>
   		<simple name="size" type="short"><value>1</value></simple>
@@ -18,13 +32,35 @@
   		<simple name="name_id" type="string"><value>joint_states</value></simple>
 	</struct>
 	
-	<struct name="ROSConPosIn" type="ConnPolicy">
-  		<simple name="type" type="short"><value>0</value></simple>
-  		<simple name="size" type="short"><value>1</value></simple>
-  		<simple name="transport" type="short"><value>3</value></simple>
-  		<simple name="name_id" type="string"><value>pendPosFromROS</value></simple>
+	<struct name="pendControllerNoStart" type="simplePendulum::PendController">
+		<struct name="Activity" type="PeriodicActivity">
+			<simple name="Period" type="double"><value>0.05</value></simple><!-- 20 Hz -->
+			<simple name="Priority" type="short"><value>1</value></simple>
+    			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  		</struct>
+		<simple name="AutoConf" type="boolean"><value>1</value></simple>
+		<simple name="AutoStart" type="boolean"><value>0</value></simple>
+		<struct name="Ports" type="PropertyBag">
+				<simple name="CartesianPoseOutput" type="string"><value>pendCont2KukaIK</value></simple>
+    			<simple name="pendPos_inputPort" type="string"><value>pendPos</value></simple>
+  		</struct>
 	</struct>
-
+	
+	<struct name="pendFilter" type="simplePendulum::PendFilter">
+		<struct name="Activity" type="PeriodicActivity">
+			<simple name="Period" type="double"><value>0.011236</value></simple><!--89 Hz (camera frequency)-->
+			<simple name="Priority" type="short"><value>1</value></simple>
+    			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  		</struct>
+		<simple name="AutoConf" type="boolean"><value>1</value></simple>
+		<simple name="AutoStart" type="boolean"><value>1</value></simple>
+		<struct name="Ports" type="PropertyBag">
+    			<simple name="PendProjPointInput" type="string"><value>ROSConPosIn</value></simple>
+    			<simple name="pendPosFiltered" type="string"><value>pendPosToROS</value></simple>
+    			<simple name="pendPosFiltered" type="string"><value>pendPos</value></simple>
+  		</struct>
+	</struct>
+	
     <struct name="kukaIKComponent" type="kuka_IK::kuka_IK">
 		<struct name="Activity" type="NonPeriodicActivity">
 			<simple name="Priority" type="short"><value>1</value></simple>
@@ -39,38 +75,9 @@
     			<simple name="msrCartPosPort" type="string"><value>MsrCartPos</value></simple>
   		</struct>
 	</struct>
-
-	<struct name="pendControllerNoStart" type="simplePendulum::PendController">
-		<struct name="Activity" type="PeriodicActivity">
-			<simple name="Period" type="double"><value>0.02</value></simple>
-			<simple name="Priority" type="short"><value>1</value></simple>
-    			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
-  		</struct>
-		<simple name="AutoConf" type="boolean"><value>1</value></simple>
-		<simple name="AutoStart" type="boolean"><value>0</value></simple>
-		<struct name="Ports" type="PropertyBag">
-				<simple name="CartesianPoseOutput" type="string"><value>pendCont2KukaIK</value></simple>
-    			<simple name="pendPos_inputPort" type="string"><value>pendPos</value></simple>
-  		</struct>
-	</struct>
-	
-	<struct name="pendFilter" type="simplePendulum::PendFilter">
-		<struct name="Activity" type="PeriodicActivity">
-			<simple name="Period" type="double"><value>0.02</value></simple>
-			<simple name="Priority" type="short"><value>1</value></simple>
-    			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
-  		</struct>
-		<simple name="AutoConf" type="boolean"><value>1</value></simple>
-		<simple name="AutoStart" type="boolean"><value>1</value></simple>
-		<struct name="Ports" type="PropertyBag">
-				<simple name="pendPos_outputPort" type="string"><value>pendPos</value></simple>
-    			<simple name="PendProjPointInput" type="string"><value>ROSConPosIn</value></simple>
-  		</struct>
-	</struct>
 	
 	<struct name="trajectoryGenerator" type="trajectory_generator::TrajectoryGenerator">
-		<struct name="Activity" type="PeriodicActivity">
-			<simple name="Period" type="double"><value>0.01</value></simple>
+		<struct name="Activity" type="NonPeriodicActivity">
 			<simple name="Priority" type="short"><value>1</value></simple>
     			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
   		</struct>

@@ -14,7 +14,7 @@ Dc = 0;
 %% Descretize the sub-system
 
 %Sampling time
-Ts = 20/1000; % 20 ms
+Ts = 1/20; % 20 Hz control
 
 sys = ss(Ac,Bc,Cc,Dc);
 sysd = c2d(sys,Ts);
@@ -28,3 +28,6 @@ Q = diag([1,2,1,2]);
 R = 1;
 
 [K,~,~] = dlqr(Ad, Bd, Q, R, zeros(4,1));
+
+
+

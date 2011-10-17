@@ -20,9 +20,8 @@ class ImageConverter
   image_transport::Subscriber image_sub_;
   image_transport::Publisher image_pub_;
   geometry_msgs::Point pendTip;
-  geometry_msgs::Point pendTipFil;
   ros::Publisher pendTipPub;
-  ros::Publisher pendTipFilPub;
+
 
   cv::Mat element;
   cv::Moments tmp_moments;
@@ -44,8 +43,7 @@ public:
     : it_(nh_)
   {
     image_pub_ = it_.advertise("/ballDetectorOut", 1);
-    pendTipPub = nh_.advertise<geometry_msgs::Point>("pendTip", 2, true);
-    pendTipFilPub = nh_.advertise<geometry_msgs::Point>("pendTipFil", 2, true);
+    pendTipPub = nh_.advertise<geometry_msgs::Point>("pendPosFromROS", 2, true);
 
     image_sub_ = it_.subscribe("/camera/image_rect", 1, &ImageConverter::imageCb, this);
 
@@ -53,11 +51,9 @@ public:
 	int size = 9;
 	element = cv::getStructuringElement( type,cv::Size( 2*size + 1, 2*size+1 ), cv::Point( size, size ) );
 
-    ox = 0.0;
-    oy = -0.17;
-    oz = -0.08;
-
-
+    ox = -0.019;
+    oy = -0.153;
+    oz = -0.05;
 
     pSize = 9.9e-06;
 
@@ -68,7 +64,7 @@ public:
     sHeight = 493;
 
 	//lenght of the pendulem
-    l = 1.082;
+    l = 0.97; // 1.082
 
     pos_km1 = std::vector<double>(2,0.0);
     pos_km2 = std::vector<double>(2,0.0);
@@ -128,20 +124,6 @@ public:
 
 		//publish pendTip
 		pendTipPub.publish(pendTip);
-
-
-		//do mean filtering
-		pendTipFil.x = (pendTip.x + pos_km1[0] + pos_km2[0] + pos_km3[0] + pos_km4[0] + pos_km5[0])/6;
-		pendTipFil.y = (pendTip.y + pos_km1[1] + pos_km2[1] + pos_km3[1] + pos_km4[1] + pos_km5[1])/6;
-		pendTipFil.z = 0.0;
-
-		//save old values
-		pos_km5 = pos_km4;
-		pos_km4 = pos_km3;
-		pos_km3 = pos_km2;
-		pos_km2 = pos_km1;
-		pos_km1[0] = pendTip.x; pos_km1[1] = pendTip.y;
-		pendTipFilPub.publish(pendTipFil);
 
     }else{
     	std::cout << "Could not find the ball" << std::endl;

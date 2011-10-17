@@ -46,7 +46,7 @@
 	
 	<struct name="pendControllerNoStart" type="simplePendulum::PendController">
 		<struct name="Activity" type="PeriodicActivity">
-			<simple name="Period" type="double"><value>0.02</value></simple>
+			<simple name="Period" type="double"><value>0.05</value></simple><!-- 20 Hz -->
 			<simple name="Priority" type="short"><value>1</value></simple>
     			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
   		</struct>
@@ -60,22 +60,22 @@
 	
 	<struct name="pendFilter" type="simplePendulum::PendFilter">
 		<struct name="Activity" type="PeriodicActivity">
-			<simple name="Period" type="double"><value>0.02</value></simple>
+			<simple name="Period" type="double"><value>0.011236</value></simple><!--89 Hz (camera frequency)-->
 			<simple name="Priority" type="short"><value>1</value></simple>
     			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
   		</struct>
 		<simple name="AutoConf" type="boolean"><value>1</value></simple>
 		<simple name="AutoStart" type="boolean"><value>1</value></simple>
 		<struct name="Ports" type="PropertyBag">
-				<simple name="pendPos_outputPort" type="string"><value>pendPos</value></simple>
     			<simple name="PendProjPointInput" type="string"><value>ROSConPosIn</value></simple>
-    			<simple name="pendPosToROS" type="string"><value>pendPosToROS</value></simple>
+    			<simple name="pendPosFiltered" type="string"><value>pendPosToROS</value></simple>
+    			<simple name="pendPosFiltered" type="string"><value>pendPos</value></simple>
   		</struct>
 	</struct>
 	
 	<struct name="trajectoryGenerator" type="trajectory_generator::TrajectoryGenerator">
 		<struct name="Activity" type="PeriodicActivity">
-			<simple name="Period" type="double"><value>0.01</value></simple>
+			<simple name="Period" type="double"><value>0.02</value></simple>
 			<simple name="Priority" type="short"><value>1</value></simple>
     			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
   		</struct>

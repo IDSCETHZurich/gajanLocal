@@ -1,0 +1,2 @@
+1. Not enough light may be one of the reasons for the camera giving out slow frames under auto-exposure setting 
+(Reference: http://answers.ros.org/question/2220/down-sample-camera-image-on-driver-or-image_proc)
