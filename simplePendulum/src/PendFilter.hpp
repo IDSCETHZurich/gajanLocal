@@ -35,14 +35,19 @@ namespace simplePendulum
         /*bool processPendProjPoint(RTT::base::PortInterface* portInterface);*/
         geometry_msgs::Point pendPosFromROS;
         geometry_msgs::Point pendPosBWFiltered;
+        geometry_msgs::Point pendVelBWFiltered;
 
+        double xp_old, yp_old;
         std::vector<double> xr, xr_est, yr, yr_est;
+        std::vector<double> xpdot, xpdot_est, ypdot, ypdot_est;
         double xr_tm1, yr_tm1;
+        double dT;
 
 
     protected:
       RTT::InputPort<geometry_msgs::Point>   		pendProjPoint_inputPort;
       RTT::OutputPort<geometry_msgs::Point>   		pendProjPoint_outputPort;
+      RTT::OutputPort<geometry_msgs::Point>   		pendProjVelocity_outputPort;
 
   }; // class
 }//namespace
