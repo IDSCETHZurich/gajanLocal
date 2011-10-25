@@ -76,7 +76,7 @@
     			<simple name="JointPositionDes" type="string"><value>JntPosIn</value></simple>
     			<simple name="JointPositionMsr" type="string"><value>MsrJointPosition2IK</value></simple>
     			<simple name="msrCartPosPort" type="string"><value>MsrCartPos</value></simple>
-    			<simple name="RobotStatePort" type="string"><value>RobotStateConn</value></simple>
+    			<simple name="RobotStatePort" type="string"><value>RobotDataConn</value></simple>
   		</struct>
 	</struct>
 	
@@ -110,7 +110,7 @@
 			<simple name="desJntPos" type="string"><value>DesJointPosition</value></simple>
 			<simple name="msrCartPos" type="string"> <value>MsrCartPos</value></simple>
 			<simple name="msrCartPos" type="string"> <value>robotPose</value></simple>
-			<simple name="RobotState" type="string"><value>RobotStateConn</value></simple>
+			<simple name="RobotData" type="string"><value>RobotDataConn</value></simple>
 		</struct>
 		<struct name="Peers" type="PropertyBag">
     			<simple type="string"><value>trajectoryGenerator</value></simple>

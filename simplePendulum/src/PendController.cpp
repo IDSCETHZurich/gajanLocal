@@ -75,14 +75,14 @@ namespace simplePendulum
 
     }
 
-/*    void PendController::updateHook()
+/*
+    void PendController::updateHook()
     {
     	robotPos_inputPort.read(poseCurrent);
     	s_t[2] = butterWorthLowpass((poseCurrent.position.x - originX - s_t[3])/dT, xrdot, xrdot_est);
     	s_t[6] = butterWorthLowpass((poseCurrent.position.y - originY - s_t[7])/dT, yrdot, yrdot_est);
 //    	s_t[2] = (poseCurrent.position.x - originX - s_t[3])/dT;
 //    	s_t[6] = (poseCurrent.position.y - originY - s_t[7])/dT;
-
     	s_t[3] = poseCurrent.position.x -  originX;
     	s_t[7] = poseCurrent.position.y -  originY;
 
@@ -133,8 +133,24 @@ namespace simplePendulum
 		pose.position.y = originY + yr;
 		pose.position.z = originZ;
 
-		m_position_desi.write(pose);
-    }*/
+		commandedState[0]=pose.position.x;
+		commandedState[1]=pose.position.y;
+		commandedState[2]=pose.position.z;
+		commandedState[3]=pose.orientation.x;
+		commandedState[4]=pose.orientation.y;
+		commandedState[5]=pose.orientation.z;
+		commandedState[6]=pose.orientation.w;
+
+		commandedState[7] = 0.0;
+		commandedState[8] = 0.0;
+		commandedState[9] = 0.0;
+		commandedState[10] = 0.0;
+		commandedState[11] = 0.0;
+		commandedState[12] = 0.0;
+
+		m_position_desi.write(commandedState);
+    }
+*/
 
     void PendController::updateHook()
     {
@@ -143,8 +159,11 @@ namespace simplePendulum
     	xr_msr = poseCurrent.position.x -  originX;
     	yr_msr = poseCurrent.position.y -  originY;
 
-    	xr_comm = 0.1*sin(3.14*t/2);
-    	yr_comm = 0.1 - 0.1*cos(3.14*t/2);
+    	xr_comm = 0.1*sin(3.14*t/8);
+    	yr_comm = 0.1*cos(3.14*t/8);
+    	xrdot_comm = (0.1*3.14/2)*cos(3.14*t/2);
+    	yrdot_comm = -(0.1*3.14/2)*sin(3.14*t/2);
+
     	t += dT;
 
     	stateLogger << xr_comm << " " << xr_msr << " " << yr_comm << " " << yr_msr  << endl;
@@ -170,13 +189,12 @@ namespace simplePendulum
     	commandedState[5]=pose.orientation.z;
     	commandedState[6]=pose.orientation.w;
 
-    	commandedState[7] = 0.0;
-    	commandedState[8] = 0.0;
+    	commandedState[7] = xrdot_comm;
+    	commandedState[8] = yrdot_comm;
     	commandedState[9] = 0.0;
     	commandedState[10] = 0.0;
     	commandedState[11] = 0.0;
     	commandedState[12] = 0.0;
-
 
 		m_position_desi.write(commandedState);
     }
@@ -192,6 +210,8 @@ namespace simplePendulum
 
     bool PendController::moveToInitialPose(){
 		geometry_msgs::Pose pose;
+
+		cout << "moveToInitialPose starting .. " << endl;
 
 		// Always point up
 		pose.orientation.x = 0.0;
@@ -219,6 +239,7 @@ namespace simplePendulum
     	commandedState[12] = 0.0;
 
 		m_position_desi.write(commandedState);
+		cout << "command sent to KUKA_IK" << endl;
 
 		return true;
     }

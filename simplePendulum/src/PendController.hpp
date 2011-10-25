@@ -59,7 +59,7 @@ namespace simplePendulum
         ofstream stateLogger;
 
         //debugging
-        double xr_comm, yr_comm, xr_msr, yr_msr, t;
+        double xr_comm, yr_comm, xrdot_comm, yrdot_comm, xr_msr, yr_msr, t;
         std::vector<double> commandedState;
 
     protected:
