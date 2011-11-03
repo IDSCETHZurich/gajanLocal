@@ -34,7 +34,8 @@
 	
 	<struct name="pendControllerNoStart" type="simplePendulum::PendController">
 		<struct name="Activity" type="PeriodicActivity">
-			<simple name="Period" type="double"><value>0.02</value></simple><!-- 50 Hz -->
+<!--			<simple name="Period" type="double"><value>0.02</value></simple><!-- 50 Hz -->
+			<simple name="Period" type="double"><value>0.02</value></simple><!-- 200	 Hz -->
 			<simple name="Priority" type="short"><value>1</value></simple>
     			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
   		</struct>

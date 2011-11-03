@@ -14,9 +14,10 @@ Dc = 0;
 
 
 Q = diag([100,200,1,2]);
-R = 0.001;
+R = 0.002;
 
 [Kc,~,~] = lqr(Ac, Bc, Q, R, zeros(4,1));
+display(Kc);
 
 
 %% Descretize the sub-system

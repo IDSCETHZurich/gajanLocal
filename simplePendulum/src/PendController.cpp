@@ -14,7 +14,7 @@ namespace simplePendulum
     using namespace std;
 
     const double PendController::gainLQR [] =
-    	{    -417.9433, -985.4614,  -97.1919,  -44.7214,  -417.9433, -985.4614,  -97.1919,  -44.7214};
+    	{ -296.4500, -700.8480,  -68.7694,  -31.6228,  -296.4500, -700.8480,  -68.7694,  -31.6228};
 
 
     PendController::PendController(string name)
@@ -75,7 +75,7 @@ namespace simplePendulum
 
     }
 
-/*
+
     void PendController::updateHook()
     {
     	robotPos_inputPort.read(poseCurrent);
@@ -141,8 +141,8 @@ namespace simplePendulum
 		commandedState[5]=pose.orientation.z;
 		commandedState[6]=pose.orientation.w;
 
-		commandedState[7] = 0.0;
-		commandedState[8] = 0.0;
+		commandedState[7] = s_t[2];
+		commandedState[8] = s_t[6];
 		commandedState[9] = 0.0;
 		commandedState[10] = 0.0;
 		commandedState[11] = 0.0;
@@ -150,8 +150,8 @@ namespace simplePendulum
 
 		m_position_desi.write(commandedState);
     }
-*/
 
+/*
     void PendController::updateHook()
     {
     	robotPos_inputPort.read(poseCurrent);
@@ -159,10 +159,10 @@ namespace simplePendulum
     	xr_msr = poseCurrent.position.x -  originX;
     	yr_msr = poseCurrent.position.y -  originY;
 
-    	xr_comm = 0.1*sin(3.14*t/8);
-    	yr_comm = 0.1*cos(3.14*t/8);
-    	xrdot_comm = (0.1*3.14/2)*cos(3.14*t/2);
-    	yrdot_comm = -(0.1*3.14/2)*sin(3.14*t/2);
+    	xr_comm = 0.1*sin(3.14*t);
+    	yr_comm = 0.1*cos(3.14*t);
+    	xrdot_comm = (0.1*3.14)*cos(3.14*t);
+    	yrdot_comm = -(0.1*3.14)*sin(3.14*t);
 
     	t += dT;
 
@@ -198,7 +198,7 @@ namespace simplePendulum
 
 		m_position_desi.write(commandedState);
     }
-
+*/
     void PendController::stopHook()
     {
     	stateLogger.close();
