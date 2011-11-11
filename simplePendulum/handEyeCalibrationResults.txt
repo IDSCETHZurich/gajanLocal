@@ -1,0 +1,8 @@
+Orientation of Camera Frame with respect to Robot tool-tip frame.
+Theta_X = [     0.99993  -0.0108014 -0.00476789
+  0.0109052    0.999692   0.0223059
+ 0.00452562  -0.0223564     0.99974 ]; 
+Translation of Camera Frame with respect to Robot tool-tip frame.
+bX = [ 0.00720369
+-0.168321
+0.0107222 ];

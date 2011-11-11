@@ -92,7 +92,8 @@ namespace simplePendulum
 		x_est[4] =   (x[0] + x[4]) + 4 * (x[1] + x[3]) + 6 * x[2]
 				+ ( -0.1508387651 * x_est[0]) + (  0.8784455006 * x_est[1])
 				+ ( -2.0129032148 * x_est[2]) + (  2.1708328750 * x_est[3]);
-		return x_est[4];
+		//return x_est[4];
+		return input;
     }
 
 /*    bool PendFilter::processPendProjPoint(RTT::base::PortInterface* portInterface){

@@ -14,7 +14,7 @@ namespace simplePendulum
     using namespace std;
 
     const double PendController::gainLQR [] =
-    	{ -296.4500, -700.8480,  -68.7694,  -31.6228,  -296.4500, -700.8480,  -68.7694,  -31.6228};
+    	{ -10.7359,  -34.3973,   -2.6273,   -1.2995,  -10.7359,  -34.3973,   -2.6273,   -1.2995};
 
 
     PendController::PendController(string name)
@@ -79,10 +79,10 @@ namespace simplePendulum
     void PendController::updateHook()
     {
     	robotPos_inputPort.read(poseCurrent);
-    	s_t[2] = butterWorthLowpass((poseCurrent.position.x - originX - s_t[3])/dT, xrdot, xrdot_est);
-    	s_t[6] = butterWorthLowpass((poseCurrent.position.y - originY - s_t[7])/dT, yrdot, yrdot_est);
-//    	s_t[2] = (poseCurrent.position.x - originX - s_t[3])/dT;
-//    	s_t[6] = (poseCurrent.position.y - originY - s_t[7])/dT;
+    	//s_t[2] = butterWorthLowpass((poseCurrent.position.x - originX - s_t[3])/dT, xrdot, xrdot_est);
+    	//s_t[6] = butterWorthLowpass((poseCurrent.position.y - originY - s_t[7])/dT, yrdot, yrdot_est);
+    	s_t[2] = (poseCurrent.position.x - originX - s_t[3])/dT;
+    	s_t[6] = (poseCurrent.position.y - originY - s_t[7])/dT;
     	s_t[3] = poseCurrent.position.x -  originX;
     	s_t[7] = poseCurrent.position.y -  originY;
 

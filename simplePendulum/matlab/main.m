@@ -8,7 +8,7 @@ Ac = [0 g/l 0 0;
    1 0 0 0;
    0 0 0 0;
    0 0 1 0];
-Bc = [-1; 0; 1; 0];
+Bc = [1; 0; -1; 0];
 Cc = [eye(4)];
 Dc = zeros(4,1);
 
@@ -41,10 +41,10 @@ Dd = sysd.d;
 display(Kd);
 x0 = [0 0.1 0 0]';
 x = [0, x0'];
-% for T=0:dT:4    
-%    u = - Kc*x0;
-%    [~,Y] = ode45(@pendDynamics,[0 dT],x0);
-%    [i, ~] = size(Y);
-%    x0 = Y(i,:)';
-%    x = [x; T, x0'];
-% end
+for T=0:dT:4    
+   u = - Kc*x0;
+   [~,Y] = ode45(@pendDynamics,[0 dT],x0);
+   [i, ~] = size(Y);
+   x0 = Y(i,:)';
+   x = [x; T, x0'];
+end

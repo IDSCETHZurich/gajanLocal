@@ -51,7 +51,7 @@
 	
 	<struct name="pendFilter" type="simplePendulum::PendFilter">
 		<struct name="Activity" type="PeriodicActivity">
-			<simple name="Period" type="double"><value>0.011236</value></simple><!--89 Hz (camera frequency)-->
+			<simple name="Period" type="double"><value>0.0114</value></simple><!--89 Hz (camera frequency)-->
 			<simple name="Priority" type="short"><value>1</value></simple>
     			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
   		</struct>

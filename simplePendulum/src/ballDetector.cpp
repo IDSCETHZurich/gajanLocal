@@ -51,9 +51,9 @@ public:
 	int size = 9;
 	element = cv::getStructuringElement( type,cv::Size( 2*size + 1, 2*size+1 ), cv::Point( size, size ) );
 
-    ox = -0.019;
-    oy = -0.153;
-    oz = -0.05;
+    ox =  0.007;
+    oy = -0.168;
+    oz =  0.011;
 
     pSize = 9.9e-06;
 
@@ -64,7 +64,7 @@ public:
     sHeight = 493;
 
 	//lenght of the pendulem
-    l = 0.97; // 1.082
+    l = 0.96;
 
     pos_km1 = std::vector<double>(2,0.0);
     pos_km2 = std::vector<double>(2,0.0);
