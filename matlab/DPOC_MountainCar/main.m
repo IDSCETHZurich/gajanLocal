@@ -1,5 +1,5 @@
 clc; clear;
-global dir g
+global g
 g = 9.81;
 
 %%continuous time 
@@ -28,11 +28,11 @@ v_step = (v_max - v_min)/dSteps;
 for i=0+dT:dT:7.5
     Td = [Td; i];
     % calculate input
-    dir=2;
+    u=2;
     if (x_old(1)<0)
-        dir = -2;
+        u = -2;
     end
-    x_new = dynamicsD(dT,x_old);
+    x_new = dynamicsD(dT,x_old,u);
     
     %discritization
      x_new(1) = floor(x_new(1)/v_step)*v_step;

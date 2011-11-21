@@ -10,20 +10,21 @@ x_max = pi+0.1;
 x_min = -x_max; 
 
 dSteps = 50;
+dT = 0.1;
 
 v_step = (v_max - v_min)/dSteps; 
 x_step = (x_max - x_min)/dSteps; 
 
 J = zeros(dSteps+1, dSteps+1);
 
-iterationSteps = 200;
+iterationSteps = 300;
 for k=1:iterationSteps
     for i =2:(dSteps)
         for j = 2:dSteps %Border Js are zeros. No need to iterate
             currentX = [v_min + i*v_step; x_min + j*x_step];
             
-            nextX_pI = f(currentX,+2);
-            nextX_nI = f(currentX,-2);
+            nextX_pI = dynamicsD(dT,currentX,+2);
+            nextX_nI = dynamicsD(dT,currentX,-2);
                 
             JvipI = floor((nextX_pI(1)-v_min)/v_step)+1;
             JxipI = floor((nextX_pI(2)-x_min)/x_step)+1;
