@@ -4,7 +4,7 @@ function Xkp1 = dynamicsD(dT,Xk,uk)
     % uk: input along the road
     
     % Gravitational acceleration
-    global g
+    g = 9.81;
 
     vk = Xk(1);
     xk = Xk(2);
