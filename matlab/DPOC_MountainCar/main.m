@@ -8,7 +8,7 @@ initialState = [0; 0];
 [T,X,TE] = ode45(@dynamics, [0 100], initialState, options);
 
 %%Discrete time 
-dT = 0.01; 
+dT = 0.4; 
 Td = [0]; 
 Xd = initialState'; 
 x_old = initialState;
@@ -43,7 +43,7 @@ for i=0+dT:dT:7.5
     
 end
 
-
+plot(Td,Xd)
 % Value Iteration
 
 
