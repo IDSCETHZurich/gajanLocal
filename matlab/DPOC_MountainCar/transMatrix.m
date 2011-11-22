@@ -2,8 +2,8 @@ function pij  = transMatrix( u )
     global v_min x_min dSteps dT v_step x_step u_max
     
     % u contains elements 1=umax and 2=-umax
-    pij = zeros(dSteps^2+1, dSteps^2+1);
-    pij(dSteps^2+1, dSteps^2+1) = 1.0;
+    pij = zeros(dSteps^2, dSteps^2);
+    %pij(dSteps^2+1, dSteps^2+1) = 1.0;
     
     for i =1:dSteps
         for j = 1:dSteps 
@@ -33,8 +33,13 @@ function pij  = transMatrix( u )
             if (Jvi>dSteps) Jvi = dSteps; end 
             if (Jxi>dSteps) Jxi = dSteps; end
             
+            if (dSteps*(i-1) + j == dSteps*(Jvi-1)+Jxi) && (abs(nextX(2)) < pi)
+                display(['diagonal: ', num2str(dSteps*(i-1) + j)]);
+            end
+            
+            
             if abs(nextX(2)) >= pi
-                pij(dSteps*(i-1) + j, dSteps^2+1) = 1; % going to terminal states
+                %pij(dSteps*(i-1) + j, dSteps^2+1) = 1; % going to terminal states
             else
                 pij(dSteps*(i-1) + j, dSteps*(Jvi-1)+Jxi) = 1;
             end
@@ -42,5 +47,6 @@ function pij  = transMatrix( u )
 
         end % for i end
     end % for j end
+    display('done');
 end % function end
 
