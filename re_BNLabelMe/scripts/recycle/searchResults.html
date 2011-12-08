@@ -1,0 +1,2430 @@
+<head>
+<script type="text/javascript">
+var lastx;
+ var lasty;
+ var pts_x;
+ var pts_y;
+ var obj_names;
+ var bname = navigator.appName;
+ var curr_poly;
+ var wait_for_input;
+ var fname;
+ var curr_canvas;
+ var curr_canvas_fg;
+ var curr_canvas_fg_line = null;
+ var jg_fg;
+ var jg_bg;
+ var jg_fg_line;
+ var edit_popup_open;
+ var curr_tag = null;
+ var curr_tag_num;
+ var deleted;
+ var verified;
+ var jg_first_point;
+ var delete_popup_open = 0;
+ var anno_xml;
+ var num_orig_anno;
+ var anno_count = 0;
+ 
+ //var screen_width;
+ //var screen_height;
+ var image_width;
+ var image_height;
+ var image_width_orig;
+ var image_height_orig;
+ var im_ratio;
+ 
+ var line_thickness = 0;
+ var red_line_thickness = 2;
+ 
+ var curr_collection_name = 'LabelMe';
+ var curr_dir_name = null;
+ var curr_im_name = null;
+ 
+ var dir_elts;
+ 
+ var req_submit;
+ 
+ var global_count = 0;
+ 
+ var username = 'anonymous';
+ var username_flag = 0;
+ var datafile = 'DirLists/labelme.xml';
+ //var datafile = 'js/dirlist-ver2.xml';
+ var template_file = 'XMLTemplates/labelme.xml';
+ //var template_file = 'anno_template.xml';
+ var page_in_use = 0;
+ 
+ function GetMainDiv(left,top) {
+   return '<div id="myPopup" class="noprint" style="position: absolute;' +
+   ' z-index: 5000; left: '+ left +'px; top: '+ top +'px; ' +
+   'visibility: visible;" onmousedown="popupDraw(event);"'+
+   'oncontextmenu="return false">';
+ }
+ 
+ function GetNWImg() {
+   if(IsNetscape()) {
+     return '<img style="border: 0pt none; width: 25px; height: 25px; '+
+     'position: absolute; left: 0px; top: 0px; z-index: 0; '+
+     '-moz-user-select: none;" src="GoogleIcons/iw_nw.png" height="25"'+
+     'width="25">';
+   }
+   else if(IsMicrosoft()) {
+     return '<img style="border: 0pt none; width: 25px; height: 25px; '+
+     'position: absolute; left: 0px; top: 0px; z-index: 0; '+
+     '-moz-user-select: none;" src="GoogleIcons/iw_nw.gif" height="25"'+
+     'width="25">';
+   }
+ }
+ 
+ function GetNImg() {
+   return '<img style="border: 0pt none ; height: 25px; position:'+
+   'absolute; left: 25px; top: 0px; z-index: 0; -moz-user-select: none;'+
+   'width: 212px;" src="GoogleIcons/iw_n.png" height="25" width="640">';
+ }
+ 
+ function GetNEImg() {
+   if(IsNetscape()) {
+     return '<img style="border: 0pt none ; width: 25px;'+
+     'height: 25px; position: absolute; top: 0px; z-index: 0;'+
+     '-moz-user-select: none; left: 237px;"'+
+     'src="GoogleIcons/iw_ne.png" height="25" width="25">';
+   }
+   else if(IsMicrosoft()) {
+     return '<img style="border: 0pt none ; width: 25px;'+
+     'height: 25px; position: absolute; top: 0px; z-index: 0;'+
+     '-moz-user-select: none; left: 237px;"'+
+     'src="GoogleIcons/iw_ne.gif" height="25" width="25">';
+   }
+ }
+ 
+ function GetWImg() {
+   return '<img style="border: 0pt none ; width: 25px; position:'+
+   'absolute; left: 0px; top: 25px; z-index: 0; -moz-user-select: none;'+
+   'height: 92px;" src="GoogleIcons/iw_w.png" height="640" width="25">';
+ }
+ 
+ function GetCImg() {
+   return '<img style="border: 0pt none ; position:'+
+   'absolute; left: 25px; top: 25px; z-index: 0; -moz-user-select: none;'+
+   'width: 212px; height: 92px;" src="GoogleIcons/iw_c.png" height="640"'+
+   'width="640">';
+ }
+ 
+ function GetEImg() {
+   return '<img style="border: 0pt none ; width: 25px; position:'+
+   'absolute; top: 25px; z-index: 0; -moz-user-select: none; height: 92px;'+
+   'left: 237px;" src="GoogleIcons/iw_e.png" height="640" width="25">';
+ }
+ 
+ function GetSWImg() {
+   return '<img style="border: 0pt none ; width: 25px;'+
+   'height: 96px; position: absolute; left: 0px; z-index: 0;'+
+   '-moz-user-select: none; top: 117px;"'+
+   'src="GoogleIcons/iw_sw.png" height="96" width="25">';
+ 
+ }
+ 
+ function GetSLeftImg() {
+   return '<img style="border: 0pt none ; height: 96px; position:'+
+   'absolute; left: 25px; z-index: 0; -moz-user-select: none; width: 53px;'+
+   'top: 117px;" src="GoogleIcons/iw_s.png" height="96" width="640">';
+ }
+ 
+ function GetSTapImg() {
+   if(IsNetscape()) {
+     return '<img style="border: 0pt none ; width: 98px; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 0px;'+
+     'top: 117px;" src="GoogleIcons/iw_tap.png" height="96" width="98">';
+   }
+   else if(IsMicrosoft()) {
+     return '<img style="border: 0pt none ; width: 98px; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 0px;'+
+     'top: 117px;" src="GoogleIcons/iw_tap.gif" height="96" width="98">';
+   }
+ }
+ 
+ function GetSRightImg() {
+   if(IsNetscape()) {
+     return '<img style="border: 0pt none ; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 98px;'+
+     'width: 139px; top: 117px;" src="GoogleIcons/iw_s.png" height="96" width="640">';
+   }
+   else if(IsMicrosoft()) {
+     return '<img style="border: 0pt none ; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 98px;'+
+     'width: 139px; top: 117px;" src="GoogleIcons/iw_s.gif" height="96" width="640">';
+   }
+ }
+ 
+ //function GetSTapImg() {
+ //  return '<img style="border: 0pt none ; width: 98px; height: 96px;'+
+ //  'position: absolute; z-index: 0; -moz-user-select: none; left: 78px;'+
+ //  'top: 117px;" src="GoogleIcons/iw_tap.png" height="96" width="98">';
+ //}
+ 
+ //function GetSRightImg() {
+ //  return '<img style="border: 0pt none ; height: 96px;'+
+ //  'position: absolute; z-index: 0; -moz-user-select: none; left: 176px;'+
+ //  'width: 61px; top: 117px;" src="GoogleIcons/iw_s.png" height="96" width="640">';
+ //}
+ 
+ function GetSEImg() {
+   if(IsNetscape()) {
+     return '<img style="border: 0pt none ; width: 25px; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 237px;'+
+     'top: 117px;" src="GoogleIcons/iw_se.png" height="96" width="25">';
+   }
+   else if(IsMicrosoft()) {
+     return '<img style="border: 0pt none ; width: 25px; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 237px;'+
+     'top: 117px;" src="GoogleIcons/iw_se.gif" height="96" width="25">';
+   }
+ }
+ 
+ // **************************************************************
+ 
+ function GetTapImgUD() {
+   if(IsNetscape()) {
+     return '<img style="border: 0pt none ; width: 98px; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 0px;'+
+     'top: 0px;" src="GoogleIcons/iw_tap_ud.png" height="96" width="98">';
+   }
+   else if(IsMicrosoft()) {
+     return '<img style="border: 0pt none ; width: 98px; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 0px;'+
+     'top: 0px;" src="GoogleIcons/iw_tap_ud.gif" height="96" width="98">';
+   }
+ }
+ 
+ function GetNImgUD() {
+   if(IsNetscape()) {
+     return '<img style="border: 0pt none ; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 98px;'+
+     'width: 139px; top: 0px;" src="GoogleIcons/iw_n_ud.png" height="96" width="640">';
+   }
+   else if(IsMicrosoft()) {
+     return '<img style="border: 0pt none ; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 98px;'+
+     'width: 139px; top: 0px;" src="GoogleIcons/iw_n_ud.gif" height="96" width="640">';
+   }
+ }
+ 
+ function GetNEImgUD() {
+   if(IsNetscape()) {
+     return '<img style="border: 0pt none ; width: 25px; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 237px;'+
+     'top: 0px;" src="GoogleIcons/iw_ne_ud.png" height="96" width="25">';
+   }
+   else if(IsMicrosoft()) {
+     return '<img style="border: 0pt none ; width: 25px; height: 96px;'+
+     'position: absolute; z-index: 0; -moz-user-select: none; left: 237px;'+
+     'top: 0px;" src="GoogleIcons/iw_ne_ud.gif" height="96" width="25">';
+   }
+ }
+ 
+ function GetWImgUD() {
+   return '<img style="border: 0pt none ; width: 25px; position:'+
+   'absolute; left: 0px; top: 96px; z-index: 0; -moz-user-select: none;'+
+   'height: 92px;" src="GoogleIcons/iw_w.png" height="640" width="25">';
+ }
+ 
+ function GetCImgUD() {
+   return '<img style="border: 0pt none ; position:'+
+   'absolute; left: 25px; top: 96px; z-index: 0; -moz-user-select: none;'+
+   'width: 212px; height: 92px;" src="GoogleIcons/iw_c.png" height="640"'+
+   'width="640">';
+ }
+ 
+ function GetEImgUD() {
+   return '<img style="border: 0pt none ; width: 25px; position:'+
+   'absolute; top: 96px; z-index: 0; -moz-user-select: none; height: 92px;'+
+   'left: 237px;" src="GoogleIcons/iw_e.png" height="640" width="25">';
+ }
+ 
+ function GetSWImgUD() {
+   if(IsNetscape()) {
+     return '<img style="border: 0pt none; width: 25px; height: 25px; '+
+     'position: absolute; left: 0px; top: 188px; z-index: 0; '+
+     '-moz-user-select: none;" src="GoogleIcons/iw_sw_ud.png" height="25"'+
+     'width="25">';
+   }
+   else if(IsMicrosoft()) {
+     return '<img style="border: 0pt none; width: 25px; height: 25px; '+
+     'position: absolute; left: 0px; top: 188px; z-index: 0; '+
+     '-moz-user-select: none;" src="GoogleIcons/iw_sw_ud.gif" height="25"'+
+     'width="25">';
+   }
+ }
+ 
+ function GetSImgUD() {
+   return '<img style="border: 0pt none ; height: 25px; position:'+
+   'absolute; left: 25px; top: 188px; z-index: 0; -moz-user-select: none;'+
+   'width: 212px;" src="GoogleIcons/iw_s_ud.png" height="25" width="640">';
+ }
+ 
+ function GetSEImgUD() {
+   if(IsNetscape()) {
+     return '<img style="border: 0pt none ; width: 25px;'+
+     'height: 25px; position: absolute; top: 188px; z-index: 0;'+
+     '-moz-user-select: none; left: 237px;"'+
+     'src="GoogleIcons/iw_se_ud.png" height="25" width="25">';
+   }
+   else if(IsMicrosoft()) {
+     return '<img style="border: 0pt none ; width: 25px;'+
+     'height: 25px; position: absolute; top: 188px; z-index: 0;'+
+     '-moz-user-select: none; left: 237px;"'+
+     'src="GoogleIcons/iw_se_ud.gif" height="25" width="25">';
+   }
+ }
+ 
+ function GetPopupForm(ud) {
+   anno_count++;
+   WriteLogMsg('*What_is_this_object_query');
+   var top;
+   if(ud) top = 86;
+   else top = 15;
+   return '<div style="position: absolute; left: 15px;'+
+   'top: ' + top + 'px; z-index: 0; cursor: auto; width: 232px; height: 112px;'+
+   'visibility: visible;"><div><div style="padding-right: 8px; width: 14em;">'+
+   '<div id="objQuery" style="font-weight: bold; visibility: visible;">'+
+   'What is this object?<\/div><div style="margin-top: 20px; z-index: 0;">'+
+   '<form name="objForm'+ curr_poly +'" id="objForm'+ curr_poly +'" style="visibility: visible;" onsubmit="submit_label();">'+
+   '<input style="width: 16em;" name="objEnter'+ curr_poly +'" id="objEnter'+ curr_poly +'" type="text">'+
+   '<input id="obj_submit" value="Submit" type="submit"><\/form><a href="javascript:RemovePolygon();">Delete</a><\/div>'+
+   '<\/div><\/div><\/div><\/div>';
+ }
+ 
+ function GetEditPopupForm(ud) {
+   WriteLogMsg('*Editing_object');
+   var top;
+   if(ud) top = 86;
+   else top = 15;
+ 
+   curr_tag_num = parseInt(curr_tag.id.substr(8,curr_tag.id.indexOf("_")));
+ 
+   if(verified[curr_tag_num]) {
+     return '<div style="position: absolute; left: 15px;'+
+     'top: ' + top + 'px; z-index: 0; cursor: auto; width: 232px; height: 112px;'+
+     'visibility: visible;"><div><div style="padding-right: 8px; width: 14em;">'+
+     '<div id="objQuery" style="font-weight: bold; visibility: visible;">'+
+     'This annotation is already good enough.  You cannot change or delete this one.</div>'+
+     '<\/div><\/div><\/div><\/div>';
+   }
+ 
+   return '<div style="position: absolute; left: 15px;'+
+   'top: ' + top + 'px; z-index: 0; cursor: auto; width: 232px; height: 112px;'+
+   'visibility: visible;"><div><div style="padding-right: 8px; width: 14em;">'+
+   '<div id="objQuery" style="font-weight: bold; visibility: visible;">'+
+   'Edit/delete object<\/div><div style="margin-top: 20px; z-index: 0;">'+
+ //  'Edit/delete object: ' + obj_names[curr_tag_num] + '<\/div><div style="margin-top: 20px; z-index: 0;">'+
+ //  '<form name="objForm'+ curr_poly +'" id="objForm'+ curr_poly +'" style="visibility: visible;">'+
+   '<form name="objForm'+ curr_tag_num +'" id="objForm'+ curr_tag_num +'" style="visibility: visible;" onsubmit="submit_edit_label();">'+
+   '<input style="width: 16em;" name="objEnter'+ curr_tag_num +'" id="objEnter'+ curr_tag_num +'" type="text" '+
+   'value="' + obj_names[curr_tag_num] + '">'+
+   '<input id="obj_submit" value="Submit" type="submit"><\/form>'+
+ //  '<input id="obj_submit" value="Submit" type="button" onclick="submit_edit_label();"><\/form>'+
+   '<a href="javascript:RemovePolygon();">Delete</a><\/div>'+
+   '<\/div><\/div><\/div><\/div>';
+ }
+ 
+ function GetDeletePopupForm(ud) {
+   var top;
+   if(ud) top = 86;
+   else top = 15;
+   curr_tag_num = parseInt(curr_tag.id.substr(8,curr_tag.id.indexOf("_")));
+   return '<div style="position: absolute; left: 15px;'+
+   'top: ' + top + 'px; z-index: 0; cursor: auto; width: 232px; height: 112px;'+
+   'visibility: visible;"><div><div style="padding-right: 8px; width: 14em;">'+
+   '<div id="objQuery" style="font-weight: bold; visibility: visible;">'+
+   'Delete object?<\/div><div style="margin-top: 20px; z-index: 0;">'+
+   '<a href="javascript:deleteEvent();">Delete</a><\/div>'+
+   '<\/div><\/div><\/div><\/div>';
+ }
+ 
+ function GetCloseImg(ud) {
+   var top;
+   if(ud) top = 81;
+   else top = 10;
+ 
+   return '<img style="border: 0pt none ; width: 14px; height: 13px; z-index: 4; '+
+   '-moz-user-select: none; position: absolute; cursor: pointer; left: '+
+   '237px; top: ' + top + 'px;" src="GoogleIcons/close.gif" '+
+   'height="13" width="14" onclick="CloseEditPopup()">';
+ }
+ 
+ function GetDeleteCloseImg(ud) {
+   var top;
+   if(ud) top = 81;
+   else top = 10;
+   return '<img style="border: 0pt none ; width: 14px; height: 13px; z-index: 4; '+
+   '-moz-user-select: none; position: absolute; cursor: pointer; left: '+
+   '237px; top: ' + top + 'px;" src="GoogleIcons/close.gif" '+
+   'height="13" width="14" onclick="CloseDeletePopup()">';
+ }
+ 
+ function mkBubbleHTML(left,top,bubble_type) {
+   var ud = 1;
+   var html_str;
+   if(top >= 213) {
+     top -= 213;
+     ud = 0;
+   }
+ 
+   if(ud) {
+     html_str = GetMainDiv(left,top) + GetTapImgUD() + GetNImgUD() +
+       GetNEImgUD() + GetWImgUD() + GetCImgUD() + GetEImgUD() + 
+       GetSWImgUD() + GetSImgUD() + GetSEImgUD();
+   }
+   else {
+     html_str = GetMainDiv(left,top) + GetNWImg() + GetNImg() +
+       GetNEImg() + GetWImg() + GetCImg() + GetEImg() + 
+       GetSTapImg() + GetSRightImg() + GetSEImg();
+   }
+   if(bubble_type.indexOf('regular')>=0) html_str += GetPopupForm(ud);
+   else if(bubble_type.indexOf('edit')>=0) 
+     html_str += GetCloseImg(ud) + GetEditPopupForm(ud);
+   else if(bubble_type.indexOf('delete')>=0)
+     html_str += GetDeleteCloseImg(ud) + GetDeletePopupForm(ud)
+   return html_str;
+ }
+ 
+ function mkPopup(left,top) {
+   if(username_flag) submit_username();
+   wait_for_input = 1;
+ 
+   var html_str = mkBubbleHTML(left,top,'regular');
+   InsertAfterDiv(html_str,'myCanvas');
+   setTimeout("document.getElementById('objEnter'+curr_poly).focus()",500);
+ //  document.getElementById('objEnter'+curr_poly).focus();
+ }
+ 
+ function mkEditPopup(tag,event,left,top) {
+   if(username_flag) submit_username();
+   if(lastx!=-1) return;
+   if(edit_popup_open) return;
+   edit_popup_open = 1;
+ //  curr_tag = tag;  // PERHAPS WE NEED THIS...
+   var elt;
+ 
+   if(event) {
+     if(IsNetscape()) {
+       elt = event.target;
+     }
+     else if(IsMicrosoft()) {
+       elt = event.srcElement;
+     }
+     else {
+       alert("Sorry, this browser type not yet supported.");
+     }
+ 
+     var x = elt.style.left;
+     var y = elt.style.top;
+ //    var x = getComputedStyle(elt,'').getPropertyValue('left');
+ //    var y = getComputedStyle(elt,'').getPropertyValue('top');
+    
+     left = parseInt(x.substr(0,x.indexOf("px")));
+     top = parseInt(y.substr(0,y.indexOf("px")));
+   }
+ 
+   var html_str = mkBubbleHTML(left,top,'edit');
+   InsertAfterDiv(html_str,'myCanvas');
+   if(!verified[curr_tag_num]) document.getElementById('objEnter'+curr_tag_num).focus();
+ }
+ 
+ function mkDeletePopup(tag,event) {
+   if(username_flag) submit_username();
+   if(delete_popup_open || wait_for_input) return;
+   delete_popup_open = 1;
+   var elt;
+   if (bname.indexOf("Netscape")!=-1) {
+     elt = event.target;
+   }
+   else if (bname.indexOf("Microsoft")!=-1) {
+     elt = event.srcElement;
+   }
+   else {
+     alert("Sorry, this browser type not yet supported.");
+   }
+ 
+   var x = elt.style.left;
+   var y = elt.style.top;
+ //  var x = getComputedStyle(elt,'').getPropertyValue('left');
+ //  var y = getComputedStyle(elt,'').getPropertyValue('top');
+   var left = parseInt(x.substr(0,x.indexOf("px")));
+   var top = parseInt(y.substr(0,y.indexOf("px")));
+ 
+   var html_str = mkBubbleHTML(left,top,'delete');
+ //  left -= 78;
+ //  top -= 117+96;
+ 
+ //  var html_str = GetMainDiv(left,top) + GetNWImg() + GetNImg() +
+ //    GetNEImg() + GetWImg() + GetCImg() + GetEImg() + GetSWImg() +
+ //    GetSLeftImg() + GetSTapImg() + GetSRightImg() + GetSEImg() + 
+ //    GetDeleteCloseImg() + GetDeletePopupForm();
+ 
+   InsertAfterDiv(html_str,'myCanvas');
+ }
+ 
+ function submit_edit_label() {
+   submission_edited = 1;
+   old_name = obj_names[curr_tag_num];
+   obj_names[curr_tag_num] = document.getElementById('objForm'+curr_tag_num).elements[0].value;
+   new_name = obj_names[curr_tag_num];
+   CloseEditPopup();
+   RemoveAnnotationList();
+   LoadAnnotationList();
+   ChangeLinkColorFG(curr_tag_num);
+   SubmitAnnotations();
+ }
+ 
+ function RemovePolygonLines() {
+   var p = document.getElementById(curr_canvas_fg_line);
+   p.parentNode.removeChild(p);
+   curr_canvas_fg_line = null;
+ }
+ 
+ function RemoveSpecialChars(str) {
+   var re = /\$|@|#|~|`|\%|\*|\^|\&|\+|\=|\[|\]|\}|\{|\;|\:|\'|\"|\<|\>|\?|\||\\|\!|\$/g;
+   return str.replace(re,"_");
+ }
+ 
+ function submit_label() {
+   lastx = -1;
+   lasty = -1;
+ 
+   document.getElementById(curr_canvas_fg).style.cursor = "pointer";
+   document.getElementById(curr_canvas_fg_line).style.cursor = "pointer";
+ 
+   document.getElementById(curr_canvas_fg).onmousedown = function(event) {mkEditPopup(this,event);};
+   document.getElementById(curr_canvas_fg_line).onmousedown = function(event) {mkEditPopup(this,event);};
+   
+   wait_for_input = 0;
+   var name_tmp = document.getElementById('objForm'+curr_poly).elements[0].value;
+   obj_names.push(RemoveSpecialChars(name_tmp));
+   var p = document.getElementById('myPopup');
+   p.parentNode.removeChild(p);
+ 
+   RemoveAnnotationList();
+   LoadAnnotationList();
+   ChangeLinkColorFG(GetCanvasNumber(curr_canvas_fg));
+ 
+   submission_edited = 0;
+   old_name = obj_names[curr_poly];
+   new_name = obj_names[curr_poly];
+ 
+   curr_poly++;
+   global_count++;
+ 
+   curr_tag = document.getElementById(curr_canvas_fg);
+   curr_canvas = 'myCanvas' + curr_poly;
+   curr_canvas_fg = curr_canvas + '_fg';
+ 
+   SubmitAnnotations();
+ //  anno_count++;
+   UpdateCounterHTML();
+ }
+ 
+ function close_polygon() {
+   if((lastx!=-1) && (pts_x[curr_poly].length>2)) {
+ //    jg.setColor("#ff0000"); // red
+ //    jg.drawLine(lastx,lasty,pts_x[curr_poly][0],pts_y[curr_poly][0]);
+ //    jg.paint();
+ 
+ //    jg_fg[curr_poly].setColor("#ff0000"); // red
+ //    jg_fg[curr_poly].setStroke(red_line_thickness); // Line thickness
+ //    jg_fg[curr_poly].drawLine(lastx,lasty,pts_x[curr_poly][0],pts_y[curr_poly][0]);
+ //    jg_fg[curr_poly].paint();
+ 
+     jg_fg_line.setColor("#ff0000"); // red
+     jg_fg_line.setStroke(red_line_thickness); // Line thickness
+     jg_fg_line.drawLine(Math.floor(im_ratio*lastx),Math.floor(im_ratio*lasty),
+                         Math.floor(im_ratio*pts_x[curr_poly][0]),
+ 			Math.floor(im_ratio*pts_y[curr_poly][0]));
+     jg_fg_line.paint();
+ 
+     if(line_thickness>0) {
+     jg_bg[curr_poly].setColor("#0000ff"); // blue
+     jg_bg[curr_poly].setStroke(line_thickness); // Line thickness
+     jg_bg[curr_poly].drawLine(Math.floor(im_ratio*lastx),Math.floor(im_ratio*lasty),
+                               Math.floor(im_ratio*pts_x[curr_poly][0]),
+ 			      Math.floor(im_ratio*pts_y[curr_poly][0]));
+     jg_bg[curr_poly].paint();
+     }
+ 
+ //    mkPopup(pts_x[curr_poly][pts_x.length],pts_y[curr_poly][pts_x.length]);
+ 
+     RemoveFirstPoint();
+     mkPopup(Math.floor(im_ratio*pts_x[curr_poly][0]),Math.floor(im_ratio*pts_y[curr_poly][0]));
+ 
+ //    curr_poly++;
+ //    lastx = -1;
+ //    lasty = -1;
+     return 1;
+   }
+   if(lastx!=-1) {
+     alert("The current polygon must have at least 3 points.");
+     return 0;
+   }
+   return 0;
+ }
+ 
+ function RemoveFirstPoint() {
+   var p = document.getElementById('first_point'+curr_poly);
+   p.parentNode.removeChild(p);
+ }
+ 
+ function WaitForInput() {
+   alert("Need to enter object name.");
+ }
+ 
+ function FlipFGFront(tag) {
+   if(debug) {
+     if(curr_tag) foo.document.write('curr_tag: ' + curr_tag.id + '<br>'); // REMOVE THIS!!!!
+     foo.document.write('tag: ' + tag.id + '<br>'); // REMOVE THIS!!!!
+   }
+   if(lastx!=-1) return;
+   if(edit_popup_open) return;
+   if(curr_tag) {
+     if(curr_tag.id!=tag.id) {
+       FlipBGFront(curr_tag);
+       ChangeLinkColorBG(GetCanvasNumber(curr_tag.id));
+     }
+     else return;
+   }
+   var tag_id = tag.id;
+   var pp = tag;
+ 
+   curr_tag = tag;
+   ChangeLinkColorFG(GetCanvasNumber(tag_id));
+   if((tag_id.indexOf("bg")>=0) && (pp.style.visibility=="visible")) {
+     pp.style.visibility="hidden";
+     pp.previousSibling.style.visibility="visible";
+     AddLineCanvasDiv('pointer',1);
+     DrawLines(GetCanvasNumber(tag_id));
+   }
+   if((tag_id.indexOf("fg")>=0) && (pp.style.visibility=="hidden")) {
+     pp.nextSibling.style.visibility="hidden";
+     pp.style.visibility="visible";
+     AddLineCanvasDiv('pointer',1);
+     DrawLines(GetCanvasNumber(tag_id));
+   }
+ }
+ 
+ function GetCanvasNumber(tag_id) {
+   return parseInt(tag_id.substr(8,tag_id.indexOf("_")));
+ }
+ 
+ function DrawLines(idx) {
+   var ii;
+   jg_fg_line.setColor("#ff0000"); // red
+   jg_fg_line.setStroke(2); // Line thickness
+   for(ii=0; ii<pts_x[idx].length-1; ii++) {
+     jg_fg_line.drawLine(Math.floor(im_ratio*pts_x[idx][ii]),
+              Math.floor(im_ratio*pts_y[idx][ii]),
+ 	     Math.floor(im_ratio*pts_x[idx][ii+1]),
+ 	     Math.floor(im_ratio*pts_y[idx][ii+1]));
+   }
+   jg_fg_line.drawLine(Math.floor(im_ratio*pts_x[idx][ii]),
+            Math.floor(im_ratio*pts_y[idx][ii]),
+            Math.floor(im_ratio*pts_x[idx][0]),
+ 	   Math.floor(im_ratio*pts_y[idx][0]));
+ 
+ //  jg_fg_line.drawPolygon(pts_x[idx],pts_y[idx]);
+   jg_fg_line.paint();
+ }
+ 
+ function FlipBGFront(tag) {
+   if(edit_popup_open) return;
+   var tag_id = tag.id;
+   var pp = tag;
+ 
+   if((tag_id.indexOf("fg")>=0) && (pp.style.visibility=="visible")) {
+     pp.style.visibility="hidden";
+     pp.nextSibling.style.visibility="visible";
+     RemovePolygonLines();
+   }
+   if((tag_id.indexOf("bg")>=0) && (pp.style.visibility=="hidden")) {
+     pp.previousSibling.style.visibility="hidden";
+     pp.style.visibility="visible";
+     RemovePolygonLines();
+   }
+ }
+ 
+ function RemovePolygon() {
+   if(!curr_tag) return;
+ 
+ //  var idx = parseInt(curr_tag.id.substr(curr_tag.id.indexOf("s")+1,curr_tag.id.indexOf("_")));
+   var idx = parseInt(curr_tag.id.substr(8,curr_tag.id.indexOf("_")));
+ 
+   if((username=='anonymous')&&(idx < num_orig_anno)) {
+     alert('You do not have permission to delete this polygon');
+     return;
+   }
+ 
+   if(verified[idx]) return mkEditPopup(curr_tag,0,Math.floor(pts_x[idx][0]*im_ratio),Math.floor(pts_y[idx][0]*im_ratio));
+ 
+   deleted[idx] = 1;
+ 
+   var p = curr_tag;
+   var q;
+ //  var p = document.getElementById(curr_tag.id);
+ //  if(curr_tag.id.indexOf("fg")>0) 
+ //    q = document.getElementById(curr_tag.id.substr(0,curr_tag.id.indexOf("_fg"))+'_bg');
+ //  else
+ //    q = document.getElementById(curr_tag.id.substr(0,curr_tag.id.indexOf("_bg"))+'_fg');
+ 
+   if(curr_tag.id.indexOf("fg_line")>0) {
+     p = document.getElementById(curr_tag.id.substr(0,curr_tag.id.indexOf("_fg"))+'_fg');
+     q = document.getElementById(curr_tag.id.substr(0,curr_tag.id.indexOf("_fg"))+'_bg');
+   }
+   else if(curr_tag.id.indexOf("fg")>0)
+     q = document.getElementById(curr_tag.id.substr(0,curr_tag.id.indexOf("_fg"))+'_bg');
+   else
+     q = document.getElementById(curr_tag.id.substr(0,curr_tag.id.indexOf("_bg"))+'_fg');
+ 
+ //  alert(q);
+   p.parentNode.removeChild(p);
+   q.parentNode.removeChild(q);
+ 
+   if(curr_canvas_fg_line) RemovePolygonLines();
+ 
+   curr_tag = null;
+   if(edit_popup_open) CloseEditPopup();
+   if(wait_for_input) CloseQueryPopup();
+   if(delete_popup_open) CloseDeletePopup();
+   RemoveAnnotationList();
+   LoadAnnotationList();
+ 
+   submission_edited = 0;
+   old_name = obj_names[idx];
+   new_name = obj_names[idx];
+   WriteLogMsg('*Deleting_object');
+ 
+   SubmitAnnotations();
+   if((idx>=num_orig_anno) && (idx<curr_poly)) {
+     anno_count--;
+     UpdateCounterHTML();
+   }
+ }
+ 
+ function CloseQueryPopup() {
+   var p = document.getElementById('myPopup');
+   p.parentNode.removeChild(p);
+   wait_for_input = 0;
+   obj_names.push('');
+   curr_poly++;
+   lastx = -1;
+   lasty = -1;
+ }
+ 
+ function CloseEditPopup() {
+   WriteLogMsg('*Closed_Edit_Popup');
+   var p = document.getElementById('myPopup');
+   p.parentNode.removeChild(p);
+   edit_popup_open = 0;
+ //  if(curr_tag) FlipBGFront(curr_tag);
+ }
+ 
+ function CloseDeletePopup() {
+   var p = document.getElementById('myPopup');
+   p.parentNode.removeChild(p);
+   delete_popup_open = 0;
+ //  if(curr_tag) FlipBGFront(curr_tag);
+ }
+ 
+ function RemoveAnnotationList() {
+   var p = document.getElementById('anno_list');
+   p.parentNode.removeChild(p);
+ }
+ 
+ function RemoveIntroText() {
+   var p = document.getElementById('intro_text');
+   p.parentNode.removeChild(p);
+ }
+ 
+ function RemoveCounterText() {
+   var p = document.getElementById('counter_text');
+   if(p) p.parentNode.removeChild(p);
+ }
+ 
+ function RemoveBottomText() {
+   var p = document.getElementById('bottom_text');
+   p.parentNode.removeChild(p);
+ }
+ 
+ function RemoveNiceBorder() {
+   var p = document.getElementById('nice_border');
+   p.parentNode.removeChild(p);
+ }
+ 
+ function RemoveAnnoDownload() {
+   var p = document.getElementById('anno_download');
+   p.parentNode.removeChild(p);
+ }
+ 
+ function DrawHandleClick(tag,event) {
+   if(event.button>1) return close_polygon();
+   mkDeletePopup(tag,event);
+ }
+ 
+ function AddNewCanvasDiv() {
+   curr_canvas = 'myCanvas' + curr_poly;
+   curr_canvas_fg = curr_canvas + '_fg';
+ 
+   var html_str = '<div id="' + curr_canvas + '_fg" oncontextmenu="return false" '+
+     'onmouseover="FlipFGFront(this);" '+
+     'onmousedown="DrawHandleClick(this,event);" style="visibility:visible; cursor: pointer;"></div>';
+ 
+   InsertAfterDiv(html_str,'myCanvas');
+ 
+   html_str = '<div id="' + curr_canvas + '_bg" oncontextmenu="return false" '+
+     'onmouseover="FlipFGFront(this);" '+
+     'onclick="mkEditPopup(this,event);" style="visibility:hidden; cursor: pointer;"></div>';
+ 
+   InsertAfterDiv(html_str,'myCanvas');
+ 
+   jg_fg.push(new jsGraphics(curr_canvas + '_fg'));
+   jg_bg.push(new jsGraphics(curr_canvas + '_bg'));
+ 
+   curr_tag = document.getElementById(curr_canvas + '_fg');
+ 
+   AddLineCanvasDiv('pointer',0);
+ //  AddLineCanvasDiv('auto',0);
+ }
+ 
+ function AddLineCanvasDiv(cursor,onclick_edit) {
+   if(debug) foo.document.write('Inside AddLineCanvasDiv()...<br>');
+   var onclick;
+   if(onclick_edit) onclick = 'mkEditPopup(this,event);';
+   else onclick = 'DrawHandleClick(this,event);';
+ 
+   curr_canvas_fg_line = 'myCanvas'+parseInt(curr_tag.id.substr(8,curr_tag.id.indexOf('_')))+'_fg_line';
+   var html_str = '<div id="' + curr_canvas_fg_line + '" oncontextmenu="return false" '+
+     'onmousedown="'+ onclick + '" style="visibility:visible; '+
+     'cursor: ' + cursor + ';"></div>';
+ 
+   InsertAfterDiv(html_str,'myCanvas');
+   jg_fg_line = new jsGraphics(curr_canvas_fg_line);
+ }
+ 
+ function AddFirstPointDiv() {
+   var html_str = '<div id="first_point' + curr_poly + '" oncontextmenu="return false" '+
+     'onmousedown="mkDeletePopup(this,event);" style="z-index:5000;visibility:visible; cursor: pointer;"></div>';
+   InsertAfterDiv(html_str,'myCanvas');
+   jg_first_point = new jsGraphics('first_point'+curr_poly);
+ }
+ 
+ function myDrawLine(event) {
+   if(username_flag) submit_username();
+   if(wait_for_input) return WaitForInput();
+   if(edit_popup_open) return;
+   if(delete_popup_open) return;
+   if(event.button>1) return close_polygon();
+   if (bname.indexOf("Netscape")!=-1) {
+     x = event.layerX;
+     y = event.layerY;
+   }
+   else if (bname.indexOf("Microsoft")!=-1) {
+     x = event.offsetX;
+     y = event.offsetY;
+   }
+   else {
+     alert("Sorry, this browser type not yet supported.");
+   }
+ 
+   x = Math.floor(x/im_ratio);
+   y = Math.floor(y/im_ratio);
+ 
+   if(lastx==-1) {
+     if(curr_tag) {
+       FlipBGFront(curr_tag);
+     }
+ 
+     // INSERT CODE HERE:
+     WriteLogMsg('*start_polygon');
+     RemoveAnnotationList();
+     LoadAnnotationList();
+     AddNewCanvasDiv();
+     pts_x.push(Array());
+     pts_y.push(Array());
+     deleted.push(0);
+     verified.push(0);
+ 
+     AddFirstPointDiv();
+   }
+ 
+   pts_x[curr_poly].push(x);
+   pts_y[curr_poly].push(y);
+ 
+   jg_fg[curr_poly].setColor("#ffffff"); // white
+   jg_fg[curr_poly].setStroke(2); // Line thickness
+   jg_fg[curr_poly].fillRect(Math.floor(im_ratio*x)-5,Math.floor(im_ratio*y)-5,10,10);
+ //  jg_fg[curr_poly].fillRect(x-3,y-3,6,6);
+ //  jg_fg[curr_poly].drawEllipse(x-3,y-3,6,6);
+   jg_fg[curr_poly].paint();
+ 
+   jg_fg[curr_poly].setColor("#ff0000"); // red
+   jg_fg[curr_poly].setStroke(1); // Line thickness
+   jg_fg[curr_poly].fillRect(Math.floor(im_ratio*x)-3,Math.floor(im_ratio*y)-3,6,6);
+ //  jg_fg[curr_poly].fillEllipse(x-3,y-3,6,6);
+   jg_fg[curr_poly].paint();
+ 
+   if(lastx==-1) {
+     jg_first_point.setColor("#ffffff"); // white
+     jg_first_point.setStroke(2); // Line thickness
+     jg_first_point.fillRect(Math.floor(im_ratio*x)-5,Math.floor(im_ratio*y)-5,10,10);
+ //    jg_first_point.drawEllipse(x-3,y-3,6,6);
+     jg_first_point.paint();
+ 
+     jg_first_point.setColor("#00ff00"); // green
+     jg_first_point.setStroke(1); // Line thickness
+     jg_first_point.fillRect(Math.floor(im_ratio*x)-3,Math.floor(im_ratio*y)-3,6,6);
+ //    jg_first_point.fillEllipse(x-3,y-3,6,6);
+     jg_first_point.paint();
+   }
+ 
+   jg_bg[curr_poly].setColor("#ffffff"); // white
+   jg_bg[curr_poly].setStroke(1); // Line thickness
+   jg_bg[curr_poly].fillRect(Math.floor(im_ratio*x)-5,Math.floor(im_ratio*y)-5,10,10);
+ //  jg_bg[curr_poly].drawEllipse(x-3,y-3,6,6);
+   jg_bg[curr_poly].paint();
+ 
+   jg_bg[curr_poly].setColor("#0000ff"); // blue
+   jg_bg[curr_poly].setStroke(1); // Line thickness
+   jg_bg[curr_poly].fillRect(Math.floor(im_ratio*x)-3,Math.floor(im_ratio*y)-3,6,6);
+ //  jg_bg[curr_poly].fillEllipse(x-3,y-3,6,6);
+   jg_bg[curr_poly].paint();
+ 
+   if(lastx!=-1) {
+ //    jg.setColor("#ff0000"); // red
+ //    jg.drawLine(lastx,lasty,x,y);
+ //    jg.paint();
+ 
+ //    jg_fg[curr_poly].setColor("#ff0000"); // red
+ //    jg_fg[curr_poly].setStroke(red_line_thickness); // Line thickness
+ //    jg_fg[curr_poly].drawLine(lastx,lasty,x,y);
+ //    jg_fg[curr_poly].paint();
+ 
+     jg_fg_line.setColor("#ff0000"); // red
+     jg_fg_line.setStroke(red_line_thickness); // Line thickness
+     jg_fg_line.drawLine(Math.floor(im_ratio*lastx),Math.floor(im_ratio*lasty),
+                         Math.floor(im_ratio*x),Math.floor(im_ratio*y));
+     jg_fg_line.paint();
+ 
+     if(line_thickness>0) {
+     jg_bg[curr_poly].setColor("#0000ff"); // blue
+     jg_bg[curr_poly].setStroke(line_thickness); // Line thickness
+     jg_bg[curr_poly].drawLine(Math.floor(im_ratio*lastx),Math.floor(im_ratio*lasty),
+                               Math.floor(im_ratio*x),Math.floor(im_ratio*y));
+     jg_bg[curr_poly].paint();
+     }
+   }
+   lastx = x;
+   lasty = y;
+ 
+   if(pts_x[curr_poly].length==3) {
+     document.getElementById('first_point'+curr_poly).onmousedown = function() {close_polygon();};
+ //    document.getElementById('first_point'+curr_poly).onmouseover = function() {MakeBigFirstDiv();};
+     // FOODADDY...COME BACK TO HERE
+   }
+ }
+ 
+ function MakeBigFirstDiv() {
+ //  var html_str = '<div style="position:absolute;left:0;top:0;z-index:8001;background-color:green;width:2000;height:2000;"></div>';
+   var html_str = '';
+ 
+   var elt = document.getElementById('first_point' + curr_poly);
+   if (bname.indexOf("Netscape")!=-1) {
+     var x = document.createRange();
+     x.setStartAfter(elt);
+ //    x.setStartBefore(elt);
+     x = x.createContextualFragment(html_str);
+     elt.appendChild(x);
+   }
+   else if (bname.indexOf("Microsoft")!=-1) {
+     elt.insertAdjacentHTML("BeforeEnd",html_str);
+   }
+   else {
+     alert("Sorry, this browser type not yet supported.");
+   }
+ 
+ //  alert(jg_first_point.cnv.firstChild.style.width);
+ //  jg_first_point.cnv.firstChild.style.width = 20;
+ //  alert(jg_first_point.cnv.firstChild.style.width);
+ }
+ 
+ function deleteEvent() {
+   if(!wait_for_input && !edit_popup_open && !username_flag) {
+     if(lastx==-1) RemovePolygon();
+     else {
+       RemovePolygon();
+       RemoveFirstPoint();
+       obj_names.push('');
+       curr_poly++;
+       lastx = -1;
+       lasty = -1;
+     }
+   }
+ }
+ 
+ function whichButton(event) {
+   return;
+   if((event.keyCode==46) || (event.keyCode==8)) {
+     deleteEvent();
+   }
+ }
+ 
+ function WriteLogMsg(msg) {
+   var url = 'write_logfile.cgi';
+ 
+   // branch for native XMLHttpRequest object
+   if (window.XMLHttpRequest) {
+     req_submit = new XMLHttpRequest();
+     req_submit.onreadystatechange = processReqChange;
+     req_submit.open("POST", url, true);
+     req_submit.send(msg);
+   } 
+   else if (window.ActiveXObject) {
+     req_submit = new ActiveXObject("Microsoft.XMLHTTP");
+     if (req_submit) {
+       req_submit.onreadystatechange = processReqChange;
+       req_submit.open("POST", url, true);
+       req_submit.send(msg);
+     }
+   }
+ }
+ 
+ function SubmitAnnotations() {
+   var url = 'submit.cgi';
+   var tmp_xml = anno_xml.cloneNode(true);
+ 
+   // Add information to go into the log:
+   var elt_pri = tmp_xml.createElement("private");
+   var elt_gct = tmp_xml.createElement("global_count");
+   var elt_user = tmp_xml.createElement("pri_username");
+   var elt_edt = tmp_xml.createElement("edited");
+   var elt_onm = tmp_xml.createElement("old_name");
+   var elt_nnm = tmp_xml.createElement("new_name");
+ 
+   var txt_gct = tmp_xml.createTextNode(global_count);
+   var txt_user = tmp_xml.createTextNode(username);
+   var txt_edt = tmp_xml.createTextNode(submission_edited);
+   var txt_onm = tmp_xml.createTextNode(old_name);
+   var txt_nnm = tmp_xml.createTextNode(new_name);
+ 
+   tmp_xml.documentElement.appendChild(elt_pri);
+   elt_pri.appendChild(elt_gct);
+   elt_pri.appendChild(elt_user);
+   elt_pri.appendChild(elt_edt);
+   elt_pri.appendChild(elt_onm);
+   elt_pri.appendChild(elt_nnm);
+ 
+   elt_gct.appendChild(txt_gct);
+   elt_user.appendChild(txt_user);
+   elt_edt.appendChild(txt_edt);
+   elt_onm.appendChild(txt_onm);
+   elt_nnm.appendChild(txt_nnm);
+ 
+   var elts_obj = tmp_xml.getElementsByTagName("object");
+   for(ii=0; ii < num_orig_anno; ii++) {
+     if(!elts_obj[ii].getElementsByTagName("name")[0].firstChild) {
+       if(obj_names[ii].length > 0) {
+         var txt_nam = tmp_xml.createTextNode(obj_names[ii]);
+         elts_obj[ii].getElementsByTagName("name")[0].appendChild(txt_nam);
+       }
+     }
+     else {
+       elts_obj[ii].getElementsByTagName("name")[0].firstChild.nodeValue = obj_names[ii];
+     }
+     elts_obj[ii].getElementsByTagName("deleted")[0].firstChild.nodeValue = deleted[ii];
+   }
+ 
+   for(ii=0; ii < (curr_poly-num_orig_anno); ii++) {
+     if(!deleted[num_orig_anno+ii]) {
+       var elt_obj = tmp_xml.createElement("object");
+       var elt_nam = tmp_xml.createElement("name");
+       var txt_nam = tmp_xml.createTextNode(obj_names[num_orig_anno+ii]);
+       var elt_del = tmp_xml.createElement("deleted");
+       var txt_del = tmp_xml.createTextNode(deleted[num_orig_anno+ii]);
+       var elt_ver = tmp_xml.createElement("verified");
+       var txt_ver = tmp_xml.createTextNode('0');
+       var elt_dat = tmp_xml.createElement("date");
+       var elt_pol = tmp_xml.createElement("polygon");
+     
+       tmp_xml.documentElement.appendChild(elt_obj);
+       elt_obj.appendChild(elt_nam);
+       elt_obj.appendChild(elt_del);
+       elt_obj.appendChild(elt_ver);
+       elt_obj.appendChild(elt_dat);
+       elt_obj.appendChild(elt_pol);
+       elt_nam.appendChild(txt_nam);
+       elt_del.appendChild(txt_del);
+       elt_ver.appendChild(txt_ver);
+ 
+       var elt_user = tmp_xml.createElement("username");
+       var txt_user = tmp_xml.createTextNode(username);
+ //      var txt_user = tmp_xml.createTextNode('');
+ //      var txt_user = tmp_xml.createTextNode(document.getElementById("username").value);
+       elt_pol.appendChild(elt_user);
+       elt_user.appendChild(txt_user);      
+     
+       for(jj=0; jj < pts_x[num_orig_anno+ii].length; jj++) {
+         var elt_pt = tmp_xml.createElement("pt");
+ 	var elt_x = tmp_xml.createElement("x");
+ 	var elt_y = tmp_xml.createElement("y");
+ 	var txt_x = tmp_xml.createTextNode(pts_x[num_orig_anno+ii][jj]);
+ 	var txt_y = tmp_xml.createTextNode(pts_y[num_orig_anno+ii][jj]);
+ 
+ 	elt_pol.appendChild(elt_pt);
+ 	elt_pt.appendChild(elt_x);
+ 	elt_pt.appendChild(elt_y);
+ 	elt_x.appendChild(txt_x);
+ 	elt_y.appendChild(txt_y);
+       }
+     }
+   }
+ 
+   // branch for native XMLHttpRequest object
+   if (window.XMLHttpRequest) {
+     req_submit = new XMLHttpRequest();
+     req_submit.onreadystatechange = processReqChange;
+     req_submit.open("POST", url, true);
+     req_submit.send(tmp_xml);
+   } 
+   else if (window.ActiveXObject) {
+     req_submit = new ActiveXObject("Microsoft.XMLHTTP");
+     if (req_submit) {
+       req_submit.onreadystatechange = processReqChange;
+       req_submit.open("POST", url, true);
+       req_submit.send(tmp_xml);
+     }
+   }
+ }
+ 
+ function loadXMLDoc() {
+   if(wait_for_input) return WaitForInput();
+   if(lastx!=-1) {
+     alert("Need to close current polygon first.");
+     return;
+   }
+ 
+ //  SubmitAnnotations();
+ 
+   // Get a new image:
+   var p = document.getElementById('main_image');
+   p.parentNode.removeChild(p);
+ 
+   RemoveAnnotationList();
+ //  RemoveCounterText();
+ 
+   GetNewImage();
+ }
+ 
+ function processReqChange() {
+   // only if req shows "loaded"
+   if(req_submit.readyState == 4) {
+     if(req_submit.status == 200) {
+       if(req_submit.responseText) {
+         if(document.getElementById('anno_download')) RemoveAnnoDownload();
+         InsertAfterDiv(req_submit.responseText,'download_anchor');
+ 	LogDownloadButton(req_submit.responseText);
+       }
+     }
+     else {
+       alert("There was a problem retrieving the XML data:\n" +
+             req_submit.statusText);
+     }
+   }
+ }
+ 
+ function LogDownloadButton(msg) {
+   var req;
+   var url = "log_download_button.cgi";
+   
+   // branch for native XMLHttpRequest object
+   if (window.XMLHttpRequest) {
+     req = new XMLHttpRequest();
+     req.open("POST", url, true);
+     req.send(msg);
+   } 
+   else if (window.ActiveXObject) {
+     req = new ActiveXObject("Microsoft.XMLHTTP");
+     if (req) {
+       req.open("POST", url, true);
+       req.send(msg);
+     }
+   }
+ }
+ 
+ function submit_pts() {
+   if(!wait_for_input) {
+     document.submitform.pts_x.value=pts_x;
+     document.submitform.pts_y.value=pts_y;
+   }
+ }
+ 
+ function DownloadAnnotations(fname) {
+ //  window.location.href=fname;
+   window.open(fname,"DownloadMe","width=400,height=400,resizable=yes,scrollbars=yes,toolbar=no,status=no");
+   RemoveAnnoDownload();
+ }
+ 
+ function help_popup() {
+   window.open("help.html","help","");
+ }
+ 
+ //function help_popup() {
+ //  window.open("help.html","help","width=400,height=400,resizable=yes,scrollbars=yes,toolbar=no,status=no");
+ //}
+ 
+ function comments_popup() {
+   window.open("comments.html","comments","width=400,height=400,resizable=yes,scrollbars=yes,toolbar=no,status=no");
+ }
+ 
+ function about_popup() {
+   window.open("AboutMe.html","about","");
+ }
+ 
+ //function about_popup() {
+ //  window.open("AboutMe.html","about","width=400,height=400,resizable=yes,scrollbars=yes,toolbar=no,status=no");
+ //}
+ 
+ function news_popup() {
+   window.open("news.html","news","");
+ }
+ 
+ //function news_popup() {
+ //  window.open("news.html","news","width=400,height=400,resizable=yes,scrollbars=yes,toolbar=no,status=no");
+ //}
+ 
+ function toolbox_popup() {
+   window.open("http://people.csail.mit.edu/torralba/LabelMeToolbox/","Matlab_Toolbox","");
+ }
+ 
+ function upload_popup() {
+   window.open("upload.html","Upload_Images","");
+ }
+ 
+ //function upload_popup() {
+ //  window.open("upload.html","Upload_Images","width=400,height=400,resizable=yes,scrollbars=yes,toolbar=no,status=no");
+ //}
+ 
+ function giveMe_popup() {
+   window.open("instructions.html","giveMe","");
+ }
+ 
+ //function giveMe_popup() {
+ //  window.open("instructions.html","giveMe","width=400,height=400,resizable=yes,scrollbars=yes,toolbar=no,status=no");
+ //}
+ 
+ function more_stats_popup() {
+   window.open("Stats/stats.html","more_stats","width=550,height=window.innerHeight,resizable=yes,scrollbars=yes,toolbar=no,status=no");
+ }
+ 
+ 
+ 
+ function popupDraw(event) {
+   if(!wait_for_input) {
+     myDrawLine(event);
+   }
+ }
+ 
+ function GetNewImage() {
+   if(debug) foo.document.write('New image...<br>');
+   document.getElementById('loading').style.display = '';
+   LoadCounterText();
+   var rnum = Math.floor(Math.random()*9)+1;
+   var im_name = ParseURL();
+   if(!im_name) return;
+ //  var im_name = GetFname();
+   fname = 'Images/' + im_name;
+ 
+ //  alert(fname);
+ //  screen_width = screen.width;
+ //  screen_height = screen.height;
+ 
+   // Return false on onmousedown will eliminate the annoying drag icon
+   // in mozilla firefox.
+   var html_str;
+   if(IsNetscape())
+     html_str = '<div id="main_image" class="top" style="display:none;">'+
+     '<div id="myCanvas">'+
+     '<img id="im" src="' + fname + '" style="display:none;" '+
+     'onload="SetImageDimensions();LoadAnnotations(\''+im_name+'\');'+
+     'LoadAnnotationList();AddSubmitButton();" onmousedown="myDrawLine(event); return false;" '+
+     'oncontextmenu="return false" />'+
+     '</div>'+
+     '</div>';
+   else if(IsMicrosoft()) {
+     html_str = '<div id="main_image" class="top" style="visibility:hidden;">'+
+     '<div id="myCanvas">'+
+     '<img id="im" src="' + fname + '" style="visibility:hidden;" '+
+     'onload="SetImageDimensions();LoadAnnotations(\''+im_name+'\');'+
+     'LoadAnnotationList();AddSubmitButton();" onmousedown="myDrawLine(event); return false;" '+
+     'oncontextmenu="return false" />'+
+     '</div>'+
+     '</div>';
+   }
+ 
+   InsertAfterDiv(html_str,"main_section");
+ 
+   lastx = -1;
+   lasty = -1;
+   wait_for_input = 0;
+   edit_popup_open = 0;
+   curr_tag = null;
+ }
+ 
+ function AddSubmitButton() {
+   var html_str = '<div id="show_new_image"><form name="submitform" '+
+   'action="javascript:loadXMLDoc();" method="post" style="margin-bottom:0px;">'+
+   '<input type="hidden" name="pts_x" />'+
+   '<input type="hidden" name="pts_y" />'+
+   '<input type="submit" value="Show New Image" '+
+   'name="Submit" onclick="submit_pts()" />'+
+   '</form></div>';
+ 
+   InsertAfterDiv(html_str,'main_image');
+ }
+ 
+ function InsertAfterDiv(html_str,tag_id) {
+   var elt = document.getElementById(tag_id);
+   if(IsNetscape()) {
+     var x = document.createRange();
+     x.setStartAfter(elt);
+ //    x.setStartBefore(elt);
+     x = x.createContextualFragment(html_str);
+     elt.appendChild(x);
+   }
+   else if(IsMicrosoft()) {
+     elt.insertAdjacentHTML("BeforeEnd",html_str);
+   }
+   else {
+     alert("Sorry, this browser type not yet supported.");
+   }
+ }
+ 
+ function LinkOver(idx) {
+   tag = document.getElementById('myCanvas'+idx+'_fg');
+   FlipFGFront(tag);
+ }
+ 
+ function LinkClick(idx) {
+   if(edit_popup_open && (idx==GetCanvasNumber(curr_tag.id))) CloseEditPopup();
+   else 
+     mkEditPopup(curr_tag,0,Math.floor(pts_x[idx][0]*im_ratio),
+       Math.floor(pts_y[idx][0]*im_ratio));
+ }
+ 
+ function ChangeLinkColorBG(idx) {
+   document.getElementById('Link'+idx).style.color = '#0000FF';
+ }
+ 
+ function ChangeLinkColorFG(idx) {
+   document.getElementById('Link'+idx).style.color = '#FF0000';
+ }
+ 
+ function LoadAnnotationList() {
+   var html_str = '<div id="anno_list">';
+  
+   for(ii=0; ii < obj_names.length; ii++) {
+     if(!deleted[ii]) {
+       part_str = '<br /><a id="Link' + ii + 
+         '" href="javascript:LinkClick('+ii+');" '+
+         'onmouseover="javascript:LinkOver('+ii+');">';
+       if(obj_names[ii].length==0) html_str += part_str +
+ 	'[ Please enter name ]</a></i>';
+       else html_str += part_str + obj_names[ii] + '</a>';
+     }
+   }
+   html_str += '</div>';
+   InsertAfterDiv(html_str,'anno_anchor');
+ }
+ 
+ function UpdateCounterHTML() {
+   RemoveCounterText();
+   var html_str = '<div id="counter_text">'+
+     'With your help, there are <font size=3><b>' + anno_count + 
+     '</b></font> labelled objects in the database ('+
+     '<a href="javascript:more_stats_popup();">more stats</a>)</div>';
+     
+   InsertAfterDiv(html_str,'counter_anchor');
+ }
+ 
+ function LoadCounterText() {
+   var objXml = XMLGet('counter');
+ 
+   if(objXml.status==200) {
+     var tmp_count = parseInt(objXml.responseText);
+     if(tmp_count > anno_count) anno_count = tmp_count;
+     UpdateCounterHTML();
+   }
+   else if(objXml.status==404) {
+     alert('counter file not found');
+   }
+   else {
+     alert('Unknown objXml.status');
+   }
+ }
+ 
+ function IsNetscape() {
+   return (bname.indexOf("Netscape")!=-1);
+ }
+ 
+ function IsMicrosoft() {
+   return (bname.indexOf("Microsoft")!=-1);
+ }
+ 
+ function SetImageDimensions() {
+   var im_elt = document.getElementById('im');
+   image_width_orig = im_elt.width;
+   image_height_orig = im_elt.height;
+ 
+   var rhs_width = document.getElementById('right_side').offsetLeft;
+   var top_height = document.getElementById('main_section').offsetTop;
+ 
+   var avail_width = rhs_width - 24;
+   var avail_height;
+   if(IsNetscape())
+     avail_height = window.innerHeight - top_height - 8;
+   else if(IsMicrosoft())
+     avail_height = document.body.offsetHeight - top_height - 8;
+ 
+   width_ratio = avail_width/image_width_orig;
+   height_ratio = avail_height/image_height_orig;
+   
+   if(width_ratio<height_ratio) im_ratio=width_ratio;
+   else im_ratio=height_ratio;
+ 
+   image_width = Math.floor(im_ratio*image_width_orig);
+   image_height = Math.floor(im_ratio*image_height_orig);
+ 
+   im_elt.width = image_width;
+   im_elt.height = image_height;
+   document.getElementById('loading').style.display = 'none';
+ 
+   if(IsNetscape()) {
+     document.getElementById('main_image').style.display = '';
+     im_elt.style.display = '';
+   }
+   else if(IsMicrosoft()) {
+     document.getElementById('main_image').style.visibility = 'visible';
+     im_elt.style.visibility = 'visible';
+   }
+ }
+ 
+ //function GetCookieValue(field) {
+ //  var idx = document.cookie.indexOf(field);
+ //  var str = document.cookie.substring(idx1,document.cookie.length);
+ //  idx = str.indexOf('&');
+ //  str = str.substring(0,idx);
+ //  idx = str.indexOf('=');
+ //  return str.substring(idx+1,str.length);
+ //}
+ 
+ function getCookie(c_name) {
+   if (document.cookie.length>0) { 
+     c_start=document.cookie.indexOf(c_name + "=");
+     if (c_start!=-1) { 
+       c_start=c_start + c_name.length+1;
+       c_end=document.cookie.indexOf(";",c_start);
+       if (c_end==-1) c_end=document.cookie.length;
+       return unescape(document.cookie.substring(c_start,c_end));
+     } 
+   }
+   return null
+ }
+ 
+ function setCookie(c_name,value,expiredays) {
+   var exdate=new Date();
+   exdate.setDate(expiredays);
+   document.cookie=c_name+ "=" +escape(value)+
+     ((expiredays==null) ? "" : "; expires="+exdate);
+ }
+ 
+ function write_username() {
+   username_flag = 0;
+   if((!page_in_use) && getCookie('username')) username = getCookie('username');
+   var html_str = '<div id="you_are_div"><br>You are: <b>' + username + 
+     '</b> (<a id="u_link" href="javascript:get_username_form();">Change Username</a>)</div>';
+   InsertAfterDiv(html_str,'username_main_div');
+ }
+ 
+ function create_username_form() {
+   var html_str = '<div id="enter_username_div">' +
+     '<form action="javascript:submit_username();" style="margin-bottom:0px;">' +
+     '<table style="font-size:small;"><tr><td nowrap>' +
+     '<br />Username: '+
+     '<input type="text" id="username" name="username" size="20em" '+
+     'style="font-family:Arial;font-size:small;" />' +
+     '<input id="username_submit" name="username_submit" '+
+     'value="Submit" type="submit" ' +
+     'style="font-family:Arial;font-size:small;" />' +
+     '</td></tr></table></form></div>';
+   
+   InsertAfterDiv(html_str,'username_main_div');
+ }
+ 
+ function submit_username() {
+   username = document.getElementById('username').value;
+   username = RemoveSpecialChars(username);
+   if(username.length==0) username = 'anonymous';
+   setCookie('username',username);
+   var p = document.getElementById('enter_username_div');
+   p.parentNode.removeChild(p);
+ //  var you_are_div = document.getElementById('you_are_div');
+ //  var enter_username_div = document.getElementById('enter_username_div');
+ //  you_are_div.style.display = '';
+ //  enter_username_div.style.display = 'none';
+ //  var p = document.getElementById('you_are_div');
+ //  p.parentNode.removeChild(p);
+   write_username();
+ }
+ 
+ function get_username_form() {
+   if(wait_for_input) return WaitForInput();
+   if(edit_popup_open) CloseEditPopup();
+   username_flag = 1;
+   var p = document.getElementById('you_are_div');
+   p.parentNode.removeChild(p);
+   create_username_form();
+ //  var you_are_div = document.getElementById('you_are_div');
+ //  var enter_username_div = document.getElementById('enter_username_div');
+ //  you_are_div.style.display = 'none';
+ //  enter_username_div.style.display = '';
+ 
+   document.getElementById('username').value = username;
+   document.getElementById('username').select();
+ }
+ 
+ function XMLGet(fname) {
+   var url = 'get_anno_file.cgi';
+   // branch for native XMLHttpRequest object
+   if (window.XMLHttpRequest) {
+     req_anno = new XMLHttpRequest();
+     req_anno.open("POST", url, false);
+     req_anno.send(fname);
+   } 
+   else if (window.ActiveXObject) {
+     req_anno = new ActiveXObject("Microsoft.XMLHTTP");
+     if (req_anno) {
+       req_anno.open("POST", url, false);
+       req_anno.send(fname);
+     }
+   }
+   return req_anno;
+ 
+ //  var req;
+ //  if(window.XMLHttpRequest) {
+ //    req = new XMLHttpRequest();
+ //    req.open("GET",fname,false);
+ //    req.send(null);
+ //  }
+ //  else if(window.ActiveXObject) {
+ //    req = new ActiveXObject("Microsoft.XMLHTTP");
+ //    if (req) {
+ //      req.open("GET",fname,false);
+ //      req.send();
+ //    }
+ //  }
+ //  else alert("We do not support this browser yet.");    
+ //  return req;
+ }
+ 
+ function GetDirList() {
+   var objXml = XMLGet(datafile);
+ //  var objXml = new XMLHttpRequest();
+ //  objXml.open("GET",datafile,false);
+ //  objXml.send(null);
+   dir_elts = objXml.responseXML.getElementsByTagName("dir");
+ }
+ 
+ function GetFname() {
+   var numdirs = dir_elts.length;
+   var rnum = Math.floor(Math.random()*numdirs);
+   curr_dir_name = dir_elts[rnum].getElementsByTagName("name")[0].firstChild.nodeValue;
+   var im_elts = dir_elts[rnum].getElementsByTagName("file");
+   var numims = im_elts.length;
+   rnum = Math.floor(Math.random()*numims);
+   curr_im_name = im_elts[rnum].getElementsByTagName("name")[0].firstChild.nodeValue;
+   return curr_dir_name + '/' + curr_im_name;
+ }
+ 
+ function ParseURL() {
+   var labelme_url = document.URL;
+   var idx = labelme_url.indexOf('?');
+   if((idx != -1) & (page_in_use == 0)) {
+     page_in_use = 1;
+     var par_str = labelme_url.substring(idx+1,labelme_url.length);
+     do {
+       idx = par_str.indexOf('&');
+       var par_tag;
+       if(idx == -1) par_tag = par_str;
+       else par_tag = par_str.substring(0,idx);
+       var par_field = GetURLField(par_tag);
+       var par_value = GetURLValue(par_tag);
+       if(par_field=='collection') SetDirListVar(par_value);
+       if(par_field=='folder') {
+         curr_dir_name = par_value;
+ 	SetTemplateFileVar(curr_dir_name);
+       }
+       if(par_field=='image') {
+         curr_im_name = par_value;
+ 	if(curr_im_name.indexOf('.jpg')==-1) {
+ 	  curr_im_name = curr_im_name + '.jpg';
+ 	}
+       }
+       par_str = par_str.substring(idx+1,par_str.length);
+     } while(idx != -1);
+     GetDirList();
+     if((!curr_dir_name) || (!curr_im_name)) return SetURL(labelme_url);
+   }
+   else {
+     GetDirList();
+     return SetURL(labelme_url);
+   }
+   return curr_dir_name + '/' + curr_im_name;
+ }
+ 
+ function SetURL(url) {
+   GetFname();
+   var idx = url.indexOf('?');
+   if(idx != -1) {
+     url = url.substring(0,idx);
+   }
+   window.location = url + '?collection=' +
+     curr_collection_name + '&folder=' + curr_dir_name + '&image=' +
+     curr_im_name;
+   return false;
+ }
+ 
+ function GetURLField(str) {
+   var idx = str.indexOf('=');
+   return str.substring(0,idx);
+ }
+ 
+ function GetURLValue(str) {
+   var idx = str.indexOf('=');
+   return str.substring(idx+1,str.length);
+ }
+ 
+ function SetTemplateFileVar(str) {
+   template_file = 'XMLTemplates/' + str + '.xml';
+ }
+ 
+ function SetDirListVar(str) {
+   curr_collection_name = str;
+   datafile = 'DirLists/' + str.toLowerCase() + '.xml';
+ //  switch(str) {
+ //    case 'LabelMeMe':
+ //      datafile = 'DirLists/labelme.xml';
+ //      break;
+ //    case 'indoor':
+ //      datafile = 'DirLists/indoor.xml';
+ //      break;
+ //    default:
+ //      datafile = 'DirLists/labelme.xml';
+ //  }
+ }
+ 
+ function LoadAnnotations(anno_file) {
+   anno_file = 'Annotations/' + anno_file.substr(0,anno_file.indexOf('.jpg')) + '.xml';
+   var objXml = XMLGet(anno_file);
+ //  var objXml = new XMLHttpRequest();
+ //  objXml.open("GET",anno_file,false);
+ //  objXml.send(null);
+ 
+   if(objXml.status==200) {
+     anno_xml = objXml.responseXML;
+     var obj_elts = anno_xml.getElementsByTagName("object");
+     var num_obj = obj_elts.length;
+   
+     jg_fg = Array(num_obj);
+     jg_bg = Array(num_obj);
+     pts_x = Array(num_obj);
+     pts_y = Array(num_obj);
+     obj_names = Array(num_obj);
+     deleted = Array(num_obj);
+     curr_poly = num_obj;
+     num_orig_anno = num_obj;
+     verified = Array(num_obj);
+ 
+     for(pp=0; pp < num_obj; pp++) {
+       if(!obj_elts[pp].getElementsByTagName("name")[0].firstChild)
+         obj_names[pp] = '';
+       else
+         obj_names[pp] = obj_elts[pp].getElementsByTagName("name")[0].firstChild.nodeValue;
+       deleted[pp] = parseInt(obj_elts[pp].getElementsByTagName("deleted")[0].firstChild.nodeValue);
+       verified[pp] = parseInt(obj_elts[pp].getElementsByTagName("verified")[0].firstChild.nodeValue);
+       var pt_elts = obj_elts[pp].getElementsByTagName("polygon")[0].getElementsByTagName("pt");
+       var numpts = pt_elts.length;
+       pts_x[pp] = Array(numpts);
+       pts_y[pp] = Array(numpts);
+       for(ii=0; ii < numpts; ii++) {
+         pts_x[pp][ii] = parseInt(pt_elts[ii].getElementsByTagName("x")[0].firstChild.nodeValue);
+         pts_y[pp][ii] = parseInt(pt_elts[ii].getElementsByTagName("y")[0].firstChild.nodeValue);
+       }
+     }
+     DrawPolygons();
+   }
+   else if(objXml.status==404) {
+     var objXml = XMLGet(template_file);
+     if(objXml.status==404) {
+       objXml = XMLGet('XMLTemplates/labelme.xml');
+     }
+ //    var objXml = new XMLHttpRequest();
+ //    objXml.open("GET",'anno_template.xml',false);
+ //    objXml.send(null);
+     anno_xml = objXml.responseXML;
+     anno_xml.getElementsByTagName("filename")[0].firstChild.nodeValue = '\n'+curr_im_name+'\n';
+     anno_xml.getElementsByTagName("folder")[0].firstChild.nodeValue = '\n'+curr_dir_name+'\n';
+ 
+     jg_fg = Array();
+     jg_bg = Array();
+     pts_x = Array();
+     pts_y = Array();
+     obj_names = Array();
+     deleted = Array();
+     curr_poly = 0;
+     num_orig_anno = 0;
+     verified = Array();
+   }
+   else {
+     alert('Unknown objXml.status');
+   }
+ }
+ 
+ function DrawPolygons() {
+   for(pp=0; pp < jg_fg.length; pp++) {
+     if(deleted[pp]==0) {
+     var my_curr_canvas = 'myCanvas' + pp;
+     var my_curr_canvas_fg = my_curr_canvas + '_fg';
+     var my_curr_canvas_bg = my_curr_canvas + '_bg';
+ 
+     var html_str = '<div id="' + my_curr_canvas_fg + '" oncontextmenu="return false" '+
+       'onmouseover="FlipFGFront(this);" '+
+       'onclick="mkEditPopup(this,event);" style="visibility:hidden; cursor: pointer;"></div>';
+     var elt = document.getElementById("myCanvas");
+     if(bname.indexOf("Netscape")!=-1) {
+       var x = document.createRange();
+       x.setStartBefore(elt);
+       x = x.createContextualFragment(html_str);
+       elt.appendChild(x);
+     }
+     else if (bname.indexOf("Microsoft")!=-1) {
+       elt.insertAdjacentHTML("BeforeEnd",html_str);
+     }
+     else {
+       alert("Sorry, this browser type not yet supported.");
+     }
+ 
+     html_str = '<div id="' + my_curr_canvas_bg + '" oncontextmenu="return false" '+
+       'onmouseover="FlipFGFront(this);" '+
+       'onclick="mkEditPopup(this,event);" style="visibility:visible; cursor: pointer;"></div>';
+     var elt = document.getElementById("myCanvas");
+     if (bname.indexOf("Netscape")!=-1) {
+       var x = document.createRange();
+       x.setStartBefore(elt);
+       x = x.createContextualFragment(html_str);
+       elt.appendChild(x);
+     }
+     else if (bname.indexOf("Microsoft")!=-1) {
+       elt.insertAdjacentHTML("BeforeEnd",html_str);
+     }
+     else {
+       alert("Sorry, this browser type not yet supported.");
+     }
+ 
+     jg_fg[pp] = new jsGraphics(my_curr_canvas_fg);
+     jg_bg[pp] = new jsGraphics(my_curr_canvas_bg);
+ 
+ //    curr_tag = document.getElementById(my_curr_canvas_fg);
+ 
+     for(ii=0; ii < pts_x[pp].length; ii++) {
+       jg_fg[pp].setColor("#ffffff"); // white
+       jg_fg[pp].setStroke(1); // Line thickness
+       jg_fg[pp].fillRect(Math.floor(im_ratio*pts_x[pp][ii])-5,Math.floor(im_ratio*pts_y[pp][ii])-5,10,10);
+ //      jg_fg[pp].drawRect(pts_x[pp][ii]-3,pts_y[pp][ii]-3,6,6);
+ //      jg_fg[pp].drawEllipse(pts_x[pp][ii]-3,pts_y[pp][ii]-3,6,6);
+       jg_fg[pp].paint();
+ 
+       jg_fg[pp].setColor("#ff0000"); // red
+       jg_fg[pp].setStroke(1); // Line thickness
+       jg_fg[pp].fillRect(Math.floor(im_ratio*pts_x[pp][ii])-3,Math.floor(im_ratio*pts_y[pp][ii])-3,6,6);
+ //      jg_fg[pp].fillEllipse(pts_x[pp][ii]-3,pts_y[pp][ii]-3,6,6);
+       jg_fg[pp].paint();
+ 
+       jg_bg[pp].setColor("#ffffff"); // white
+       jg_bg[pp].setStroke(1); // Line thickness
+       jg_bg[pp].fillRect(Math.floor(im_ratio*pts_x[pp][ii])-5,Math.floor(im_ratio*pts_y[pp][ii])-5,10,10);
+ //      jg_bg[pp].drawRect(pts_x[pp][ii]-3,pts_y[pp][ii]-3,6,6);
+ //      jg_bg[pp].drawEllipse(pts_x[pp][ii]-3,pts_y[pp][ii]-3,6,6);
+       jg_bg[pp].paint();
+ 
+       jg_bg[pp].setColor("#0000ff"); // blue
+       jg_bg[pp].setStroke(1); // Line thickness
+       jg_bg[pp].fillRect(Math.floor(im_ratio*pts_x[pp][ii])-3,Math.floor(im_ratio*pts_y[pp][ii])-3,6,6);
+ //      jg_bg[pp].fillEllipse(pts_x[pp][ii]-3,pts_y[pp][ii]-3,6,6);
+       jg_bg[pp].paint();
+     }
+ 
+     if(line_thickness>0) {
+ //    jg_fg[pp].setColor("#ff0000"); // red
+ //    jg_fg[pp].setStroke(line_thickness); // Line thickness
+ //    jg_fg[pp].drawPolygon(pts_x[pp],pts_y[pp]);
+ //    jg_fg[pp].paint();
+ 
+     jg_bg[pp].setColor("#0000ff"); // blue
+     jg_bg[pp].setStroke(line_thickness); // Line thickness
+     jg_bg[pp].drawPolygon(Math.floor(im_ratio*pts_x[pp]),Math.floor(im_ratio*pts_y[pp]));
+     jg_bg[pp].paint();
+     }
+   }
+   }
+ }
+
+</script>	
+	<title>LabelMe query</title>
+<style type="text/css">
+  #top_mid {margin-left:4em; font-size:small;}
+  .top {vertical-align:top;}
+</style>
+
+</head>
+<body>
+
+<table id="header">
+<tr>
+  <td class="top">
+<img src="http://people.csail.mit.edu/brussell/research/LabelMe/Icons/LabelMeNEWtight198x55.gif" height="55"><br>
+  </td>
+
+  <td class="top" nowrap>
+  <div id="top_mid">
+
+ <font size=-1>
+  <a href="http://people.csail.mit.edu/brussell/research/LabelMe/">Labeling tool</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:help_popup();">Help</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:giveMe_popup();">Downloads</a><sup><font color=red>New!</font></sup>
+  &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:about_popup()">About</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:toolbox_popup()">Matlab Toolbox</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:upload_popup()">Upload Images</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:more_stats_popup()">Stats</a>
+</font>
+  </div>
+  </td>
+</tr>
+</table>
+
+<form action="http://people.csail.mit.edu/torralba/research/LabelMe/js/LabelMeQueryFast.cgi"
+      method="POST">
+<input type="text" name="query">
+<input type="submit" value="Search">
+</form>
+
+<hr>
+Your query (<b>kitchen</b>) matches <b>195</b> images
+<hr>
+<br>
+
+
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_houses_boston_2005&image=mau_IMG_7579.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_houses_boston_2005/mau_IMG_7579.jpg" height=96 border=0></a>
+<font size=0>1</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_houses_boston_2005&image=IMG_3637.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_houses_boston_2005/IMG_3637.jpg" height=96 border=0></a>
+<font size=0>2</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen138.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen138.jpg" height=96 border=0></a>
+<font size=0>3</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen036.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen036.jpg" height=96 border=0></a>
+<font size=0>4</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen136.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen136.jpg" height=96 border=0></a>
+<font size=0>5</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen060.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen060.jpg" height=96 border=0></a>
+<font size=0>6</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen033.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen033.jpg" height=96 border=0></a>
+<font size=0>7</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen248.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen248.jpg" height=96 border=0></a>
+<font size=0>8</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen189.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen189.jpg" height=96 border=0></a>
+<font size=0>9</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home&image=indoor_0265.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home/indoor_0265.jpg" height=96 border=0></a>
+<font size=0>10</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen169.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen169.jpg" height=96 border=0></a>
+<font size=0>11</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen1.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen1.jpg" height=96 border=0></a>
+<font size=0>12</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen174.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen174.jpg" height=96 border=0></a>
+<font size=0>13</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen46.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen46.jpg" height=96 border=0></a>
+<font size=0>14</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen35.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen35.jpg" height=96 border=0></a>
+<font size=0>15</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen1a.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen1a.jpg" height=96 border=0></a>
+<font size=0>16</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen177.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen177.jpg" height=96 border=0></a>
+<font size=0>17</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_submitted_3d&image=img_564015515.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_submitted_3d/img_564015515.jpg" height=96 border=0></a>
+<font size=0>18</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen061.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen061.jpg" height=96 border=0></a>
+<font size=0>19</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen125.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen125.jpg" height=96 border=0></a>
+<font size=0>20</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen17.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen17.jpg" height=96 border=0></a>
+<font size=0>21</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchenblack.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchenblack.jpg" height=96 border=0></a>
+<font size=0>22</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen78.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen78.jpg" height=96 border=0></a>
+<font size=0>23</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_houses_boston_2005&image=IMG_4025.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_houses_boston_2005/IMG_4025.jpg" height=96 border=0></a>
+<font size=0>24</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=img_0586.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/img_0586.jpg" height=96 border=0></a>
+<font size=0>25</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen226.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen226.jpg" height=96 border=0></a>
+<font size=0>26</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=apto_flavia_015.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/apto_flavia_015.jpg" height=96 border=0></a>
+<font size=0>27</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen99.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen99.jpg" height=96 border=0></a>
+<font size=0>28</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen057.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen057.jpg" height=96 border=0></a>
+<font size=0>29</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen143.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen143.jpg" height=96 border=0></a>
+<font size=0>30</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen045.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen045.jpg" height=96 border=0></a>
+<font size=0>31</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen137.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen137.jpg" height=96 border=0></a>
+<font size=0>32</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen055.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen055.jpg" height=96 border=0></a>
+<font size=0>33</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen15.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen15.jpg" height=96 border=0></a>
+<font size=0>34</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen65.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen65.jpg" height=96 border=0></a>
+<font size=0>35</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen265.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen265.jpg" height=96 border=0></a>
+<font size=0>36</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen014.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen014.jpg" height=96 border=0></a>
+<font size=0>37</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor64.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor64.jpg" height=96 border=0></a>
+<font size=0>38</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=img_6613.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/img_6613.jpg" height=96 border=0></a>
+<font size=0>39</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen006.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen006.jpg" height=96 border=0></a>
+<font size=0>40</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor70.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor70.jpg" height=96 border=0></a>
+<font size=0>41</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_256x256_web_tv_database&image=room17.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_256x256_web_tv_database/room17.jpg" height=96 border=0></a>
+<font size=0>42</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=p1050322.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/p1050322.jpg" height=96 border=0></a>
+<font size=0>43</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=img_0017.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/img_0017.jpg" height=96 border=0></a>
+<font size=0>44</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=101_0107.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/101_0107.jpg" height=96 border=0></a>
+<font size=0>45</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor87.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor87.jpg" height=96 border=0></a>
+<font size=0>46</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor63.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor63.jpg" height=96 border=0></a>
+<font size=0>47</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_256x256_web_tv_database&image=room15.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_256x256_web_tv_database/room15.jpg" height=96 border=0></a>
+<font size=0>48</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=100_2855.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/100_2855.jpg" height=96 border=0></a>
+<font size=0>49</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=indoor55.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/indoor55.jpg" height=96 border=0></a>
+<font size=0>50</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_256x256_web_tv_database&image=room189.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_256x256_web_tv_database/room189.jpg" height=96 border=0></a>
+<font size=0>51</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_database_by_aude_oliva&image=kitchen037.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_database_by_aude_oliva/kitchen037.jpg" height=96 border=0></a>
+<font size=0>52</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=101_0108.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/101_0108.jpg" height=96 border=0></a>
+<font size=0>53</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=apartments_ind_2_043.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/apartments_ind_2_043.jpg" height=96 border=0></a>
+<font size=0>54</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=img_0116.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/img_0116.jpg" height=96 border=0></a>
+<font size=0>55</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=100_0100.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/100_0100.jpg" height=96 border=0></a>
+<font size=0>56</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_256x256_web_tv_database&image=room14.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_256x256_web_tv_database/room14.jpg" height=96 border=0></a>
+<font size=0>57</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor89.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor89.jpg" height=96 border=0></a>
+<font size=0>58</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=s4030012.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/s4030012.jpg" height=96 border=0></a>
+<font size=0>59</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=img_0014.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/img_0014.jpg" height=96 border=0></a>
+<font size=0>60</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen036.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen036.jpg" height=96 border=0></a>
+<font size=0>61</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=img_0224.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/img_0224.jpg" height=96 border=0></a>
+<font size=0>62</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=im4.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/im4.jpg" height=96 border=0></a>
+<font size=0>63</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=indoor66.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/indoor66.jpg" height=96 border=0></a>
+<font size=0>64</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=100_0093.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/100_0093.jpg" height=96 border=0></a>
+<font size=0>65</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=la_cocina.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/la_cocina.jpg" height=96 border=0></a>
+<font size=0>66</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor85.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor85.jpg" height=96 border=0></a>
+<font size=0>67</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=dscf2952.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/dscf2952.jpg" height=96 border=0></a>
+<font size=0>68</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=kitchen.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/kitchen.jpg" height=96 border=0></a>
+<font size=0>69</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_256x256_web_tv_database&image=room187.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_256x256_web_tv_database/room187.jpg" height=96 border=0></a>
+<font size=0>70</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_256x256_web_tv_database&image=room16.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_256x256_web_tv_database/room16.jpg" height=96 border=0></a>
+<font size=0>71</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen011.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen011.jpg" height=96 border=0></a>
+<font size=0>72</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=kitchen1.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/kitchen1.jpg" height=96 border=0></a>
+<font size=0>73</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_256x256_web_tv_database&image=room18.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_256x256_web_tv_database/room18.jpg" height=96 border=0></a>
+<font size=0>74</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_256x256_web_tv_database&image=room10.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_256x256_web_tv_database/room10.jpg" height=96 border=0></a>
+<font size=0>75</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=IMG_3994.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/IMG_3994.jpg" height=96 border=0></a>
+<font size=0>76</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor75.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor75.jpg" height=96 border=0></a>
+<font size=0>77</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=img_0015.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/img_0015.jpg" height=96 border=0></a>
+<font size=0>78</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=Indoor82.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/Indoor82.jpg" height=96 border=0></a>
+<font size=0>79</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen084.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen084.jpg" height=96 border=0></a>
+<font size=0>80</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen061.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen061.jpg" height=96 border=0></a>
+<font size=0>81</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor88.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor88.jpg" height=96 border=0></a>
+<font size=0>82</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_256x256_web_tv_database&image=room19.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_256x256_web_tv_database/room19.jpg" height=96 border=0></a>
+<font size=0>83</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=2335_1.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/2335_1.jpg" height=96 border=0></a>
+<font size=0>84</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor50.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor50.jpg" height=96 border=0></a>
+<font size=0>85</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=000106949b.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/000106949b.jpg" height=96 border=0></a>
+<font size=0>86</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor47.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor47.jpg" height=96 border=0></a>
+<font size=0>87</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen050.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen050.jpg" height=96 border=0></a>
+<font size=0>88</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=apto_025.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/apto_025.jpg" height=96 border=0></a>
+<font size=0>89</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen067.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen067.jpg" height=96 border=0></a>
+<font size=0>90</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen037.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen037.jpg" height=96 border=0></a>
+<font size=0>91</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=dsc01012.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/dsc01012.jpg" height=96 border=0></a>
+<font size=0>92</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=IMG_0087.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/IMG_0087.jpg" height=96 border=0></a>
+<font size=0>93</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=indoor62.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/indoor62.jpg" height=96 border=0></a>
+<font size=0>94</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen033.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen033.jpg" height=96 border=0></a>
+<font size=0>95</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=p3060098.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/p3060098.jpg" height=96 border=0></a>
+<font size=0>96</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=Indoor83.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/Indoor83.jpg" height=96 border=0></a>
+<font size=0>97</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=im6.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/im6.jpg" height=96 border=0></a>
+<font size=0>98</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=img_0373.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/img_0373.jpg" height=96 border=0></a>
+<font size=0>99</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen044.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen044.jpg" height=96 border=0></a>
+<font size=0>100</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen090.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen090.jpg" height=96 border=0></a>
+<font size=0>101</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=indoor483.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/indoor483.jpg" height=96 border=0></a>
+<font size=0>102</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen066.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen066.jpg" height=96 border=0></a>
+<font size=0>103</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=p1010319.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/p1010319.jpg" height=96 border=0></a>
+<font size=0>104</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=casas_073.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/casas_073.jpg" height=96 border=0></a>
+<font size=0>105</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen016.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen016.jpg" height=96 border=0></a>
+<font size=0>106</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=100_0098.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/100_0098.jpg" height=96 border=0></a>
+<font size=0>107</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen005.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen005.jpg" height=96 border=0></a>
+<font size=0>108</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=kitchen2.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/kitchen2.jpg" height=96 border=0></a>
+<font size=0>109</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=im8.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/im8.jpg" height=96 border=0></a>
+<font size=0>110</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=100_0097.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/100_0097.jpg" height=96 border=0></a>
+<font size=0>111</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor65.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor65.jpg" height=96 border=0></a>
+<font size=0>112</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=img_0073.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/img_0073.jpg" height=96 border=0></a>
+<font size=0>113</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=easyst029.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/easyst029.jpg" height=96 border=0></a>
+<font size=0>114</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_houses_boston_2005&image=IMG_7674.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_houses_boston_2005/IMG_7674.jpg" height=96 border=0></a>
+<font size=0>115</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=101_0106.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/101_0106.jpg" height=96 border=0></a>
+<font size=0>116</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=indoor489.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/indoor489.jpg" height=96 border=0></a>
+<font size=0>117</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=indoor106.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/indoor106.jpg" height=96 border=0></a>
+<font size=0>118</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen075.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen075.jpg" height=96 border=0></a>
+<font size=0>119</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=101_0101.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/101_0101.jpg" height=96 border=0></a>
+<font size=0>120</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen069.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen069.jpg" height=96 border=0></a>
+<font size=0>121</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor324.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor324.jpg" height=96 border=0></a>
+<font size=0>122</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen008.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen008.jpg" height=96 border=0></a>
+<font size=0>123</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=100_0095.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/100_0095.jpg" height=96 border=0></a>
+<font size=0>124</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=aparta_mento_2__kitchen.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/aparta_mento_2__kitchen.jpg" height=96 border=0></a>
+<font size=0>125</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen058.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen058.jpg" height=96 border=0></a>
+<font size=0>126</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=indoor482.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/indoor482.jpg" height=96 border=0></a>
+<font size=0>127</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor104.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor104.jpg" height=96 border=0></a>
+<font size=0>128</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen006.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen006.jpg" height=96 border=0></a>
+<font size=0>129</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_mixed2&image=IMG_7627.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_mixed2/IMG_7627.jpg" height=96 border=0></a>
+<font size=0>130</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=100_0099.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/100_0099.jpg" height=96 border=0></a>
+<font size=0>131</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen017.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen017.jpg" height=96 border=0></a>
+<font size=0>132</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen021.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen021.jpg" height=96 border=0></a>
+<font size=0>133</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen002.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen002.jpg" height=96 border=0></a>
+<font size=0>134</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=dsc02719.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/dsc02719.jpg" height=96 border=0></a>
+<font size=0>135</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen047.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen047.jpg" height=96 border=0></a>
+<font size=0>136</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_256x256_web_tv_database&image=room127.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_256x256_web_tv_database/room127.jpg" height=96 border=0></a>
+<font size=0>137</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=100_0094.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/100_0094.jpg" height=96 border=0></a>
+<font size=0>138</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=indoor495.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/indoor495.jpg" height=96 border=0></a>
+<font size=0>139</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=100_0096.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/100_0096.jpg" height=96 border=0></a>
+<font size=0>140</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=ins29.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/ins29.jpg" height=96 border=0></a>
+<font size=0>141</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen053.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen053.jpg" height=96 border=0></a>
+<font size=0>142</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen007.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen007.jpg" height=96 border=0></a>
+<font size=0>143</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen015.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen015.jpg" height=96 border=0></a>
+<font size=0>144</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen073.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen073.jpg" height=96 border=0></a>
+<font size=0>145</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen041.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen041.jpg" height=96 border=0></a>
+<font size=0>146</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=Indoor81.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/Indoor81.jpg" height=96 border=0></a>
+<font size=0>147</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen079.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen079.jpg" height=96 border=0></a>
+<font size=0>148</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=Indoor154.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/Indoor154.jpg" height=96 border=0></a>
+<font size=0>149</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=Indoor104.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/Indoor104.jpg" height=96 border=0></a>
+<font size=0>150</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=p1000395.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/p1000395.jpg" height=96 border=0></a>
+<font size=0>151</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen034.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen034.jpg" height=96 border=0></a>
+<font size=0>152</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen078.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen078.jpg" height=96 border=0></a>
+<font size=0>153</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor74.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor74.jpg" height=96 border=0></a>
+<font size=0>154</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=Indoor101.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/Indoor101.jpg" height=96 border=0></a>
+<font size=0>155</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen027.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen027.jpg" height=96 border=0></a>
+<font size=0>156</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=indoor497.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/indoor497.jpg" height=96 border=0></a>
+<font size=0>157</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen055.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen055.jpg" height=96 border=0></a>
+<font size=0>158</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_stims&image=Indoor380.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_stims/Indoor380.jpg" height=96 border=0></a>
+<font size=0>159</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=Indoor108.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/Indoor108.jpg" height=96 border=0></a>
+<font size=0>160</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=101_0102.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/101_0102.jpg" height=96 border=0></a>
+<font size=0>161</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_houses_boston_2005&image=oak5.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_houses_boston_2005/oak5.jpg" height=96 border=0></a>
+<font size=0>162</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen087.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen087.jpg" height=96 border=0></a>
+<font size=0>163</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_submitted_noa_ofen_jenny_chai_ret_images&image=Indoor109.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_submitted_noa_ofen_jenny_chai_ret_images/Indoor109.jpg" height=96 border=0></a>
+<font size=0>164</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_dining&image=dining046.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_dining/dining046.jpg" height=96 border=0></a>
+<font size=0>165</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen045.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen045.jpg" height=96 border=0></a>
+<font size=0>166</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen029.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen029.jpg" height=96 border=0></a>
+<font size=0>167</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen014.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen014.jpg" height=96 border=0></a>
+<font size=0>168</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_web_indoor_home2&image=cimg0707.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_web_indoor_home2/cimg0707.jpg" height=96 border=0></a>
+<font size=0>169</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen065.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen065.jpg" height=96 border=0></a>
+<font size=0>170</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen048.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen048.jpg" height=96 border=0></a>
+<font size=0>171</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen019.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen019.jpg" height=96 border=0></a>
+<font size=0>172</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen071.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen071.jpg" height=96 border=0></a>
+<font size=0>173</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_mixed2&image=IMG_7640.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_mixed2/IMG_7640.jpg" height=96 border=0></a>
+<font size=0>174</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=img_0016.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/img_0016.jpg" height=96 border=0></a>
+<font size=0>175</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen035.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen035.jpg" height=96 border=0></a>
+<font size=0>176</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen074.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen074.jpg" height=96 border=0></a>
+<font size=0>177</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen043.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen043.jpg" height=96 border=0></a>
+<font size=0>178</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen082.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen082.jpg" height=96 border=0></a>
+<font size=0>179</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen012.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen012.jpg" height=96 border=0></a>
+<font size=0>180</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen060.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen060.jpg" height=96 border=0></a>
+<font size=0>181</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=aug1_static_kpm_kitchen&image=100_0092.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/aug1_static_kpm_kitchen/100_0092.jpg" height=96 border=0></a>
+<font size=0>182</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen063.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen063.jpg" height=96 border=0></a>
+<font size=0>183</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen051.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen051.jpg" height=96 border=0></a>
+<font size=0>184</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen057.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen057.jpg" height=96 border=0></a>
+<font size=0>185</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=kitchen024.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/kitchen024.jpg" height=96 border=0></a>
+<font size=0>186</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=IMG_0084.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/IMG_0084.jpg" height=96 border=0></a>
+<font size=0>187</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=4.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/4.jpg" height=96 border=0></a>
+<font size=0>188</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=IMG_0085.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/IMG_0085.jpg" height=96 border=0></a>
+<font size=0>189</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=IMG_0086.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/IMG_0086.jpg" height=96 border=0></a>
+<font size=0>190</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=IMG_3803.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/IMG_3803.jpg" height=96 border=0></a>
+<font size=0>191</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=IMG_3805.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/IMG_3805.jpg" height=96 border=0></a>
+<font size=0>192</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=IMG_3826.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/IMG_3826.jpg" height=96 border=0></a>
+<font size=0>193</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=IMG_4070.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/IMG_4070.jpg" height=96 border=0></a>
+<font size=0>194</font>&nbsp;&nbsp;
+<a href="http://labelme.csail.mit.edu/tool.html?collection=LabelMe&folder=static_indoor_kitchen&image=IMG_4071.jpg">
+<IMG src="http://people.csail.mit.edu/brussell/research/LabelMe/Thumbnails/static_indoor_kitchen/IMG_4071.jpg" height=96 border=0></a>
+<font size=0>195</font>&nbsp;&nbsp;
+<br>
+<!--WEBBOT bot="HTMLMarkup" startspan ALT="Site Meter" -->
+<script type="text/javascript" language="JavaScript">var site="s21labelme"</script>
+<script type="text/javascript" language="JavaScript1.2" src="http://s21.sitemeter.com/js/counter.js?site=s21labelme">
+</script>
+<noscript>
+<a href="http://s21.sitemeter.com/stats.asp?site=s21labelme" target="_top">
+<img src="http://s21.sitemeter.com/meter.asp?site=s21labelme" alt="Site Meter" border="0"/></a>
+
+</noscript>
+<!-- Copyright (c)2005 Site Meter -->
+<!--WEBBOT bot="HTMLMarkup" Endspan -->
+
+</body>

@@ -94,7 +94,7 @@ public:
     }
 
     cv_ptr->image = ~(cv_ptr->image);
-    cv::threshold(cv_ptr->image, cv_ptr->image, 180, 255, cv::THRESH_TOZERO);
+    cv::threshold(cv_ptr->image, cv_ptr->image, 195, 255, cv::THRESH_TOZERO);
 
     //perform erosion and dilation
 

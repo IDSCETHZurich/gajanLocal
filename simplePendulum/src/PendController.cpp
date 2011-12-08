@@ -52,7 +52,6 @@ namespace simplePendulum
 
     	stateLogger.open("stateLog.txt");
 
-
     	//debugging
     	t = 0.0;
     	commandedState = std::vector<double>(13, 0.0);
