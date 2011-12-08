@@ -1,0 +1,16 @@
+<package>
+  <description brief="re_BNLabelMe">
+
+     re_BNLabelMe
+
+  </description>
+  <author>gajan</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/re_BNLabelMe</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+
+</package>
+
+
