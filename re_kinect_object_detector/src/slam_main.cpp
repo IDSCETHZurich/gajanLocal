@@ -52,6 +52,7 @@
 #include <cv_bridge/cv_bridge.h>
 
 #include "re_kinect_object_detector/DetectionResult.h"
+#include "re_kinect_object_detector/OrderedList.h"
 
 #include "recognitionmodel.h"
 
@@ -82,6 +83,8 @@ public:
         model_sub = nh.subscribe<std_msgs::String>("re_kinect/model_path", 1000, boost::bind(&ROSCom::model_path_cb, this, _1));
 
         detected_objects_pub = nh.advertise<re_kinect_object_detector::DetectionResult>("re_kinect/detection_results", 10);
+
+        reorderedList_sub = nh.subscribe("re_kinect/orderedList", 1, &ROSCom::model_orderedList_cb, this);
     }
 
     /// callback for new model directories
@@ -100,6 +103,16 @@ public:
             models.insert(std::make_pair(model_path, model));
 
         ROS_INFO("done loading model from %s", model_path.c_str());
+    }
+
+    /// callback for new model directories
+    void model_orderedList_cb(const re_kinect_object_detector::OrderedListConstPtr &msg) {
+        boost::mutex::scoped_lock lock(mutex);
+        ROS_INFO("A new ordered list arrived from BN");
+
+        //htf do you reoder a map
+
+
     }
 
     /// callback for Kinect point clouds
@@ -145,6 +158,7 @@ public:
         for(std::map<std::string, RecognitionModel>::iterator it=models.begin(); it!=models.end(); it++, i++) {
             RecognitionModel& model = it->second;
             re_msgs::DetectedObject detectedObjMsg;
+            resultMsg.FullObjectList.push_back(model.model_name);
 
             // Match the scene with the model.
             if (model.matchAspects(scene, t)) {
@@ -182,7 +196,7 @@ public:
                 tf::Transform object_tf = tfFromEigen(t);
                 tf_broadcaster.sendTransform(tf::StampedTransform(object_tf, pcl_msg->header.stamp, pcl_msg->header.frame_id, model.model_name));
 
-                resultMsg.ObjectNames.push_back(model.model_name);
+                resultMsg.DetectedObjectList.push_back(model.model_name);
                 resultMsg.Detections.push_back(detectedObjMsg);
 
             }
@@ -204,6 +218,7 @@ public:
 
 
     ros::Subscriber kinect_sub;
+    ros::Subscriber reorderedList_sub;
     ros::Subscriber model_sub;
     ros::Publisher features_pub;
     ros::Publisher detected_objects_pub;
