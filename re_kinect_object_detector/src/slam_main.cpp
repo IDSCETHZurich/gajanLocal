@@ -85,6 +85,8 @@ public:
         detected_objects_pub = nh.advertise<re_kinect_object_detector::DetectionResult>("re_kinect/detection_results", 10);
 
         reorderedList_sub = nh.subscribe("re_kinect/orderedList", 1, &ROSCom::model_orderedList_cb, this);
+
+        ROS_INFO("Starting the BN patched version of object detection");
     }
 
     /// callback for new model directories
@@ -93,14 +95,23 @@ public:
         ROS_INFO("model path callback; path = %s", model_path_msg->data.c_str());
 
         std::string model_path = model_path_msg->data;
-        if (models.find(model_path) != models.end()) {
-            ROS_WARN("model path '%s' was already known. Ignoring.", model_path.c_str());
-            return;
+
+
+        bool noDuplicate=true;
+        for(int i=0; i<(int)models.size(); i++){
+        	if(models[i].model_name == model_path){
+                ROS_WARN("model path '%s' was already known. Ignoring.", model_path.c_str());
+        		noDuplicate = true;
+        	}
         }
 
         RecognitionModel model;
-        if (model.loadFromPath(model_path))
-            models.insert(std::make_pair(model_path, model));
+        if (noDuplicate && model.loadFromPath(model_path)){
+            models.push_back(model);
+            modelPaths.push_back(model_path);
+            order.push_back(order.size()); //includes 0
+
+        }
 
         ROS_INFO("done loading model from %s", model_path.c_str());
     }
@@ -109,10 +120,7 @@ public:
     void model_orderedList_cb(const re_kinect_object_detector::OrderedListConstPtr &msg) {
         boost::mutex::scoped_lock lock(mutex);
         ROS_INFO("A new ordered list arrived from BN");
-
-        //htf do you reoder a map
-
-
+        order = msg->FullOrderedObjectList;
     }
 
     /// callback for Kinect point clouds
@@ -155,8 +163,9 @@ public:
         sensor_msgs::PointCloud2 feature_msg;
         int i = 0;
         re_kinect_object_detector::DetectionResult resultMsg;
-        for(std::map<std::string, RecognitionModel>::iterator it=models.begin(); it!=models.end(); it++, i++) {
-            RecognitionModel& model = it->second;
+//      for(std::map<std::string, RecognitionModel>::iterator it=models.begin(); it!=models.end(); it++, i++) {
+        for(;i < (int)order.size(); i++) {
+            RecognitionModel& model = models[order[i]];
             re_msgs::DetectedObject detectedObjMsg;
             resultMsg.FullObjectList.push_back(model.model_name);
 
@@ -226,7 +235,11 @@ public:
     boost::mutex mutex;
 
     /// maps model paths to model objects (for checking if a given model path was already loaded)
-    std::map<std::string, RecognitionModel> models;
+    // Quick fix TODO: Try to replace with Boost.MultiIndex
+    std::vector<int32_t> order;
+    std::vector<RecognitionModel> models;
+    std::vector<std::string> modelPaths;
+
 };
 
 
