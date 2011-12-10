@@ -1,5 +1,7 @@
 import ros.*;
 import ros.communication.*;
+import ros.pkg.re_kinect_object_detector.msg.DetectionResult;
+import ros.pkg.re_kinect_object_detector.msg.OrderedList;
 
 public class NodeSort {
     public static void main(String args[]) 
@@ -7,22 +9,46 @@ public class NodeSort {
         final Ros ros = Ros.getInstance();
         ros.init("Listner");
         
-        ros.pkg.std_msgs.msg.String msg = new ros.pkg.std_msgs.msg.String();
+        //ros.pkg.std_msgs.msg.String msg = new ros.pkg.std_msgs.msg.String();
+        //ros.pkg.re_kinect_object_detector.msg.DetectionResult
         
-        NodeHandle n = ros.createNodeHandle();        
+        NodeHandle n = ros.createNodeHandle(); 
         
-        Subscriber.Callback<ros.pkg.std_msgs.msg.String> callback = 
-        new Subscriber.Callback<ros.pkg.std_msgs.msg.String>() {
-            public void call(ros.pkg.std_msgs.msg.String msg) {
-                ros.logInfo("Received [" + msg.data + "]"); 
+        final Publisher<ros.pkg.re_kinect_object_detector.msg.OrderedList> pub =
+        	       n.advertise("re_kinect/orderedList", new ros.pkg.re_kinect_object_detector.msg.OrderedList(), 1);
+        
+        Subscriber.Callback<ros.pkg.re_kinect_object_detector.msg.DetectionResult> callback = 
+        new Subscriber.Callback<ros.pkg.re_kinect_object_detector.msg.DetectionResult>() {
+            public void call(ros.pkg.re_kinect_object_detector.msg.DetectionResult msg) {
+                ros.logInfo("Received Msg"); 
+                java.util.ArrayList<java.lang.String> DetectedObjectList = msg.DetectedObjectList;
+                java.util.ArrayList<java.lang.String> FullObjectList = msg.FullObjectList;
+                
+                for(int i=0; i<DetectedObjectList.size();i++){
+                	ros.logInfo(DetectedObjectList.get(i));
+                }
+                
+                for(int i=0; i<FullObjectList.size();i++){
+                	ros.logInfo(FullObjectList.get(i));
+                }
+                
+                // Okan here is where your code goes
+                
+                int[] FullOrderedObjectList = new int[FullObjectList.size()];
+                
+                ros.pkg.re_kinect_object_detector.msg.OrderedList ol = new ros.pkg.re_kinect_object_detector.msg.OrderedList();
+                ol.FullOrderedObjectList = FullOrderedObjectList;
+                
+                pub.publish(ol);
+                
             }
         };    
         
-        Subscriber<ros.pkg.std_msgs.msg.String> sub; 
-        sub = n.subscribe("chatter", 
-                          new ros.pkg.std_msgs.msg.String(), 
+        Subscriber<ros.pkg.re_kinect_object_detector.msg.DetectionResult> sub; 
+        sub = n.subscribe("re_kinect/detection_results", 
+                          new ros.pkg.re_kinect_object_detector.msg.DetectionResult(), 
                           callback, 
-                          100);
+                          1);
         
         n.spin();
     }
