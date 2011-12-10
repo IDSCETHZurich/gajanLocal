@@ -9,9 +9,6 @@ public class NodeSort {
         final Ros ros = Ros.getInstance();
         ros.init("Listner");
         
-        //ros.pkg.std_msgs.msg.String msg = new ros.pkg.std_msgs.msg.String();
-        //ros.pkg.re_kinect_object_detector.msg.DetectionResult
-        
         NodeHandle n = ros.createNodeHandle(); 
         
         final Publisher<ros.pkg.re_kinect_object_detector.msg.OrderedList> pub =
