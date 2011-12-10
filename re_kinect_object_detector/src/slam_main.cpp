@@ -101,7 +101,7 @@ public:
         for(int i=0; i<(int)models.size(); i++){
         	if(models[i].model_name == model_path){
                 ROS_WARN("model path '%s' was already known. Ignoring.", model_path.c_str());
-        		noDuplicate = true;
+        		noDuplicate = false;
         	}
         }
 
@@ -110,7 +110,7 @@ public:
             models.push_back(model);
             modelPaths.push_back(model_path);
             order.push_back(order.size()); //includes 0
-
+            ROS_INFO("New model pushed back. # of models %d", models.size());
         }
 
         ROS_INFO("done loading model from %s", model_path.c_str());
@@ -163,14 +163,14 @@ public:
         sensor_msgs::PointCloud2 feature_msg;
         int i = 0;
         re_kinect_object_detector::DetectionResult resultMsg;
-//      for(std::map<std::string, RecognitionModel>::iterator it=models.begin(); it!=models.end(); it++, i++) {
         for(;i < (int)order.size(); i++) {
+        	ROS_INFO("Checking model %d / %d", order[i], (int)models.size());
             RecognitionModel& model = models[order[i]];
             re_msgs::DetectedObject detectedObjMsg;
             resultMsg.FullObjectList.push_back(model.model_name);
 
             // Match the scene with the model.
-            if (model.matchAspects(scene, t)) {
+            if (model.matchAspects(scene, t)){
 
                 // get transformation
                 ROS_INFO("displaying %d points in frame: %s",(int)scene.match->points->size(),pcl_msg->header.frame_id.c_str());
