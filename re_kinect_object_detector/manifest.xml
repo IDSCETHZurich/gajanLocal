@@ -15,6 +15,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/re_kinect_object_detector</url>
   <depend package="roscpp"/>
+  <depend package="rospy"/>
   <depend package="sensor_msgs"/>
   <depend package="opencv2"/>
   <depend package="image_transport"/>

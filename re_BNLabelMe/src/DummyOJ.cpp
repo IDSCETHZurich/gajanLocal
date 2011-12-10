@@ -1,6 +1,6 @@
 #include "ros/ros.h"
-#include "re_BNLabelMe/orderedList.h"
-#include "re_BNLabelMe/unorderedListwithEvidence.h"
+#include <re_kinect_object_detector/DetectionResult.h>
+#include <re_kinect_object_detector/OrderedList.h>
 
 using namespace std;
 
@@ -10,12 +10,12 @@ public:
 	ros::Publisher pub;
 	ros::Subscriber sub;
 	DummyOJ(){
-		pub = n.advertise<re_BNLabelMe::unorderedListwithEvidence>("unorderedListwithEvidence", 1);
-		sub = n.subscribe("orderedList", 1, &DummyOJ::orderedListCallback, this);
+		pub = n.advertise<re_kinect_object_detector::DetectionResult>("re_kinect/detection_results", 1);
+		sub = n.subscribe("re_kinect/orderedList", 1, &DummyOJ::orderedListCallback, this);
 	};
 
 	bool publishUnorderedListWithEvidence(){
-		re_BNLabelMe::unorderedListwithEvidence uListEvidenceMsg;
+		re_kinect_object_detector::DetectionResult resultMsg;;
 		std::vector<string> uList;
 		std::vector<string> evidence;
 
@@ -24,15 +24,15 @@ public:
 
 		evidence.push_back("Gajan");
 
-		uListEvidenceMsg.uList = uList;
-		uListEvidenceMsg.evidence = evidence;
+		resultMsg.FullObjectList = uList;
+		resultMsg.DetectedObjectList = evidence;
 
-		pub.publish(uListEvidenceMsg);
+		pub.publish(resultMsg);
 
 		return true;
 	};
 
-	void orderedListCallback(const re_BNLabelMe::orderedListConstPtr& msg){
+	void orderedListCallback(const re_kinect_object_detector::OrderedListConstPtr &msg){
 		std::cout << "Received message" << std::endl;
 	};
 };

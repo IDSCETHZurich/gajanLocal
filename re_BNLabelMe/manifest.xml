@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/re_BNLabelMe</url>
   <depend package="roscpp"/>
+  <depend package="re_kinect_object_detector"/>
   <depend package="rospy"/>
 
 </package>
