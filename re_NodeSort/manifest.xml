@@ -1,0 +1,16 @@
+<package>
+  <description brief="re_NodeSort">
+
+     re_NodeSort
+
+  </description>
+  <author>gajan</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/re_NodeSort</url>
+  <depend package="rosjava_jni"/>
+  <depend package="re_kinect_object_detector"/>
+
+</package>
+
+
