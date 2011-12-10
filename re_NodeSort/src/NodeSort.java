@@ -1,7 +1,5 @@
 import ros.*;
 import ros.communication.*;
-import ros.pkg.re_kinect_object_detector.msg.DetectionResult;
-import ros.pkg.re_kinect_object_detector.msg.OrderedList;
 
 public class NodeSort {
     public static void main(String args[]) 
