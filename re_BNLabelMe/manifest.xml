@@ -8,9 +8,12 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/re_BNLabelMe</url>
+  
   <depend package="roscpp"/>
-  <depend package="re_kinect_object_detector"/>
+  <depend package="rosjava_jni"/>
   <depend package="rospy"/>
+  
+  <depend package="re_kinect_object_detector"/>
 
 </package>
 
