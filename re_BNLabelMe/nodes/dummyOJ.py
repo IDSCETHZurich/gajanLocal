@@ -15,8 +15,8 @@ class dummyOJ:
 
 	def publishDetectionResult(self):
 		result = DetectionResult()
-		result.FullObjectList = ['Obj1','Obj2']
-		result.DetectedObjectList = ['Obj2']		
+		result.FullObjectList = ['window','cupboard','sink','refrigerator','bottle']
+		result.DetectedObjectList = ['sink', 'window']		
 		self.pub.publish(result)
 
 if __name__ == '__main__':
