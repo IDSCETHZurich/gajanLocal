@@ -158,10 +158,10 @@ namespace simplePendulum
     	xr_msr = poseCurrent.position.x -  originX;
     	yr_msr = poseCurrent.position.y -  originY;
 
-    	xr_comm = 0.1*sin(3.14*t);
-    	yr_comm = 0.1*cos(3.14*t);
-    	xrdot_comm = (0.1*3.14)*cos(3.14*t);
-    	yrdot_comm = -(0.1*3.14)*sin(3.14*t);
+    	xr_comm = 0.0; //0.2*sin(3.14*t);
+    	yr_comm = 0.2*cos(3.14*t);
+    	xrdot_comm = 0.0; //(0.2*3.14)*cos(3.14*t);
+    	yrdot_comm = -(0.2*3.14)*sin(3.14*t);
 
     	t += dT;
 
@@ -196,8 +196,8 @@ namespace simplePendulum
     	commandedState[12] = 0.0;
 
 		m_position_desi.write(commandedState);
-    }
-*/
+    }*/
+
     void PendController::stopHook()
     {
     	stateLogger.close();

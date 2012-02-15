@@ -19,7 +19,7 @@
   <depend package="ocl"/>
   <depend package="orocos_kdl"/>
   <depend package="kdl"/>
-  <depend package="lwr_fri"/>
+  <!--<depend package="lwr_fri"/>-->
 </package>
 
 

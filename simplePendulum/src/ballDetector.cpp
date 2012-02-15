@@ -96,10 +96,12 @@ public:
     cv_ptr->image = ~(cv_ptr->image);
     cv::threshold(cv_ptr->image, cv_ptr->image, 195, 255, cv::THRESH_TOZERO);
 
+
     //perform erosion and dilation
 
     cv::erode(cv_ptr->image, cv_ptr->image,element);
     cv::dilate(cv_ptr->image, cv_ptr->image,element);
+
     //cvMoments
     tmp_moments = cv::moments( cv_ptr->image, 0 );
 
