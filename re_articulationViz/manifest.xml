@@ -1,0 +1,15 @@
+<package>
+  <description brief="re_articulationViz">
+
+     re_articulationViz
+
+  </description>
+  <author>gajan</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/re_articulationViz</url>
+  <depend package="visualization_msgs"/>
+
+</package>
+
+

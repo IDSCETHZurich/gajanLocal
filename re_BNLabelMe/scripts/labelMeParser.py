@@ -8,7 +8,7 @@ matchString = 'http://labelme.csail.mit.edu/tool.html?collection=LabelMe'
 baseXML = 'http://labelme.csail.mit.edu/Annotations/'
 
 # options: kitchen, bathroom, bedroom, 
-searchValue = 'kitchen'
+searchValue = 'living room'
 values = {'query': searchValue,'submit': 'Search'}
 searchResponse = urllib.urlopen(url, urllib.urlencode(values)).read()
 

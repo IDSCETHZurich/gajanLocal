@@ -8,6 +8,7 @@ from re_kinect_object_detector.msg import OrderedList
 
 class reorderingClass:
 	def __init__(self):
+
 		rospy.init_node('reorderingNode', anonymous=True)
 		rospy.Subscriber("re_kinect/detection_results", DetectionResult, self.callback)
 		
@@ -20,5 +21,8 @@ def listener():
     rospy.Subscriber("re_kinect/detection_results", DetectionResult, callback)
     rospy.spin()
 
+
 if __name__ == '__main__':
-    listener()
+	rospy.init_node('reorderingNode', anonymous=True)
+ 	roc = reorderingClass()
+	rospy.spin()
