@@ -64,7 +64,7 @@ public:
     sHeight = 493;
 
 	//lenght of the pendulem
-    l = 0.96;
+    l = 0.89;
 
     pos_km1 = std::vector<double>(2,0.0);
     pos_km2 = std::vector<double>(2,0.0);

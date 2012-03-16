@@ -2,7 +2,7 @@ clear; clc;
 global sys u;
 
 %% Continous Time sub-system
-l = 0.95;
+l = 0.89;
 g = 9.81;
 Ac = [0 g/l 0 0;
    1 0 0 0;
@@ -16,17 +16,16 @@ Dc = zeros(4,1);
 % Q = diag([100,200,1,2]);
 % R = 0.002;
 
-Q = diag([1,2,1,2]);
-R = 1;
+Q = diag([5/0.04,10/0.04,1/0.09,1/0.09]);
+R = 0.001/0.09;
 
 [Kc,~,~] = lqr(Ac, Bc, Q, R, zeros(4,1));
 display(Kc);
 
-
 %% Discretize the sub-system
 
 %Sampling time
-dT = 1/50; % 50 Hz control
+dT = 1/40; % 20 Hz control
 
 sys = ss(Ac,Bc,Cc,Dc);
 

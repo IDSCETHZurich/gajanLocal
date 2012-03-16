@@ -6,7 +6,7 @@ ORO_LIST_COMPONENT_TYPE(simplePendulum::PendFilter);
 //Butterworth
 #define NZEROS 4
 #define NPOLES 4
-#define GAIN   1.397824236e+02
+#define GAIN   4.108289960e+00
 
 
 using namespace std;
@@ -44,6 +44,9 @@ namespace simplePendulum
     	xp_old = 0.0;
     	yp_old = 0.0;
 
+    	xpdot_ma = 0.0;
+    	xpm1dot_ma = 0.0;
+
     }
 
     PendFilter::~PendFilter()
@@ -67,13 +70,23 @@ namespace simplePendulum
     void PendFilter::updateHook()
     {
     	pendProjPoint_inputPort.read(pendPosBWFiltered);
-    	pendPosBWFiltered.x = butterWorthLowpass(pendPosBWFiltered.x, xr, xr_est);
+    	//pendPosBWFiltered.x = butterWorthLowpass(pendPosBWFiltered.x, xr, xr_est);
+    	pendPosBWFiltered.x = pendPosBWFiltered.x;
     	pendPosBWFiltered.y = butterWorthLowpass(pendPosBWFiltered.y, yr, yr_est);
     	pendProjPoint_outputPort.write(pendPosBWFiltered);
 
-    	pendVelBWFiltered.x = butterWorthLowpass((pendPosBWFiltered.x-xp_old)/dT, xpdot, xpdot_est);
-    	pendVelBWFiltered.y = butterWorthLowpass((pendPosBWFiltered.y-yp_old)/dT, ypdot, ypdot_est);
-    	xp_old = pendPosBWFiltered.x; yp_old = pendPosBWFiltered.y;
+    	//pendVelBWFiltered.x = butterWorthLowpass((pendPosBWFiltered.x-xp_old)/dT, xpdot, xpdot_est);
+
+    	//moving average filter for pend x vel
+    	xpdot_ma = (pendPosBWFiltered.x-xp_old)/dT;
+    	pendVelBWFiltered.x = (xpdot_ma + xpm1dot_ma)/2.0;
+    	xpm1dot_ma = xpdot_ma;
+    	xp_old = pendPosBWFiltered.x;
+
+    	//pendVelBWFiltered.y = butterWorthLowpass((pendPosBWFiltered.y-yp_old)/dT, ypdot, ypdot_est);
+    	//yp_old = pendPosBWFiltered.y;
+
+
     	pendProjVelocity_outputPort.write(pendVelBWFiltered);
     }
 
@@ -90,10 +103,9 @@ namespace simplePendulum
 		x[4] = input / GAIN;
 		x_est[0] = x_est[1]; x_est[1] = x_est[2]; x_est[2] = x_est[3]; x_est[3] = x_est[4];
 		x_est[4] =   (x[0] + x[4]) + 4 * (x[1] + x[3]) + 6 * x[2]
-				+ ( -0.1508387651 * x_est[0]) + (  0.8784455006 * x_est[1])
-				+ ( -2.0129032148 * x_est[2]) + (  2.1708328750 * x_est[3]);
-		//return x_est[4];
-		return input;
+				+ (  -0.059836225 * x_est[0]) + ( -0.3875638231 * x_est[1])
+				+ (  -1.0813800035 * x_est[2]) + ( -1.3657843902 * x_est[3]);
+		return x_est[4];
     }
 
 /*    bool PendFilter::processPendProjPoint(RTT::base::PortInterface* portInterface){

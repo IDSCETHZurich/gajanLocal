@@ -14,8 +14,7 @@ namespace simplePendulum
     using namespace std;
 
     const double PendController::gainLQR [] =
-    	{ -10.7359,  -34.3973,   -2.6273,   -1.2995,  -10.7359,  -34.3973,   -2.6273,   -1.2995};
-
+    	{  57.0645,  162.1676,   19.0043,    9.7225, 57.0645,  162.1676,   19.0043,    9.7225};
 
     PendController::PendController(string name)
         : TaskContext(name,PreOperational)
@@ -81,14 +80,15 @@ namespace simplePendulum
     	//s_t[2] = butterWorthLowpass((poseCurrent.position.x - originX - s_t[3])/dT, xrdot, xrdot_est);
     	//s_t[6] = butterWorthLowpass((poseCurrent.position.y - originY - s_t[7])/dT, yrdot, yrdot_est);
     	s_t[2] = (poseCurrent.position.x - originX - s_t[3])/dT;
-    	s_t[6] = (poseCurrent.position.y - originY - s_t[7])/dT;
+    	//s_t[6] = (poseCurrent.position.y - originY - s_t[7])/dT;
     	s_t[3] = poseCurrent.position.x -  originX;
-    	s_t[7] = poseCurrent.position.y -  originY;
+    	//s_t[7] = poseCurrent.position.y -  originY;
 
     	pendPos_inputPort.read(filteredPos);
     	s_t[1] = filteredPos.x;
     	s_t[5] = filteredPos.y;
 
+    	/*
     	pendVel_inputPort.read(filteredVel);
     	s_t[0] = filteredVel.x;
     	s_t[4] = filteredVel.y;
@@ -99,24 +99,27 @@ namespace simplePendulum
     		u_t[0] += -gainLQR[i]*s_t[i];
     	}
     	for(int i=4; i<8;i++){
-			u_t[1] += -gainLQR[i]*s_t[i];
+			u_t[1] += gainLQR[i]*s_t[i];
 		}
 
     	//updating position and velocity (order matters !) s_(t+1)
     	xr = s_t[3] + 0.5 * dT * (2 * s_t[2] + dT * u_t[0]); // xr_tplus1
     	yr  = s_t[7] + 0.5 * dT * (2 * s_t[6] + dT * u_t[1]); // yr_tplus1
+*/
 
-    	stateLogger << s_t[0] << " " << s_t[1] << " " << s_t[2] << " " << s_t[3] << " " << s_t[4] << " " << s_t[5] << " " <<
-    	    			s_t[6] << " " << s_t[7]  <<  " " << u_t[0] << " " << u_t[1] << " " << xr << " " << yr << endl;
+//    	stateLogger << s_t[0] << " " << s_t[1] << " " << s_t[2] << " " << s_t[3] << " " << s_t[4] << " " << s_t[5] << " " <<
+//    	    			s_t[6] << " " << s_t[7]  <<  " " << u_t[0] << " " << u_t[1] << " " << xr << " " << yr << endl;
+
+    	//stateLogger << s_t[0] << " " << s_t[1] << " " << s_t[2] << " " << s_t[3] << " " << xr << " " << u_t[0] <<  endl;
+
 
     	//check for sanity
-        if(abs(xr)>Xr || abs(yr)>Yr){
+        if(abs(xr)>Xr){
         	cout << "PendController::Commanded Value out of Range" << endl;
         		cout << "	xr = " << xr << endl;
-        		cout << "	yr = " << yr << endl;
-        	//this->stop();
-        	xr = 0;
-        	yr = 0;
+        	this->stop();
+        	//xr = 0;
+        	//yr = 0;
         }
 
 		//Send Pose to Robot
@@ -128,8 +131,11 @@ namespace simplePendulum
 		pose.orientation.z = 0.0;
 		pose.orientation.w = 1.0;
 
-		pose.position.x = originX + xr;
-		pose.position.y = originY + yr;
+		//pose.position.x = originX + xr;
+
+		pose.position.x = poseCurrent.position.x + filteredPos.x;
+
+		pose.position.y = originY;// + yr;
 		pose.position.z = originZ;
 
 		commandedState[0]=pose.position.x;
@@ -140,8 +146,8 @@ namespace simplePendulum
 		commandedState[5]=pose.orientation.z;
 		commandedState[6]=pose.orientation.w;
 
-		commandedState[7] = s_t[2];
-		commandedState[8] = s_t[6];
+		commandedState[7] = s_t[2] + dT * u_t[0];
+		commandedState[8] = 0.0; //s_t[6];
 		commandedState[9] = 0.0;
 		commandedState[10] = 0.0;
 		commandedState[11] = 0.0;

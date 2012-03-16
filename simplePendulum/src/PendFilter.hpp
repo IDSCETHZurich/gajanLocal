@@ -40,6 +40,7 @@ namespace simplePendulum
         double xp_old, yp_old;
         std::vector<double> xr, xr_est, yr, yr_est;
         std::vector<double> xpdot, xpdot_est, ypdot, ypdot_est;
+        double xpdot_ma,xpm1dot_ma;
         double xr_tm1, yr_tm1;
         double dT;
 
