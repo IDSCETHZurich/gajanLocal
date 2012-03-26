@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/re_articulationViz</url>
   <depend package="visualization_msgs"/>
+  <depend package="kdl"/>
 
 </package>
 

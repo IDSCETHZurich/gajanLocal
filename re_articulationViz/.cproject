@@ -183,6 +183,8 @@
 <pathentry include="/opt/ros/electric/ros/core/roslib/include" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/electric/ros/tools/rospack" kind="inc" path="" system="true"/>
 <pathentry include="/opt/ros/electric/ros/tools/rospack/include" kind="inc" path="" system="true"/>
+<pathentry include="/opt/ros/electric/stacks/orocos_kinematics_dynamics/orocos_kdl/install_dir/include" kind="inc" path="" system="true"/>
+<pathentry include="/usr/include/eigen3" kind="inc" path="" system="true"/>
 <pathentry include="/usr/include" kind="inc" path="" system="true"/>
 <pathentry include="/usr/local/include" kind="inc" path="" system="true"/>
 <pathentry include="/usr/lib/gcc/x86_64-linux-gnu/4.4.3/include" kind="inc" path="" system="true"/>
