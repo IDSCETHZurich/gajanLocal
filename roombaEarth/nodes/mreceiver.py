@@ -14,7 +14,7 @@ sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 while True:
 	binaryString = sock.recv(1024)
-	print('Recived')
-	print(binaryString)  
-	print(struct.unpack('2B3HIB',binaryString))
+	print('Received')
+	print(binascii.hexlify(binaryString))  
+	print(len(binaryString))
 	print('-------')
