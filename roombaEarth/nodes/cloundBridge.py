@@ -4,6 +4,7 @@ import rospy
 
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import JointState
+from sensor_msgs.msg import LaserScan
 
 if __name__ == "__main__":
 	rospy.init_node('cloudBridge')
