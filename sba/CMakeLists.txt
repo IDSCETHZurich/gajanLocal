@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.4.6)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 set(ROS_BUILT_TYPE RelWithDebInfo)
-#add_definitions (-permissive)
+add_definitions (-Wall -O3 -funroll-loops -fpermissive)
 rosbuild_init()
 
 rosbuild_add_boost_directories()

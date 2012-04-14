@@ -158,7 +158,7 @@ namespace sba
                     const Eigen::Matrix<double,4,1> &trans, 
                     const Eigen::Quaternion<double> &qrot)
   {
-    m.block<3,3>(0,0) = qrot.toRotationMatrix().transpose();
+    m.block<3,3>(0,0) = qrot.toRotationMatrix();//.transpose();
     m.col(3).setZero();         // make sure there's no translation
     m.col(3) = -m*trans;
   };
