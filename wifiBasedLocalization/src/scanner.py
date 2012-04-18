@@ -5,6 +5,7 @@ import os.path
 import pickle
 from singleMsr import singleMsr
 
+
 if __name__  ==  '__main__':
 	proc = subprocess.Popen('iwlist eth2 scanning', shell=True, stdout=subprocess.PIPE, ) 
 	stdout_str = proc.communicate()[0] 
