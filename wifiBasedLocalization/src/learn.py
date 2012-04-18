@@ -28,7 +28,7 @@ if __name__  ==  '__main__':
 	print labels 
 	
 	centroids = []
-	numOfFeatures = 10
+	numOfFeatures = 12
 
 	for label in labels:
 		apStr = {} #Strength
