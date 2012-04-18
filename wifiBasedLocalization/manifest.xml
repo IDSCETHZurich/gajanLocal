@@ -1,0 +1,15 @@
+<package>
+  <description brief="wifiBasedLocalization">
+
+     wifiBasedLocalization
+
+  </description>
+  <author>gajan</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/wifiBasedLocalization</url>
+  <depend package="rospy"/>
+
+</package>
+
+
