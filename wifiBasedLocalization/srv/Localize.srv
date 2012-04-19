@@ -1,0 +1,4 @@
+string[] addresses
+float32[] strengths
+---
+string label
