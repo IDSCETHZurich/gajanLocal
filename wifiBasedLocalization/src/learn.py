@@ -3,14 +3,6 @@ import os.path
 import pickle
 from singleMsr import singleMsr
 
-#class singleMsr:
-#	def __init__(self, address, signalStrength, ESSID):
-#		self.address = address
-#		self.signalStrength = signalStrength
-#		self.ESSID = ESSID
-#	def __repr__(self):
-#		return self.address+' '+str(self.signalStrength)
-
 if __name__  ==  '__main__':	
 	if os.path.exists('data.pickle'):
 		data = pickle.load(open('data.pickle','rb'))
