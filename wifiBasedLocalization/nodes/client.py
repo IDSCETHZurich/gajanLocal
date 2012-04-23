@@ -38,7 +38,6 @@ def getReading():
 if __name__ == "__main__":
 	#create environment 
 	envID = ServiceAPI.changeEnv(nodesToAdd=[('wifiBasedLocalization/classifier.py', None)])
-<<<<<<< HEAD
 	
 	#address, strength = getReading()
 	address = ['00:03:52:5C:28:B1', '00:03:52:5C:28:B2', '00:03:52:5C:28:B3', '00:0F:61:86:EC:21', '00:0F:61:86:EC:22', '00:0F:61:86:EC:23', '00:03:52:5C:26:C0', '00:03:52:5C:26:C1', '00:03:52:5C:26:C2', '00:03:52:5C:26:C3', '00:0F:61:86:EC:20', '00:0F:61:B5:33:98']
@@ -47,15 +46,6 @@ if __name__ == "__main__":
 	try:
 		#build message
 		msg = { 'addresses' : address, 'strengths' : strength }
-=======
-
-	address, strength = getReading()
-	try:
-		#build message
-		msg = { 'addresses' : address, 'strengths' : strength }
-		print msg
-		#localize = rospy.ServiceProxy('wifiBasedLocationClassifier', Localize)
->>>>>>> 6a506141b4cfa0dcf85fd56e0a33a621c929d1dc
 
 		#add task
 		taskID = ServiceAPI.addTask(envID, 'wifiBasedLocalization/wifiBasedLocationClassifier', msg)
