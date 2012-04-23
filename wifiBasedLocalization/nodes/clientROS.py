@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-#import roslib; roslib.load_manifest('wifiBasedLocalization')
+import roslib; roslib.load_manifest('wifiBasedLocalization')
 
-#from wifiBasedLocalization.srv import *
-#import rospy
+from wifiBasedLocalization.srv import *
+import rospy
 
 import ServiceAPI
 
@@ -40,7 +40,7 @@ def getReading():
 	return (address,strength)
 
 if __name__ == "__main__":
-	#rospy.wait_for_service('wifiBasedLocationClassifier')
+	rospy.wait_for_service('wifiBasedLocationClassifier')
 
 	#create environment 
 	envID = ServiceAPI.changeEnv(nodesToAdd=[('wifiBasedLocalization/classifier.py', None)])
@@ -48,23 +48,25 @@ if __name__ == "__main__":
 	address, strength = getReading()
 	try:
 		#build message
-		msg = { 'addresses' : address, 'strengths' : strength }
-		print msg
-		#localize = rospy.ServiceProxy('wifiBasedLocationClassifier', Localize)
+		#msg = { 'addresses' : address, 'strengths' : strength }
+		#print msg
+		localize = rospy.ServiceProxy('wifiBasedLocationClassifier', Localize)
 
 		#add task
-		taskID = ServiceAPI.addTask(envID, 'wifiBasedLocalization/wifiBasedLocationClassifier', msg)
-		#label = localize(address, strength)
+		#taskID = ServiceAPI.addTask(envID, 'wifiBasedLocalization/wifiBasedLocationClassifier', msg)
+		label = localize(address, strength)
 
 		#get task result
-		(status, result) = ServiceAPI.getTask(envID, taskID, 5)
+		#(status, result) = ServiceAPI.getTask(envID, taskID, 5)
 		
 		#print result
-		if status == 'completed':
-			print result['label']
-		else:
-			print '{0}: {1}'.format(status, result)
-		#print label
-	except SercviceAPI.RequestError as e:
-		print "Service call failed: %s"%e
-
+		#if status == 'completed':
+		#	print result['label']
+		#else:
+		#	print '{0}: {1}'.format(status, result)
+		print label
+	#except SercviceAPI.RequestError as e:
+	#	print "Service call failed: %s"%e
+	except:
+		raise
+	
