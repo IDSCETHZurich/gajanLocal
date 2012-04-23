@@ -20,7 +20,7 @@ def localize(req):
 		centroids = pickle.load(open('centroids.pickle','rb'))
 	else:
 		print 'centroids.pickle can not be read'
-		estimatedModel = 'None'
+		estimatedLabel = 'None'
 		return estimatedLabel
 
 	distances = []
