@@ -66,14 +66,15 @@ if __name__ == "__main__":
 	logFile = open("log.txt", "w")
 	logFile.write( "dist, angle, rangeIR, mts, flag\n");
 
-
+	dist_wheel_l = 0.0
+	dist_wheel_r = 0.0
 
 	#Get data and publish infinitly
 	while not rospy.is_shutdown():
 
 		binaryString = sock.recv(1024)
 		if(len(binaryString)==16):
-			data = struct.unpack('=BBhhIIBB',binaryString)
+			data = struct.unpack('=BBHHIIBB',binaryString)
 			# startByte: start byte
 			# pktType: packet type
 			# dist: distance traveled; sum of the distance traveled by two wheels divided by 2 [mm]
@@ -83,7 +84,8 @@ if __name__ == "__main__":
 			# flag: indicates if new odometry has been received
 			# chk: modular sum checksum
 			startByte, pktType, dist, angle, rangeIR, mts, flag, chk = data 
-			# print data
+			dist_wheel_l = dist_wheel_l + float(int(dist) + int(angle))
+			dist_wheel_r = dist_wheel_r + float(int(dist) - int(angle))
 		
 			jntState.header.stamp = rospy.get_rostime()		
 			jntState.position = [0.1, 0.0, 0.0, 0.0]
@@ -106,6 +108,6 @@ if __name__ == "__main__":
 			scanPub.publish(scanMsg)
 			logFile.write('{0}, {1}, {2}, {3}, {4}\n'.format(dist, angle, rangeIR, mts, flag))
 			if flag == 1:			
-				print('{0}, {1}, {2}, {3}, {4}'.format(dist, angle, rangeIR, mts, flag))
+				print('{0}, {1}, {2}, {3}, {4} --- {5}, {6}'.format(dist, angle, rangeIR, mts, flag, dist_wheel_l, dist_wheel_r ))
 	# Close log file
 	logFile.close()
