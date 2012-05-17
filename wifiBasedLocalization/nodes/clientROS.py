@@ -44,8 +44,11 @@ if __name__ == "__main__":
 
 	#create environment 
 	envID = ServiceAPI.changeEnv(nodesToAdd=[('wifiBasedLocalization/classifier.py', None)])
-
-	address, strength = getReading()
+	
+	#address, strength = getReading()
+	address = ['00:03:52:5C:28:B1', '00:03:52:5C:28:B2', '00:03:52:5C:28:B3', '00:0F:61:86:EC:21', '00:0F:61:86:EC:22', '00:0F:61:86:EC:23', '00:03:52:5C:26:C0', '00:03:52:5C:26:C1', '00:03:52:5C:26:C2', '00:03:52:5C:26:C3', '00:0F:61:86:EC:20', '00:0F:61:B5:33:98']
+	strength = [-85.0, -84.0, -83.0, -57.0, -57.0, -57.0, -73.0, -73.0, -72.0, -72.0, -68.0, -87.0]
+	
 	try:
 		#build message
 		#msg = { 'addresses' : address, 'strengths' : strength }
