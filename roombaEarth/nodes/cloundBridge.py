@@ -7,6 +7,7 @@ from sensor_msgs.msg import LaserScan
 
 import socket
 import struct
+import math
 
 def getRangeFromRawData(data):
 	#Linear model:
@@ -69,6 +70,13 @@ if __name__ == "__main__":
 	dist_wheel_l = 0.0
 	dist_wheel_r = 0.0
 
+	# robot states w.r.t inertial frame
+	robot_x_i = 0.0
+	robot_y_i = 0.0
+	robot_theta_i = 0.0
+	
+	robot_description_r = 0.258 / 2.0
+
 	#Get data and publish infinitly
 	while not rospy.is_shutdown():
 
@@ -92,14 +100,21 @@ if __name__ == "__main__":
 			jntState.velocity = [0.0, 0.1, 0.0, 0.0]
 			jntStatePub.publish(jntState)
 		
+
+			# compute odometry
+			robot_theta_i = robot_theta_i + angle/robot_description_r
+			robot_x_i = robot_x_i + dist * math.cos(robot_theta_i)
+			robot_y_i = robot_y_i + dist * math.sin(robot_theta_i)	
+
+
 			odoMsg.header.stamp = rospy.get_rostime()
-			odoMsg.pose.pose.position.x = 0.0
-			odoMsg.pose.pose.position.y = 0.0
+			odoMsg.pose.pose.position.x = robot_x_i
+			odoMsg.pose.pose.position.y = robot_y_i
 			odoMsg.pose.pose.position.z = 0.0
 			odoMsg.pose.pose.orientation.x = 0.0 
 			odoMsg.pose.pose.orientation.y = 0.0
-			odoMsg.pose.pose.orientation.z = 0.0
-			odoMsg.pose.pose.orientation.w = 0.1
+			odoMsg.pose.pose.orientation.z = math.sin(robot_theta_i/2.0)
+			odoMsg.pose.pose.orientation.w = math.cos(robot_theta_i/2.0)
 			odomPub.publish(odoMsg)
 			
 			scanMsg.header.stamp = rospy.get_rostime()
@@ -109,5 +124,7 @@ if __name__ == "__main__":
 			logFile.write('{0}, {1}, {2}, {3}, {4}\n'.format(dist, angle, rangeIR, mts, flag))
 			if flag == 1:			
 				print('{0}, {1}, {2}, {3}, {4} --- {5}, {6}'.format(dist, angle, rangeIR, mts, flag, dist_wheel_l, dist_wheel_r ))
+				#print('{0}, {1}, {2}'.format(robot_x_i, robot_y_i, robot_theta_i))
 	# Close log file
+
 	logFile.close()
