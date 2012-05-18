@@ -3,7 +3,7 @@ function pij  = transMatrix( u )
     
     % u contains elements 1=umax and 2=-umax
     pij = zeros(dSteps^2, dSteps^2);
-    %pij(dSteps^2+1, dSteps^2+1) = 1.0;
+    % pij(dSteps^2+1, dSteps^2+1) = 1.0;
     
     for i =1:dSteps
         for j = 1:dSteps 

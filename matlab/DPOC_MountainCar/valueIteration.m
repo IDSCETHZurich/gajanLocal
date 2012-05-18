@@ -1,4 +1,4 @@
-clc; clear;
+clc; 
 global g v_max v_min x_max x_min dSteps dT v_step x_step 
 g = 9.81;
 
@@ -8,7 +8,7 @@ v_min = -v_max;
 x_max = pi; 
 x_min = -x_max; 
 
-dSteps = 50;
+dSteps = 55;
 dT = 0.1;
 
 v_step = (v_max - v_min)/dSteps; 
@@ -16,7 +16,7 @@ x_step = (x_max - x_min)/dSteps;
 
 J = zeros(dSteps * dSteps,1);
 
-iterationSteps = 50;
+iterationSteps = 100;
 for k=1:iterationSteps
     for i =1:dSteps
         for j = 1:dSteps 
@@ -38,13 +38,13 @@ for k=1:iterationSteps
             
             %Boundary checks
             updateJ = 1;
-            if (JvipI<1) updateJ=updateJ*0; end 
-            if (JvinI<1) updateJ=updateJ*0; end            
+            if (JvipI<1) JvipI=1; end 
+            if (JvinI<1) JvinI=1; end            
             if (JxipI<1) updateJ=updateJ*0; end 
             if (JxinI<1) updateJ=updateJ*0; end
             
-            if (JvipI>dSteps) updateJ=updateJ*0; end 
-            if (JvinI>dSteps) updateJ=updateJ*0; end            
+            if (JvipI>dSteps) JvipI=dSteps; end 
+            if (JvinI>dSteps) JvinI=dSteps; end            
             if (JxipI>dSteps) updateJ=updateJ*0; end 
             if (JxinI>dSteps) updateJ=updateJ*0; end
             

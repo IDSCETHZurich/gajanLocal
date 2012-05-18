@@ -8,8 +8,8 @@ v_min = -v_max;
 x_max = pi; 
 x_min = -x_max; 
 
-dSteps = 100;
-dT = 0.05;
+dSteps = 60;
+dT = 0.1;
 
 v_step = (v_max - v_min)/dSteps; 
 x_step = (x_max - x_min)/dSteps; 
@@ -42,35 +42,31 @@ for pk=1:iterationSteps
                 currentX = [v_min + (i-1)*v_step + 0.5*v_step;
                     x_min + (j-1)*x_step + 0.5*x_step];
 
+                currentUele = u( dSteps*(i-1)+j );
+                if currentUele == 1
+                    currentU = u_max;
+                elseif currentUele == 2
+                    currentU = -u_max;
+                else
+                    display('error:u contains unexpected element');
+                end
+                
                 %calculate the next states
-                nextX_pI = dynamicsD(dT,currentX,+2);
-                nextX_nI = dynamicsD(dT,currentX,-2);
+                nextX = dynamicsD(dT,currentX,currentU);
 
                 %finding the corresponding indices
-                JvipI = floor((nextX_pI(1)-v_min)/v_step)+1;
-                JxipI = floor((nextX_pI(2)-x_min)/x_step)+1;
-
-                JvinI = floor((nextX_nI(1)-v_min)/v_step)+1;
-                JxinI = floor((nextX_nI(2)-x_min)/x_step)+1;
+                Jvi = floor((nextX(1)-v_min)/v_step)+1;
+                Jxi = floor((nextX(2)-x_min)/x_step)+1;
 
                 %Boundary checks
                 updateJ = 1;
-                if (JvipI<1) updateJ=updateJ*0; end 
-                if (JvinI<1) updateJ=updateJ*0; end            
-                if (JxipI<1) updateJ=updateJ*0; end 
-                if (JxinI<1) updateJ=updateJ*0; end
+                if (Jvi<1) updateJ=updateJ*0; end 
+                if (Jxi<1) updateJ=updateJ*0; end 
 
-                if (JvipI>dSteps) updateJ=updateJ*0; end 
-                if (JvinI>dSteps) updateJ=updateJ*0; end            
-                if (JxipI>dSteps) updateJ=updateJ*0; end 
-                if (JxinI>dSteps) updateJ=updateJ*0; end
-
-                %Update value
+                if (Jvi>dSteps) updateJ=updateJ*0; end 
+                if (Jxi>dSteps) updateJ=updateJ*0; end 
                 if updateJ==1
-                    J(dSteps*(i-1) + j) = min([gc(currentX,+2) ...
-                        + J(dSteps*(JvipI-1)+JxipI); % u = +2
-                        gc(currentX,-2) ...
-                        + J(dSteps*(JvinI-1)+JxinI)]); % u = -2
+                    J(dSteps*(i-1) + j) = gc(currentX,+2) + J(dSteps*(Jvi-1)+Jxi); 
                 end
             end
         end
