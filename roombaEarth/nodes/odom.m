@@ -9,7 +9,7 @@ robot_theta_i = 0.0;
 distance = 0.0;
 
 robotState = [];
-robot_description_r = 0.268 / 2.0;
+robot_description_r = 0.258 / 2.0;
 
 
 for i=1:size(data,1)
@@ -17,7 +17,7 @@ for i=1:size(data,1)
     d_angle = data(i,2)/1000.0;
     
     distance = distance + d_dist;
-    robot_theta_i = robot_theta_i + d_angle/robot_description_r;
+    robot_theta_i = robot_theta_i + 2*d_angle/robot_description_r;
     robot_x_i = robot_x_i + d_dist * cos(robot_theta_i);
     robot_y_i = robot_y_i + d_dist * sin(robot_theta_i);	
     
@@ -30,8 +30,8 @@ for i=1:size(data,1)
         robot_x_i, robot_y_i, robot_theta_i, obstacle_x, obstacle_y, range];
 end
 
-%plot(robotState(:,4), robotState(:,5),'xb',robotState(:,1), robotState(:,2), '-r')
-plot(robotState(:,1), robotState(:,2), '-r')
+plot(robotState(:,4), robotState(:,5),'xb',robotState(:,1), robotState(:,2), '-r')
+%plot(robotState(:,1), robotState(:,2), '-r')
 axis equal
 
 display(distance)
