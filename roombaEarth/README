@@ -1,0 +1,2 @@
+roslaunch roombaEarth roomba.launch
+rosrun roombaEarth fakePublisher.py
